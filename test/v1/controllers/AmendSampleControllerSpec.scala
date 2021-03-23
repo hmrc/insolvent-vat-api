@@ -83,7 +83,6 @@ class AmendSampleControllerSpec
     MockedAppConfig.apiGatewayContext.returns("organisations/insolvent/vat").anyNumberOfTimes()
   }
 
-
   val responseBody: JsValue = Json.parse(
     """
       |{
