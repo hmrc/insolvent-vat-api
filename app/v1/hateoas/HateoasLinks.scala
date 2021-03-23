@@ -18,43 +18,20 @@ package v1.hateoas
 
 import config.AppConfig
 import v1.models.hateoas.Link
-import v1.models.hateoas.Method.{PUT, _}
-import v1.models.hateoas.RelType.{AMEND_SAMPLE_REL, DELETE_SAMPLE_REL, _}
+import v1.models.hateoas.Method.PUT
+import v1.models.hateoas.RelType.AMEND_SAMPLE_REL
 
 trait HateoasLinks {
 
   //Domain URIs
-  private def sampleUri(appConfig: AppConfig, nino: String, taxYear: String) =
-    s"/${appConfig.apiGatewayContext}/sample/$nino/$taxYear"
+  private def sampleUri(appConfig: AppConfig, nino: String) =
+    s"/${appConfig.apiGatewayContext}/sample/$nino"
 
   //Sample links
-  def amendSample(appConfig: AppConfig, nino: String, taxYear: String): Link =
+  def amendSample(appConfig: AppConfig, nino: String): Link =
     Link(
-      href = sampleUri(appConfig, nino, taxYear),
+      href = sampleUri(appConfig, nino),
       method = PUT,
       rel = AMEND_SAMPLE_REL
-    )
-
-  def retrieveSample(appConfig: AppConfig, nino: String, taxYear: String, isSelf: Boolean): Link =
-    if (isSelf) {
-      Link(
-        href = sampleUri(appConfig, nino, taxYear),
-        method = GET,
-        rel = SELF
-      )
-    }
-  else {
-      Link(
-        href = sampleUri(appConfig, nino, taxYear),
-        method = GET,
-        rel = RETRIEVE_SAMPLE_REL
-      )
-    }
-
-  def deleteSample(appConfig: AppConfig, nino: String, taxYear: String): Link =
-    Link(
-      href = sampleUri(appConfig, nino, taxYear),
-      method = DELETE,
-      rel = DELETE_SAMPLE_REL
     )
 }

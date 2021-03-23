@@ -25,33 +25,31 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
   val apiDefinitionJson: JsValue = Json.parse(
     """
     |{
-    |   "scopes":[
+    |  "scopes": [
+    |    {
+    |		   "key": "read:vat",
+    |		   "name": "View your VAT information",
+    |		   "description": "Allow read access to VAT data"
+    |	   },
+    |    {
+    |		   "key": "write:vat",
+    |		   "name": "Change your VAT information",
+    |		   "description": "Allow write access to VAT data"
+    |	   }
+    |  ],
+    |	 "api": {
+    |		 "name": "Insolvent VAT (MTD)",
+    |		 "description": "An API for providing VAT data for insolvent traders",
+    |		 "context": "organisations/insolvent/vat",
+    |		 "categories": ["VAT_MTD"],
+    |		 "versions": [
     |      {
-    |         "key":"read:self-assessment",
-    |         "name":"View your Self Assessment information",
-    |         "description":"Allow read access to self assessment data"
-    |      },
-    |      {
-    |         "key":"write:self-assessment",
-    |         "name":"Change your Self Assessment information",
-    |         "description":"Allow write access to self assessment data"
-    |      }
-    |   ],
-    |   "api":{
-    |      "name":"#mtd-api# (MTD)",
-    |      "description":"#desc#",
-    |      "context":"mtd/template",
-    |      "categories":[
-    |         "INCOME_TAX_MTD"
-    |      ],
-    |      "versions":[
-    |         {
-    |            "version":"1.0",
-    |            "status":"ALPHA",
-    |            "endpointsEnabled":false
-    |         }
-    |      ]
-    |   }
+    |		  	 "version": "1.0",
+    |		  	 "status": "BETA",
+    |			   "endpointsEnabled": true
+    |		   }
+    |    ]
+    |  }
     |}
     """.stripMargin
   )

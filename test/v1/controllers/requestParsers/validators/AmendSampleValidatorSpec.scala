@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package v1.controllers.requestParsers.validators
 import config.AppConfig
 import mocks.MockAppConfig
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
 import v1.models.errors._
 import v1.models.request.amendSample.AmendSampleRawData
@@ -27,7 +27,6 @@ import v1.models.request.amendSample.AmendSampleRawData
 class AmendSampleValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
-  private val validTaxYear = "2020-21"
   private val requestBodyJson = Json.parse(
     """{
       |  "data" : "someData"
@@ -41,44 +40,26 @@ class AmendSampleValidatorSpec extends UnitSpec {
     implicit val appConfig: AppConfig = mockAppConfig
 
     val validator = new AmendSampleValidator()
-
-    MockedAppConfig.minimumPermittedTaxYear
-      .returns(2021)
   }
 
   "running a validation" should {
     "return no errors" when {
       "a valid request is supplied" in new Test {
-        validator.validate(AmendSampleRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
+        validator.validate(AmendSampleRawData(validNino, requestBodyJson)) shouldBe Nil
       }
     }
 
     "return NinoFormatError error" when {
       "an invalid nino is supplied" in new Test {
-        validator.validate(AmendSampleRawData("A12344A", validTaxYear, requestBodyJson)) shouldBe
+        validator.validate(AmendSampleRawData("A12344A", requestBodyJson)) shouldBe
           List(NinoFormatError)
-      }
-    }
-
-    "return TaxYearFormatError error" when {
-      "an invalid tax year is supplied" in new Test {
-        validator.validate(AmendSampleRawData(validNino, "20178", requestBodyJson)) shouldBe
-          List(TaxYearFormatError)
-      }
-    }
-
-    "return RuleTaxYearNotSupportedError error" when {
-      "an out of range tax year is supplied" in new Test {
-        validator.validate(
-          AmendSampleRawData(validNino, "2016-17", requestBodyJson)) shouldBe
-          List(RuleTaxYearNotSupportedError)
       }
     }
 
     "return multiple errors" when {
       "request supplied has multiple errors" in new Test {
-        validator.validate(AmendSampleRawData("A12344A", "20178", requestBodyJson)) shouldBe
-          List(NinoFormatError, TaxYearFormatError)
+        validator.validate(AmendSampleRawData("A12344A", JsObject.empty)) shouldBe
+          List(NinoFormatError, RuleIncorrectOrEmptyBodyError)
       }
     }
   }

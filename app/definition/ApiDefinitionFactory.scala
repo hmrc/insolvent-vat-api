@@ -24,8 +24,8 @@ import play.api.Logger
 @Singleton
 class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
 
-  private val readScope = "read:self-assessment"
-  private val writeScope = "write:self-assessment"
+  private val readScope = "read:vat"
+  private val writeScope = "write:vat"
   private val logger: Logger = Logger(this.getClass)
 
   lazy val definition: Definition =
@@ -33,20 +33,20 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
       scopes = Seq(
         Scope(
           key = readScope,
-          name = "View your Self Assessment information",
-          description = "Allow read access to self assessment data"
+          name = "View your VAT information",
+          description = "Allow read access to VAT data"
         ),
         Scope(
           key = writeScope,
-          name = "Change your Self Assessment information",
-          description = "Allow write access to self assessment data"
+          name = "Change your VAT information",
+          description = "Allow write access to VAT data"
         )
       ),
       api = APIDefinition(
-        name = "#mtd-api# (MTD)",
-        description = "#desc#",
+        name = "Insolvent VAT (MTD)",
+        description = "An API for providing VAT data for insolvent traders",
         context = appConfig.apiGatewayContext,
-        categories = Seq("INCOME_TAX_MTD"),
+        categories = Seq("VAT_MTD"),
         versions = Seq(
           APIVersion(
             version = VERSION_1,

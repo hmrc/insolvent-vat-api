@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,43 +28,43 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
   class Test extends MockHttpClient with MockAppConfig {
     val apiDefinitionFactory = new ApiDefinitionFactory(mockAppConfig)
-    MockedAppConfig.apiGatewayContext returns "mtd/template"
+    MockedAppConfig.apiGatewayContext returns "/organisations/insolvent/vat"
   }
 
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
         MockedAppConfig.featureSwitch returns None
-        MockedAppConfig.apiStatus returns "1.0"
+        MockedAppConfig.apiStatus returns "BETA"
         MockedAppConfig.endpointsEnabled returns true
 
-        private val readScope = "read:self-assessment"
-        private val writeScope = "write:self-assessment"
+        private val readScope = "read:vat"
+        private val writeScope = "write:vat"
 
         apiDefinitionFactory.definition shouldBe
           Definition(
             scopes = Seq(
               Scope(
                 key = readScope,
-                name = "View your Self Assessment information",
-                description = "Allow read access to self assessment data"
+                name = "View your VAT information",
+                description = "Allow read access to VAT data"
               ),
               Scope(
                 key = writeScope,
-                name = "Change your Self Assessment information",
-                description = "Allow write access to self assessment data"
+                name = "Change your VAT information",
+                description = "Allow write access to VAT data"
               )
             ),
             api = APIDefinition(
-              name = "#mtd-api# (MTD)",
-              description = "#desc#",
-              context = "mtd/template",
-              categories = Seq("INCOME_TAX_MTD"),
+              name = "Insolvent VAT (MTD)",
+              description = "An API for providing VAT data for insolvent traders",
+              context = "/organisations/insolvent/vat",
+              categories = Seq("VAT_MTD"),
               versions = Seq(
                 APIVersion(
                   version = VERSION_1,
                   access = None,
-                  status = ALPHA,
+                  status = BETA,
                   endpointsEnabled = true
                 )
               ),

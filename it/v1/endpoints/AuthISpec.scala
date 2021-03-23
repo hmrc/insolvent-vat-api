@@ -22,7 +22,6 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.domain.DesTaxYear
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class AuthISpec extends IntegrationBaseSpec {
@@ -31,7 +30,6 @@ class AuthISpec extends IntegrationBaseSpec {
     val nino: String = "AA123456A"
     val taxYear: String = "2020-21"
     val data: String = "someData"
-    val correlationId: String = "X-123"
 
     val requestJson: String =
       s"""
@@ -44,11 +42,11 @@ class AuthISpec extends IntegrationBaseSpec {
 
     def request(): WSRequest = {
       setupStubs()
-      buildRequest(s"/sample/$nino/$taxYear")
+      buildRequest(s"/sample/$nino")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
-    def desUri: String = s"/some-placeholder/template/$nino/${DesTaxYear.fromMtd(taxYear)}"
+    def desUri: String = s"/some-placeholder/template/$nino"
 
     val desResponse: JsValue = Json.parse(
       """

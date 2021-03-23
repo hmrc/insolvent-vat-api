@@ -51,12 +51,11 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
     endpointName = "amendSample"
   )
 
-  def amendSample(nino: String, taxYear: String): Action[JsValue] =
+  def amendSample(nino: String): Action[JsValue] =
     authorisedAction(nino).async(parse.json) { implicit request =>
 
       val rawData = AmendSampleRawData(
         nino = nino,
-        taxYear = taxYear,
         body = request.body
       )
 
@@ -76,7 +75,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
               userDetails = request.userDetails
             ))
 
-          Ok(amendSampleHateoasBody(appConfig, nino, taxYear))
+          Ok(amendSampleHateoasBody(appConfig, nino))
             .withApiHeaders(serviceResponse.correlationId)
             .as(MimeTypes.JSON)
         }
@@ -100,9 +99,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
       case RuleIncorrectOrEmptyBodyError | BadRequestError |
-           TaxYearFormatError | RuleTaxYearNotSupportedError |
-           NinoFormatError | RuleTaxYearRangeInvalidError
-      => BadRequest(Json.toJson(errorWrapper))
+           NinoFormatError => BadRequest(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
@@ -122,7 +119,6 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
       userType = userDetails.userType,
       agentReferenceNumber = userDetails.agentReferenceNumber,
       nino = rawData.nino,
-      taxYear = rawData.taxYear,
       `X-CorrelationId` = correlationId,
       response = response
     )

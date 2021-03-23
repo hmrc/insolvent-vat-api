@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ class SampleAuditDetailSpec extends UnitSpec {
   private val userType = "Organisation"
   private val agentReferenceNumber = Some("012345678")
   private val nino = "AA123456A"
-  private val taxYear = "2017-18"
   private val `X-CorrelationId` = "X-123"
   private val responseSuccess = SampleAuditResponse(Status.SEE_OTHER, None)
   private val responseFail = SampleAuditResponse(Status.BAD_REQUEST, Some(Seq(AuditError("FORMAT_NINO"))))
@@ -39,7 +38,6 @@ class SampleAuditDetailSpec extends UnitSpec {
              |  "userType": "Organisation",
              |  "agentReferenceNumber": "012345678",
              |  "nino": "AA123456A",
-             |  "taxYear": "2017-18",
              |  "X-CorrelationId": "X-123",
              |  "response": {
              |    "httpStatus": 303
@@ -47,7 +45,7 @@ class SampleAuditDetailSpec extends UnitSpec {
              |}
            """.stripMargin)
 
-        val model = SampleAuditDetail(userType, agentReferenceNumber, nino, taxYear, `X-CorrelationId`, responseSuccess)
+        val model = SampleAuditDetail(userType, agentReferenceNumber, nino, `X-CorrelationId`, responseSuccess)
 
         Json.toJson(model) shouldBe json
       }
@@ -60,7 +58,6 @@ class SampleAuditDetailSpec extends UnitSpec {
              |{
              |  "userType": "Organisation",
              |  "nino": "AA123456A",
-             |  "taxYear": "2017-18",
              |  "X-CorrelationId": "X-123",
              |  "response": {
              |    "httpStatus": 400,
@@ -73,7 +70,7 @@ class SampleAuditDetailSpec extends UnitSpec {
              |}
            """.stripMargin)
 
-        val model = SampleAuditDetail(userType, None, nino, taxYear, `X-CorrelationId`, responseFail)
+        val model = SampleAuditDetail(userType, None, nino, `X-CorrelationId`, responseFail)
 
         Json.toJson(model) shouldBe json
       }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package v1.connectors
 import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.MockHttpClient
-import v1.models.domain.DesTaxYear
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendSample.{AmendSampleRequest, AmendSampleRequestBody}
 
@@ -28,11 +27,9 @@ import scala.concurrent.Future
 class AmendSampleConnectorSpec extends ConnectorSpec {
 
   val nino: String = "AA123456A"
-  val desTaxYear: DesTaxYear = DesTaxYear.fromMtd(taxYear = "2018-19")
 
   val request: AmendSampleRequest = AmendSampleRequest(
     nino = Nino(nino),
-    desTaxYear = desTaxYear,
     body = AmendSampleRequestBody("someData")
   )
 
@@ -60,7 +57,7 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
 
         MockedHttpClient
           .put(
-            url = s"$baseUrl/some-placeholder/template/$nino/$desTaxYear",
+            url = s"$baseUrl/some-placeholder/template/$nino",
             body = request.body,
             requiredHeaders = desRequestHeaders: _*
           ).returns(Future.successful(outcome))

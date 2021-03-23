@@ -22,7 +22,6 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.domain.DesTaxYear
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
@@ -31,12 +30,9 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
   private trait Test {
 
     val nino = "AA123456A"
-    val taxYear = "2020-21"
-    val correlationId = "X-123"
 
-    def uri: String = s"/sample/$nino/$taxYear"
-
-    def desUri: String = s"/some-placeholder/template/$nino/${DesTaxYear.fromMtd(taxYear)}"
+    def uri: String = s"/sample/$nino"
+    def desUri: String = s"/some-placeholder/template/$nino"
 
     def setupStubs(): StubMapping
 
@@ -48,11 +44,11 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
   }
 
   val requestJson: JsValue = Json.parse(
-    s"""
-       |{
-       |  "data": "someData"
-       |}
-        """.stripMargin
+    """
+      |{
+      |  "data": "someData"
+      |}
+    """.stripMargin
   )
 
   val mtdResponse: JsValue = Json.parse(
@@ -60,19 +56,9 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
       |{
       |  "links": [
       |    {
-      |      "href": "/mtd/template/sample/AA123456A/2020-21",
+      |      "href": "/organisations/insolvent/vat/sample/AA123456A",
       |      "method": "PUT",
       |      "rel": "amend-sample-rel"
-      |    },
-      |    {
-      |      "href": "/mtd/template/sample/AA123456A/2020-21",
-      |      "method": "GET",
-      |      "rel": "self"
-      |    },
-      |    {
-      |      "href": "/mtd/template/sample/AA123456A/2020-21",
-      |      "method": "DELETE",
-      |      "rel": "delete-sample-rel"
       |    }
       |  ]
       |}
@@ -99,11 +85,10 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestNino: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
             override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
@@ -119,10 +104,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = Seq(
-          ("AA1123A", "2017-18", BAD_REQUEST, NinoFormatError),
-          ("AA123456A", "20177", BAD_REQUEST, TaxYearFormatError),
-          ("AA123456A", "2015-16", BAD_REQUEST, RuleTaxYearNotSupportedError),
-          ("AA123456A", "2015-17", BAD_REQUEST, RuleTaxYearRangeInvalidError)
+          ("AA1123A", BAD_REQUEST, NinoFormatError)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))

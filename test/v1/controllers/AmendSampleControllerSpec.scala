@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.requestParsers.MockAmendSampleRequestParser
 import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, SampleAuditDetail, SampleAuditResponse}
-import v1.models.domain.DesTaxYear
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
@@ -42,7 +41,6 @@ class AmendSampleControllerSpec
     with MockAuditService {
 
   val nino: String = "AA123456A"
-  val taxYear: String = "2017-18"
   val correlationId: String = "X-123"
 
   val requestBodyJson: JsValue = Json.parse(
@@ -55,7 +53,6 @@ class AmendSampleControllerSpec
 
   val rawData: AmendSampleRawData = AmendSampleRawData(
     nino = nino,
-    taxYear = taxYear,
     body = requestBodyJson
   )
 
@@ -63,14 +60,13 @@ class AmendSampleControllerSpec
     data = "someData"
   )
 
-  val requestData = AmendSampleRequest(
+  val requestData: AmendSampleRequest = AmendSampleRequest(
     nino = Nino(nino),
-    desTaxYear = DesTaxYear.fromMtd(taxYear),
     body = requestBody
   )
 
   trait Test {
-    val hc = HeaderCarrier()
+    val hc: HeaderCarrier = HeaderCarrier()
 
     val controller = new AmendSampleController(
       authService = mockEnrolmentsAuthService,
@@ -84,7 +80,7 @@ class AmendSampleControllerSpec
 
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
-    MockedAppConfig.apiGatewayContext.returns("baseUrl").anyNumberOfTimes()
+    MockedAppConfig.apiGatewayContext.returns("organisations/insolvent/vat").anyNumberOfTimes()
   }
 
 
@@ -93,19 +89,9 @@ class AmendSampleControllerSpec
       |{
       |  "links": [
       |    {
-      |      "href": "/baseUrl/sample/AA123456A/2017-18",
+      |      "href": "/organisations/insolvent/vat/sample/AA123456A",
       |      "method": "PUT",
       |      "rel": "amend-sample-rel"
-      |    },
-      |    {
-      |      "href": "/baseUrl/sample/AA123456A/2017-18",
-      |      "method": "GET",
-      |      "rel": "self"
-      |    },
-      |    {
-      |      "href": "/baseUrl/sample/AA123456A/2017-18",
-      |      "method": "DELETE",
-      |      "rel": "delete-sample-rel"
       |    }
       |  ]
       |}
@@ -124,7 +110,7 @@ class AmendSampleControllerSpec
           .amendSample(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-        val result: Future[Result] = controller.amendSample(nino, taxYear)(
+        val result: Future[Result] = controller.amendSample(nino)(
           fakePutRequest(requestBodyJson)
         )
 
@@ -136,7 +122,6 @@ class AmendSampleControllerSpec
           userType = "Individual",
           agentReferenceNumber = None,
           nino = nino,
-          taxYear = taxYear,
           `X-CorrelationId` = correlationId,
           response = SampleAuditResponse(
             httpStatus = OK,
@@ -163,7 +148,7 @@ class AmendSampleControllerSpec
               .parse(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
-            val result: Future[Result] = controller.amendSample(nino, taxYear)(
+            val result: Future[Result] = controller.amendSample(nino)(
               fakePutRequest(requestBodyJson)
             )
 
@@ -175,7 +160,6 @@ class AmendSampleControllerSpec
               userType = "Individual",
               agentReferenceNumber = None,
               nino = nino,
-              taxYear = taxYear,
               `X-CorrelationId` = header("X-CorrelationId", result).get,
               response = SampleAuditResponse(
                 httpStatus = expectedStatus,
@@ -196,9 +180,6 @@ class AmendSampleControllerSpec
         val input = Seq(
           (BadRequestError, BAD_REQUEST),
           (NinoFormatError, BAD_REQUEST),
-          (TaxYearFormatError, BAD_REQUEST),
-          (RuleTaxYearNotSupportedError, BAD_REQUEST),
-          (RuleTaxYearRangeInvalidError, BAD_REQUEST),
           (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
@@ -218,7 +199,7 @@ class AmendSampleControllerSpec
               .amendSample(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-            val result: Future[Result] = controller.amendSample(nino, taxYear)(
+            val result: Future[Result] = controller.amendSample(nino)(
               fakePutRequest(requestBodyJson)
             )
 
@@ -230,7 +211,6 @@ class AmendSampleControllerSpec
               userType = "Individual",
               agentReferenceNumber = None,
               nino = nino,
-              taxYear = taxYear,
               `X-CorrelationId` = header("X-CorrelationId", result).get,
               response = SampleAuditResponse(
                 httpStatus = expectedStatus,
@@ -250,7 +230,6 @@ class AmendSampleControllerSpec
 
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
-          (TaxYearFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )

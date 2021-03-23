@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package v1.controllers.requestParsers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.validators.MockAmendSampleValidator
-import v1.models.domain.DesTaxYear
 import v1.models.errors._
 import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
@@ -35,8 +34,7 @@ class AmendSampleRequestParserSpec extends UnitSpec {
       |}
     """.stripMargin)
 
-  val inputData =
-    AmendSampleRawData(nino, taxYear, requestBodyJson)
+  val inputData: AmendSampleRawData = AmendSampleRawData(nino, requestBodyJson)
 
   trait Test extends MockAmendSampleValidator {
     lazy val parser = new AmendSampleRequestParser(mockAmendSampleValidator)
@@ -49,7 +47,7 @@ class AmendSampleRequestParserSpec extends UnitSpec {
         MockAmendSampleValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(AmendSampleRequest(Nino(nino), DesTaxYear("2018"), AmendSampleRequestBody("someData")))
+          Right(AmendSampleRequest(Nino(nino), AmendSampleRequestBody("someData")))
       }
     }
 
@@ -64,11 +62,11 @@ class AmendSampleRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockAmendSampleValidator.validate(inputData)
-          .returns(List(NinoFormatError, TaxYearFormatError))
+        MockAmendSampleValidator.validate(inputData.copy(body = JsObject.empty))
+          .returns(List(NinoFormatError, RuleIncorrectOrEmptyBodyError))
 
-        parser.parseRequest(inputData) shouldBe
-          Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TaxYearFormatError))))
+        parser.parseRequest(inputData.copy(body = JsObject.empty)) shouldBe
+          Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, RuleIncorrectOrEmptyBodyError))))
       }
     }
   }

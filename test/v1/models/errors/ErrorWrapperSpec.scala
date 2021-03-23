@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class ErrorWrapperSpec extends UnitSpec {
       Some (
         Seq(
           NinoFormatError,
-          TaxYearFormatError
+          RuleIncorrectOrEmptyBodyError
         )
       )
     )
@@ -78,8 +78,8 @@ class ErrorWrapperSpec extends UnitSpec {
         |         "message": "The provided NINO is invalid"
         |       },
         |       {
-        |         "code": "FORMAT_TAX_YEAR",
-        |         "message": "The provided tax year is invalid"
+        |         "code": "RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED",
+        |         "message": "An empty or non-matching body was submitted"
         |       }
         |   ]
         |}
