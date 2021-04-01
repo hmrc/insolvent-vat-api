@@ -18,8 +18,7 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.Enrolment
-import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import v1.controllers.requestParsers.validators.validations.VrnValidation
@@ -41,10 +40,7 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
 
     override protected def executionContext: ExecutionContext = cc.executionContext
 
-    def predicate(vrn: String): Predicate =
-      Enrolment("HMRC-MTD-VAT")
-        .withIdentifier("VRN", vrn)
-        .withDelegatedAuthRule("mtd-vat-auth")
+    def predicate: Predicate = EmptyPredicate
 
     override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
 
@@ -53,7 +49,7 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
       val clientId = request.headers.get("X-Client-Id").getOrElse("N/A")
 
       if (VrnValidation.validate(vrn) == Nil) {
-        authService.authorised(predicate(vrn), nrsRequired).flatMap[Result] {
+        authService.authorised(predicate, nrsRequired).flatMap[Result] {
           case Right(userDetails) => block(UserRequest(userDetails.copy(clientId = clientId), request))
           case Left(UnauthorisedError) => Future.successful(Forbidden(Json.toJson(UnauthorisedError)))
           case Left(_) => Future.successful(InternalServerError(Json.toJson(DownstreamError)))

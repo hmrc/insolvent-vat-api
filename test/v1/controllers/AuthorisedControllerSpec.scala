@@ -18,7 +18,7 @@ package v1.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.services.MockEnrolmentsAuthService
 import v1.models.errors.{DownstreamError, MtdError, UnauthorisedError}
@@ -57,10 +57,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
     "the enrolments auth service returns an error" must {
       "map to the correct result" when {
 
-        val predicate: Enrolment =
-          Enrolment("HMRC-MTD-VAT")
-            .withIdentifier("VRN", vrn)
-            .withDelegatedAuthRule("mtd-vat-auth")
+        val predicate: Predicate = EmptyPredicate
 
         def serviceErrors(mtdError: MtdError, expectedStatus: Int, expectedBody: JsValue): Unit = {
           s"a ${mtdError.code} error is returned from the enrolments auth service" in new Test {
