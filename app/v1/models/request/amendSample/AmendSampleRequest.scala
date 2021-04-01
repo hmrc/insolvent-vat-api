@@ -16,6 +16,6 @@
 
 package v1.models.request.amendSample
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 
-case class AmendSampleRequest(nino: Nino, body: AmendSampleRequestBody)
+case class AmendSampleRequest(vrn: Vrn, body: AmendSampleRequestBody)

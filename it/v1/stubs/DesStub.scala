@@ -17,7 +17,8 @@
 package v1.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.JsValue
+import play.api.http.Status.NO_CONTENT
+import play.api.libs.json.{JsObject, JsValue}
 import support.WireMockMethods
 
 object DesStub extends WireMockMethods {
@@ -45,5 +46,14 @@ object DesStub extends WireMockMethods {
   def onError(method: HTTPMethod, uri: String, queryParams: Map[String, String], errorStatus: Int, errorBody: String): StubMapping = {
     when(method = method, uri = uri, queryParams)
       .thenReturn(status = errorStatus, errorBody)
+  }
+
+  private def url(vrn: String): String =
+    //s"/vat/returns/vrn/$vrn"
+    s"/some-placeholder/template/$vrn"
+
+  def serviceSuccess(vrn: String /*, periodKey: String*/): StubMapping = {
+    //when(method = GET, uri = url(vrn), queryParams = Map("period-key" -> periodKey))
+    when(method = PUT, uri = url(vrn)).thenReturn(status = NO_CONTENT, JsObject.empty)
   }
 }

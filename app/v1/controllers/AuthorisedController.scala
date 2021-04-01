@@ -22,9 +22,10 @@ import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import v1.controllers.requestParsers.validators.validations.VrnValidation
 import v1.models.auth.UserDetails
-import v1.models.errors._
-import v1.services.{EnrolmentsAuthService, MtdIdLookupService}
+import v1.models.errors.{DownstreamError, UnauthorisedError, VrnFormatError}
+import v1.services.EnrolmentsAuthService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,38 +34,32 @@ case class UserRequest[A](userDetails: UserDetails, request: Request[A]) extends
 abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   val authService: EnrolmentsAuthService
-  val lookupService: MtdIdLookupService
 
-  def authorisedAction(nino: String): ActionBuilder[UserRequest, AnyContent] = new ActionBuilder[UserRequest, AnyContent] {
+  def authorisedAction(vrn: String, nrsRequired: Boolean = false): ActionBuilder[UserRequest, AnyContent] = new ActionBuilder[UserRequest, AnyContent] {
 
     override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
 
     override protected def executionContext: ExecutionContext = cc.executionContext
 
-    def predicate(mtdId: String): Predicate =
-      Enrolment("HMRC-MTD-IT")
-        .withIdentifier("MTDITID", mtdId)
-        .withDelegatedAuthRule("mtd-it-auth")
-
-    def invokeBlockWithAuthCheck[A](mtdId: String, request: Request[A], block: UserRequest[A] => Future[Result])(
-      implicit headerCarrier: HeaderCarrier): Future[Result] = {
-      authService.authorised(predicate(mtdId)).flatMap[Result] {
-        case Right(userDetails)      => block(UserRequest(userDetails.copy(mtdId = mtdId), request))
-        case Left(UnauthorisedError) => Future.successful(Forbidden(Json.toJson(UnauthorisedError)))
-        case Left(_)                 => Future.successful(InternalServerError(Json.toJson(DownstreamError)))
-      }
-    }
+    def predicate(vrn: String): Predicate =
+      Enrolment("HMRC-MTD-VAT")
+        .withIdentifier("VRN", vrn)
+        .withDelegatedAuthRule("mtd-vat-auth")
 
     override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
 
       implicit val headerCarrier: HeaderCarrier = hc(request)
 
-      lookupService.lookup(nino).flatMap[Result] {
-        case Right(mtdId)            => invokeBlockWithAuthCheck(mtdId, request, block)
-        case Left(NinoFormatError)   => Future.successful(BadRequest(Json.toJson(NinoFormatError)))
-        case Left(UnauthorisedError) => Future.successful(Forbidden(Json.toJson(UnauthorisedError)))
-        case Left(InvalidBearerTokenError) => Future.successful(Unauthorized(Json.toJson(InvalidBearerTokenError)))
-        case Left(_)                 => Future.successful(InternalServerError(Json.toJson(DownstreamError)))
+      val clientId = request.headers.get("X-Client-Id").getOrElse("N/A")
+
+      if (VrnValidation.validate(vrn) == Nil) {
+        authService.authorised(predicate(vrn), nrsRequired).flatMap[Result] {
+          case Right(userDetails) => block(UserRequest(userDetails.copy(clientId = clientId), request))
+          case Left(UnauthorisedError) => Future.successful(Forbidden(Json.toJson(UnauthorisedError)))
+          case Left(_) => Future.successful(InternalServerError(Json.toJson(DownstreamError)))
+        }
+      } else {
+        Future.successful(BadRequest(Json.toJson(VrnFormatError)))
       }
     }
   }

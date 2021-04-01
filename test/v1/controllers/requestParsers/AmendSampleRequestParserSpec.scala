@@ -18,13 +18,13 @@ package v1.controllers.requestParsers
 
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 import v1.mocks.validators.MockAmendSampleValidator
 import v1.models.errors._
 import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
 class AmendSampleRequestParserSpec extends UnitSpec {
-  val nino = "AA123456B"
+  val vrn = "123456789"
   val taxYear = "2017-18"
   val calcId = "someCalcId"
 
@@ -34,39 +34,37 @@ class AmendSampleRequestParserSpec extends UnitSpec {
       |}
     """.stripMargin)
 
-  val inputData: AmendSampleRawData = AmendSampleRawData(nino, requestBodyJson)
+  val inputData: AmendSampleRawData = AmendSampleRawData(vrn, requestBodyJson)
 
   trait Test extends MockAmendSampleValidator {
     lazy val parser = new AmendSampleRequestParser(mockAmendSampleValidator)
   }
 
   "parse" should {
-
     "return a request object" when {
       "valid request data is supplied" in new Test {
         MockAmendSampleValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(AmendSampleRequest(Nino(nino), AmendSampleRequestBody("someData")))
+          Right(AmendSampleRequest(Vrn(vrn), AmendSampleRequestBody("someData")))
       }
     }
 
     "return an ErrorWrapper" when {
-
       "a single validation error occurs" in new Test {
         MockAmendSampleValidator.validate(inputData)
-          .returns(List(NinoFormatError))
+          .returns(List(VrnFormatError))
 
         parser.parseRequest(inputData) shouldBe
-          Left(ErrorWrapper(None, NinoFormatError, None))
+          Left(ErrorWrapper(None, VrnFormatError, None))
       }
 
       "multiple validation errors occur" in new Test {
         MockAmendSampleValidator.validate(inputData.copy(body = JsObject.empty))
-          .returns(List(NinoFormatError, RuleIncorrectOrEmptyBodyError))
+          .returns(List(VrnFormatError, RuleIncorrectOrEmptyBodyError))
 
         parser.parseRequest(inputData.copy(body = JsObject.empty)) shouldBe
-          Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, RuleIncorrectOrEmptyBodyError))))
+          Left(ErrorWrapper(None, BadRequestError, Some(Seq(VrnFormatError, RuleIncorrectOrEmptyBodyError))))
       }
     }
   }

@@ -21,7 +21,7 @@ import support.UnitSpec
 
 class AuditErrorSpec extends UnitSpec {
 
-  private val auditError = AuditError("FORMAT_NINO")
+  private val auditError = AuditError("FORMAT_VRN")
 
   "writes" when {
     "passed an audit error model" should {
@@ -30,7 +30,7 @@ class AuditErrorSpec extends UnitSpec {
          val json = Json.parse(
           s"""
              |{
-             |  "errorCode": "FORMAT_NINO"
+             |  "errorCode": "FORMAT_VRN"
              |}
            """.stripMargin)
 

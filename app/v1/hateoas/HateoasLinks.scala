@@ -24,13 +24,13 @@ import v1.models.hateoas.RelType.AMEND_SAMPLE_REL
 trait HateoasLinks {
 
   //Domain URIs
-  private def sampleUri(appConfig: AppConfig, nino: String) =
-    s"/${appConfig.apiGatewayContext}/sample/$nino"
+  private def sampleUri(appConfig: AppConfig, vrn: String) =
+    s"/${appConfig.apiGatewayContext}/sample/$vrn"
 
   //Sample links
-  def amendSample(appConfig: AppConfig, nino: String): Link =
+  def amendSample(appConfig: AppConfig, vrn: String): Link =
     Link(
-      href = sampleUri(appConfig, nino),
+      href = sampleUri(appConfig, vrn),
       method = PUT,
       rel = AMEND_SAMPLE_REL
     )

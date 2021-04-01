@@ -17,7 +17,7 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendSample.{AmendSampleRequest, AmendSampleRequestBody}
@@ -26,10 +26,10 @@ import scala.concurrent.Future
 
 class AmendSampleConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA123456A"
+  val vrn: String = "123456789"
 
   val request: AmendSampleRequest = AmendSampleRequest(
-    nino = Nino(nino),
+    vrn = Vrn(vrn),
     body = AmendSampleRequestBody("someData")
   )
 
@@ -57,7 +57,7 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
 
         MockedHttpClient
           .put(
-            url = s"$baseUrl/some-placeholder/template/$nino",
+            url = s"$baseUrl/some-placeholder/template/$vrn",
             body = request.body,
             requiredHeaders = desRequestHeaders: _*
           ).returns(Future.successful(outcome))

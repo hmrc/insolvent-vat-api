@@ -24,13 +24,13 @@ class ErrorWrapperSpec extends UnitSpec {
   val correlationId = "X-123"
 
   "Rendering a error response with one error" should {
-    val error = ErrorWrapper(None, NinoFormatError, Some(Seq.empty))
+    val error = ErrorWrapper(None, VrnFormatError, Some(Seq.empty))
 
     val json = Json.parse(
       """
         |{
-        |   "code": "FORMAT_NINO",
-        |   "message": "The provided NINO is invalid"
+        |   "code": "FORMAT_VRN",
+        |   "message": "The format of the supplied VRN field is not valid"
         |}
       """.stripMargin
     )
@@ -41,13 +41,13 @@ class ErrorWrapperSpec extends UnitSpec {
   }
 
   "Rendering a error response with one error and an empty sequence of errors" should {
-    val error = ErrorWrapper(None, NinoFormatError, Some(Seq.empty))
+    val error = ErrorWrapper(None, VrnFormatError, Some(Seq.empty))
 
     val json = Json.parse(
       """
         |{
-        |   "code": "FORMAT_NINO",
-        |   "message": "The provided NINO is invalid"
+        |   "code": "FORMAT_VRN",
+        |   "message": "The format of the supplied VRN field is not valid"
         |}
       """.stripMargin
     )
@@ -61,7 +61,7 @@ class ErrorWrapperSpec extends UnitSpec {
     val error = ErrorWrapper(None, BadRequestError,
       Some (
         Seq(
-          NinoFormatError,
+          VrnFormatError,
           RuleIncorrectOrEmptyBodyError
         )
       )
@@ -74,8 +74,8 @@ class ErrorWrapperSpec extends UnitSpec {
         |   "message": "Invalid request",
         |   "errors": [
         |       {
-        |         "code": "FORMAT_NINO",
-        |         "message": "The provided NINO is invalid"
+        |         "code": "FORMAT_VRN",
+        |         "message": "The format of the supplied VRN field is not valid"
         |       },
         |       {
         |         "code": "RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED",

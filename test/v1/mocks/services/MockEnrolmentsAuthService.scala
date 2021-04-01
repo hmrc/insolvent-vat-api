@@ -30,16 +30,17 @@ trait MockEnrolmentsAuthService extends MockFactory {
 
   val mockEnrolmentsAuthService: EnrolmentsAuthService = mock[EnrolmentsAuthService]
 
-  object MockedEnrolmentsAuthService {
+  object MockEnrolmentsAuthService {
+
     def authoriseUser(): Unit = {
-      (mockEnrolmentsAuthService.authorised(_: Predicate)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *, *)
-        .returns(Future.successful(Right(UserDetails("mtd-id", "Individual", None))))
+      (mockEnrolmentsAuthService.authorised(_: Predicate, _: Boolean)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *)
+        .returns(Future.successful(Right(UserDetails("Individual", None, "client-Id"))))
     }
 
     def authorised(predicate: Predicate): CallHandler[Future[AuthOutcome]] = {
-      (mockEnrolmentsAuthService.authorised(_: Predicate)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(predicate, *, *)
+      (mockEnrolmentsAuthService.authorised(_: Predicate, _: Boolean)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(predicate, *, *, *)
     }
   }
 

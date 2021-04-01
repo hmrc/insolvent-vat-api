@@ -26,7 +26,7 @@ class AmendSampleValidator extends Validator[AmendSampleRawData] {
 
   private def parameterFormatValidation: AmendSampleRawData => List[List[MtdError]] = (data: AmendSampleRawData) => {
     List(
-      NinoValidation.validate(data.nino),
+      VrnValidation.validate(data.vrn),
       JsonFormatValidation.validate[AmendSampleRequestBody](data.body)
     )
   }

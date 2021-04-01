@@ -17,16 +17,16 @@
 package v1.controllers.requestParsers
 
 import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 import v1.controllers.requestParsers.validators.Validator
-import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, RuleIncorrectOrEmptyBodyError}
+import v1.models.errors.{BadRequestError, ErrorWrapper, VrnFormatError, RuleIncorrectOrEmptyBodyError}
 import v1.models.request.RawData
 
 class RequestParserSpec extends UnitSpec {
 
-  private val nino = "AA123456A"
-  case class Raw(nino: String) extends RawData
-  case class Request(nino: Nino)
+  private val vrn = "123456789"
+  case class Raw(vrn: String) extends RawData
+  case class Request(vrn: Vrn)
 
   trait Test {
     test =>
@@ -36,7 +36,7 @@ class RequestParserSpec extends UnitSpec {
     val parser: RequestParser[Raw, Request] = new RequestParser[Raw, Request] {
       val validator: Validator[Raw] = test.validator
 
-      protected def requestFor(data: Raw) = Request(Nino(data.nino))
+      protected def requestFor(data: Raw): Request = Request(Vrn(data.vrn))
     }
   }
 
@@ -45,23 +45,23 @@ class RequestParserSpec extends UnitSpec {
       "the validator returns no errors" in new Test {
         lazy val validator: Validator[Raw] = (_: Raw) => Nil
 
-        parser.parseRequest(Raw(nino)) shouldBe Right(Request(Nino(nino)))
+        parser.parseRequest(Raw(vrn)) shouldBe Right(Request(Vrn(vrn)))
       }
     }
 
     "return a single error" when {
       "the validator returns a single error" in new Test {
-        lazy val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError)
+        lazy val validator: Validator[Raw] = (_: Raw) => List(VrnFormatError)
 
-        parser.parseRequest(Raw(nino)) shouldBe Left(ErrorWrapper(None, NinoFormatError, None))
+        parser.parseRequest(Raw(vrn)) shouldBe Left(ErrorWrapper(None, VrnFormatError, None))
       }
     }
 
     "return multiple errors" when {
       "the validator returns multiple errors" in new Test {
-        lazy val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError, RuleIncorrectOrEmptyBodyError)
+        lazy val validator: Validator[Raw] = (_: Raw) => List(VrnFormatError, RuleIncorrectOrEmptyBodyError)
 
-        parser.parseRequest(Raw(nino)) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, RuleIncorrectOrEmptyBodyError))))
+        parser.parseRequest(Raw(vrn)) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(VrnFormatError, RuleIncorrectOrEmptyBodyError))))
       }
     }
   }

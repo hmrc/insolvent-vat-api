@@ -38,7 +38,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
-                                      val lookupService: MtdIdLookupService,
                                       appConfig: AppConfig,
                                       requestParser: AmendSampleRequestParser,
                                       service: AmendSampleService,
@@ -51,11 +50,11 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
     endpointName = "amendSample"
   )
 
-  def amendSample(nino: String): Action[JsValue] =
-    authorisedAction(nino).async(parse.json) { implicit request =>
+  def amendSample(vrn: String): Action[JsValue] =
+    authorisedAction(vrn).async(parse.json) { implicit request =>
 
       val rawData = AmendSampleRawData(
-        nino = nino,
+        vrn = vrn,
         body = request.body
       )
 
@@ -75,7 +74,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
               userDetails = request.userDetails
             ))
 
-          Ok(amendSampleHateoasBody(appConfig, nino))
+          Ok(amendSampleHateoasBody(appConfig, vrn))
             .withApiHeaders(serviceResponse.correlationId)
             .as(MimeTypes.JSON)
         }
@@ -99,7 +98,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
       case RuleIncorrectOrEmptyBodyError | BadRequestError |
-           NinoFormatError => BadRequest(Json.toJson(errorWrapper))
+           VrnFormatError => BadRequest(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
@@ -118,7 +117,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
     SampleAuditDetail(
       userType = userDetails.userType,
       agentReferenceNumber = userDetails.agentReferenceNumber,
-      nino = rawData.nino,
+      vrn = rawData.vrn,
       `X-CorrelationId` = correlationId,
       response = response
     )

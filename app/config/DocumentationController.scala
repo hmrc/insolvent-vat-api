@@ -24,12 +24,12 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 
 @Singleton
-class DocumentationController @Inject()(selfAssessmentApiDefinition: ApiDefinitionFactory,
+class DocumentationController @Inject()(apiDefinition: ApiDefinitionFactory,
                                         cc: ControllerComponents, assets: Assets, errorHandler: HttpErrorHandler)
   extends HmrcDocumentationController(cc,assets , errorHandler ) {
 
   override def definition(): Action[AnyContent] = Action {
-    Ok(Json.toJson(selfAssessmentApiDefinition.definition))
+    Ok(Json.toJson(apiDefinition.definition))
   }
 
   def raml(version: String, file: String): Action[AnyContent] = {

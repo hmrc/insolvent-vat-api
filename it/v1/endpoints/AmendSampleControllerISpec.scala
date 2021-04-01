@@ -23,16 +23,16 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DesStub}
 
 class AmendSampleControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino = "AA123456A"
+    val vrn = "123456789"
 
-    def uri: String = s"/sample/$nino"
-    def desUri: String = s"/some-placeholder/template/$nino"
+    def uri: String = s"/sample/$vrn"
+    def desUri: String = s"/some-placeholder/template/$vrn"
 
     def setupStubs(): StubMapping
 
@@ -56,7 +56,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
       |{
       |  "links": [
       |    {
-      |      "href": "/organisations/insolvent/vat/sample/AA123456A",
+      |      "href": "/organisations/insolvent/vat/sample/123456789",
       |      "method": "PUT",
       |      "rel": "amend-sample-rel"
       |    }
@@ -66,13 +66,12 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
   )
 
   "Calling the sample endpoint" should {
-    "return a 204 status code" when {
+    "return a 200 status code" when {
       "any valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
           DesStub.onSuccess(DesStub.PUT, desUri, NO_CONTENT)
         }
 
@@ -85,15 +84,14 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
       "validation error" when {
-        def validationErrorTest(requestNino: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestVrn: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
+            override val vrn: String = requestVrn
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
             }
 
             val response: WSResponse = await(request().put(requestJson))
@@ -104,7 +102,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = Seq(
-          ("AA1123A", BAD_REQUEST, NinoFormatError)
+          ("AA1123A", BAD_REQUEST, VrnFormatError)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
@@ -117,7 +115,6 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
               DesStub.onError(DesStub.PUT, desUri, desStatus, errorBody(desCode))
             }
 

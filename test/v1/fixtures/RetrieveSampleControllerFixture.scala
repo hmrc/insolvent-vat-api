@@ -123,22 +123,22 @@ object RetrieveSampleControllerFixture {
     """.stripMargin
   )
 
-  def mtdResponseWithHateoas(nino: String, taxYear: String): JsObject = mtdJson.as[JsObject] ++ Json.parse(
+  def mtdResponseWithHateoas(vrn: String, taxYear: String): JsObject = mtdJson.as[JsObject] ++ Json.parse(
     s"""
        |{
        |   "links":[
        |      {
-       |         "href":"/mtd/template/sample/$nino/$taxYear",
+       |         "href":"/mtd/template/sample/$vrn/$taxYear",
        |         "method":"PUT",
        |         "rel":"amend-sample-rel"
        |      },
        |      {
-       |         "href":"/mtd/template/sample/$nino/$taxYear",
+       |         "href":"/mtd/template/sample/$vrn/$taxYear",
        |         "method":"GET",
        |         "rel":"self"
        |      },
        |      {
-       |         "href":"/mtd/template/sample/$nino/$taxYear",
+       |         "href":"/mtd/template/sample/$vrn/$taxYear",
        |         "method":"DELETE",
        |         "rel":"delete-sample-rel"
        |      }

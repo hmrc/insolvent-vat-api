@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OWrites}
 
 case class SampleAuditDetail(userType: String,
                              agentReferenceNumber: Option[String],
-                             nino: String,
+                             vrn: String,
                              `X-CorrelationId`: String,
                              response: SampleAuditResponse)
 

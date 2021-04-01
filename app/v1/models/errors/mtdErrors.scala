@@ -24,9 +24,9 @@ object MtdError {
   implicit val writes: Writes[MtdError] = Json.writes[MtdError]
 }
 
-object NinoFormatError extends MtdError(
-  code = "FORMAT_NINO",
-  message = "The provided NINO is invalid"
+object VrnFormatError extends MtdError(
+  code = "FORMAT_VRN",
+  message = "The format of the supplied VRN field is not valid"
 )
 
 // Rule Errors

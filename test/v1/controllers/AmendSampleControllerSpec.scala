@@ -19,10 +19,10 @@ package v1.controllers
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.requestParsers.MockAmendSampleRequestParser
-import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmentsAuthService}
 import v1.models.audit.{AuditError, AuditEvent, SampleAuditDetail, SampleAuditResponse}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
@@ -34,13 +34,12 @@ import scala.concurrent.Future
 class AmendSampleControllerSpec
   extends ControllerBaseSpec
     with MockEnrolmentsAuthService
-    with MockMtdIdLookupService
     with MockAppConfig
     with MockAmendSampleService
     with MockAmendSampleRequestParser
     with MockAuditService {
 
-  val nino: String = "AA123456A"
+  val vrn: String = "123456789"
   val correlationId: String = "X-123"
 
   val requestBodyJson: JsValue = Json.parse(
@@ -52,7 +51,7 @@ class AmendSampleControllerSpec
   )
 
   val rawData: AmendSampleRawData = AmendSampleRawData(
-    nino = nino,
+    vrn = vrn,
     body = requestBodyJson
   )
 
@@ -61,7 +60,7 @@ class AmendSampleControllerSpec
   )
 
   val requestData: AmendSampleRequest = AmendSampleRequest(
-    nino = Nino(nino),
+    vrn = Vrn(vrn),
     body = requestBody
   )
 
@@ -70,7 +69,6 @@ class AmendSampleControllerSpec
 
     val controller = new AmendSampleController(
       authService = mockEnrolmentsAuthService,
-      lookupService = mockMtdIdLookupService,
       appConfig = mockAppConfig,
       requestParser = mockAmendSampleRequestParser,
       service = mockAmendSampleService,
@@ -78,8 +76,7 @@ class AmendSampleControllerSpec
       cc = cc
     )
 
-    MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
-    MockedEnrolmentsAuthService.authoriseUser()
+    MockEnrolmentsAuthService.authoriseUser()
     MockedAppConfig.apiGatewayContext.returns("organisations/insolvent/vat").anyNumberOfTimes()
   }
 
@@ -88,7 +85,7 @@ class AmendSampleControllerSpec
       |{
       |  "links": [
       |    {
-      |      "href": "/organisations/insolvent/vat/sample/AA123456A",
+      |      "href": "/organisations/insolvent/vat/sample/123456789",
       |      "method": "PUT",
       |      "rel": "amend-sample-rel"
       |    }
@@ -109,7 +106,7 @@ class AmendSampleControllerSpec
           .amendSample(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-        val result: Future[Result] = controller.amendSample(nino)(
+        val result: Future[Result] = controller.amendSample(vrn)(
           fakePutRequest(requestBodyJson)
         )
 
@@ -120,7 +117,7 @@ class AmendSampleControllerSpec
         val detail: SampleAuditDetail = SampleAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          nino = nino,
+          vrn = vrn,
           `X-CorrelationId` = correlationId,
           response = SampleAuditResponse(
             httpStatus = OK,
@@ -147,7 +144,7 @@ class AmendSampleControllerSpec
               .parse(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
-            val result: Future[Result] = controller.amendSample(nino)(
+            val result: Future[Result] = controller.amendSample(vrn)(
               fakePutRequest(requestBodyJson)
             )
 
@@ -158,7 +155,7 @@ class AmendSampleControllerSpec
             val detail: SampleAuditDetail = SampleAuditDetail(
               userType = "Individual",
               agentReferenceNumber = None,
-              nino = nino,
+              vrn = vrn,
               `X-CorrelationId` = header("X-CorrelationId", result).get,
               response = SampleAuditResponse(
                 httpStatus = expectedStatus,
@@ -178,7 +175,7 @@ class AmendSampleControllerSpec
 
         val input = Seq(
           (BadRequestError, BAD_REQUEST),
-          (NinoFormatError, BAD_REQUEST),
+          (VrnFormatError, BAD_REQUEST),
           (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
@@ -198,7 +195,7 @@ class AmendSampleControllerSpec
               .amendSample(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-            val result: Future[Result] = controller.amendSample(nino)(
+            val result: Future[Result] = controller.amendSample(vrn)(
               fakePutRequest(requestBodyJson)
             )
 
@@ -209,7 +206,7 @@ class AmendSampleControllerSpec
             val detail: SampleAuditDetail = SampleAuditDetail(
               userType = "Individual",
               agentReferenceNumber = None,
-              nino = nino,
+              vrn = vrn,
               `X-CorrelationId` = header("X-CorrelationId", result).get,
               response = SampleAuditResponse(
                 httpStatus = expectedStatus,
@@ -228,7 +225,7 @@ class AmendSampleControllerSpec
         }
 
         val input = Seq(
-          (NinoFormatError, BAD_REQUEST),
+          (VrnFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )

@@ -16,4 +16,9 @@
 
 package v1.models.auth
 
-case class UserDetails(mtdId: String, userType: String, agentReferenceNumber: Option[String])
+import v1.nrs.models.request.IdentityData
+
+case class UserDetails(userType: String,
+                       agentReferenceNumber: Option[String],
+                       clientId: String,
+                       identityData: Option[IdentityData] = None)

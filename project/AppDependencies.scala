@@ -27,7 +27,8 @@ object AppDependencies {
     "org.typelevel" %% "cats-core"         % "2.3.0",
     compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.1" cross CrossVersion.full),
     "com.github.ghik" % "silencer-lib" % "1.7.1" % Provided cross CrossVersion.full,
-    "com.chuusai"   %% "shapeless"         % "2.4.0-M1"
+    "com.chuusai"   %% "shapeless"         % "2.4.0-M1",
+    "com.typesafe.play" %% "play-json-joda"    % "2.7.3" // TODO: Please refactor utils.DateUtils to remove uses of JodaReads/Writes and remove this import.
   )
 
   def test(scope: String = "test, it"): Seq[sbt.ModuleID] = Seq(

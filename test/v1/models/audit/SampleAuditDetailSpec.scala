@@ -24,10 +24,10 @@ class SampleAuditDetailSpec extends UnitSpec {
 
   private val userType = "Organisation"
   private val agentReferenceNumber = Some("012345678")
-  private val nino = "AA123456A"
+  private val vrn = "123456789"
   private val `X-CorrelationId` = "X-123"
   private val responseSuccess = SampleAuditResponse(Status.SEE_OTHER, None)
-  private val responseFail = SampleAuditResponse(Status.BAD_REQUEST, Some(Seq(AuditError("FORMAT_NINO"))))
+  private val responseFail = SampleAuditResponse(Status.BAD_REQUEST, Some(Seq(AuditError("FORMAT_VRN"))))
 
   "writes" when {
     "passed an audit model with all fields provided" should {
@@ -37,7 +37,7 @@ class SampleAuditDetailSpec extends UnitSpec {
              |{
              |  "userType": "Organisation",
              |  "agentReferenceNumber": "012345678",
-             |  "nino": "AA123456A",
+             |  "vrn": "123456789",
              |  "X-CorrelationId": "X-123",
              |  "response": {
              |    "httpStatus": 303
@@ -45,7 +45,7 @@ class SampleAuditDetailSpec extends UnitSpec {
              |}
            """.stripMargin)
 
-        val model = SampleAuditDetail(userType, agentReferenceNumber, nino, `X-CorrelationId`, responseSuccess)
+        val model = SampleAuditDetail(userType, agentReferenceNumber, vrn, `X-CorrelationId`, responseSuccess)
 
         Json.toJson(model) shouldBe json
       }
@@ -57,20 +57,20 @@ class SampleAuditDetailSpec extends UnitSpec {
           s"""
              |{
              |  "userType": "Organisation",
-             |  "nino": "AA123456A",
+             |  "vrn": "123456789",
              |  "X-CorrelationId": "X-123",
              |  "response": {
              |    "httpStatus": 400,
              |    "errors": [
              |      {
-             |        "errorCode": "FORMAT_NINO"
+             |        "errorCode": "FORMAT_VRN"
              |      }
              |    ]
              |  }
              |}
            """.stripMargin)
 
-        val model = SampleAuditDetail(userType, None, nino, `X-CorrelationId`, responseFail)
+        val model = SampleAuditDetail(userType, None, vrn, `X-CorrelationId`, responseFail)
 
         Json.toJson(model) shouldBe json
       }

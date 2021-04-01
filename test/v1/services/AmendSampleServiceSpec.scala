@@ -16,7 +16,7 @@
 
 package v1.services
 
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.domain.Vrn
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockAmendSampleConnector
 import v1.models.errors._
@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class AmendSampleServiceSpec extends ServiceSpec {
 
-  private val nino = "AA123456A"
+  private val vrn = "123456789"
   private val correlationId = "X-123"
 
   private val requestBody = AmendSampleRequestBody(
@@ -35,7 +35,7 @@ class AmendSampleServiceSpec extends ServiceSpec {
   )
 
   private val requestData = AmendSampleRequest(
-    nino = Nino(nino),
+    vrn = Vrn(vrn),
     body = requestBody
   )
 
@@ -71,7 +71,7 @@ class AmendSampleServiceSpec extends ServiceSpec {
         }
 
       val input = Seq(
-        ("INVALID_NINO", NinoFormatError),
+        ("INVALID_VRN", VrnFormatError),
         ("NOT_FOUND", NotFoundError),
         ("SERVER_ERROR", DownstreamError),
         ("SERVICE_UNAVAILABLE", DownstreamError)

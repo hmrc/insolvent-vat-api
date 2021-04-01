@@ -18,19 +18,22 @@ package v1.mocks.connectors
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{MtdIdLookupConnector, MtdIdLookupOutcome}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockMtdIdLookupConnector extends MockFactory {
+trait MockAuthConnector extends MockFactory {
 
-  val mockMtdIdLookupConnector: MtdIdLookupConnector = mock[MtdIdLookupConnector]
+  val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  object MockedMtdIdLookupConnector {
-    def lookup(nino: String): CallHandler[Future[MtdIdLookupOutcome]] = {
-      (mockMtdIdLookupConnector.getMtdId(_: String)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(nino, *, *)
+  object MockAuthConnector {
+
+    def authorised[A](predicate: Predicate, retrievals: Retrieval[A]): CallHandler[Future[A]] = {
+      (mockAuthConnector.authorise[A](_: Predicate, _: Retrieval[A])(_: HeaderCarrier, _: ExecutionContext))
+        .expects(predicate, retrievals, *, *)
     }
   }
 

@@ -21,10 +21,10 @@ import play.api.libs.json.{JsValue, Json}
 
 trait AmendHateoasBodies extends HateoasLinks {
 
-  def amendSampleHateoasBody(appConfig: AppConfig, nino: String): JsValue = {
+  def amendSampleHateoasBody(appConfig: AppConfig, vrn: String): JsValue = {
 
     val links = Seq(
-      amendSample(appConfig, nino)
+      amendSample(appConfig, vrn)
     )
 
     Json.obj("links" -> links)

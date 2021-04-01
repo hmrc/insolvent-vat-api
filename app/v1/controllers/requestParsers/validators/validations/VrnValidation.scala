@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package v1.connectors
+package v1.controllers.requestParsers.validators.validations
 
-import config.AppConfig
-import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import v1.models.errors.{MtdError, VrnFormatError}
 
-import scala.concurrent.{ExecutionContext, Future}
+object VrnValidation {
+  private val vrnRegex = """^\d{9}$"""
 
-@Singleton
-class MtdIdLookupConnector @Inject()(http: HttpClient,
-                                     appConfig: AppConfig) {
-
-  def getMtdId(nino: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MtdIdLookupOutcome] = {
-    import v1.connectors.httpparsers.MtdIdLookupHttpParser.mtdIdLookupHttpReads
-
-    http.GET[MtdIdLookupOutcome](s"${appConfig.mtdIdBaseUrl}/mtd-identifier-lookup/nino/$nino")
+  def validate(vrn: String): List[MtdError] = {
+    if (vrn.matches(vrnRegex)) NoValidationErrors else List(VrnFormatError)
   }
 }

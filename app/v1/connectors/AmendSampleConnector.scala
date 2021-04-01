@@ -33,11 +33,11 @@ class AmendSampleConnector @Inject()(val http: HttpClient,
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
 
-    val nino = request.nino.nino
+    val vrn = request.vrn.vrn
 
     put(
       body = request.body,
-      DesUri[Unit](s"some-placeholder/template/$nino")
+      DesUri[Unit](s"some-placeholder/template/$vrn")
     )
   }
 }

@@ -26,7 +26,7 @@ import v1.models.request.amendSample.AmendSampleRawData
 
 class AmendSampleValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
+  private val validVrn = "123456789"
   private val requestBodyJson = Json.parse(
     """{
       |  "data" : "someData"
@@ -45,21 +45,21 @@ class AmendSampleValidatorSpec extends UnitSpec {
   "running a validation" should {
     "return no errors" when {
       "a valid request is supplied" in new Test {
-        validator.validate(AmendSampleRawData(validNino, requestBodyJson)) shouldBe Nil
+        validator.validate(AmendSampleRawData(validVrn, requestBodyJson)) shouldBe Nil
       }
     }
 
-    "return NinoFormatError error" when {
-      "an invalid nino is supplied" in new Test {
+    "return VrnFormatError error" when {
+      "an invalid VRN is supplied" in new Test {
         validator.validate(AmendSampleRawData("A12344A", requestBodyJson)) shouldBe
-          List(NinoFormatError)
+          List(VrnFormatError)
       }
     }
 
     "return multiple errors" when {
       "request supplied has multiple errors" in new Test {
         validator.validate(AmendSampleRawData("A12344A", JsObject.empty)) shouldBe
-          List(NinoFormatError, RuleIncorrectOrEmptyBodyError)
+          List(VrnFormatError, RuleIncorrectOrEmptyBodyError)
       }
     }
   }

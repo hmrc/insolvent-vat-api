@@ -17,33 +17,26 @@
 package v1.controllers.requestParsers.validators.validations
 
 import support.UnitSpec
-import v1.models.errors.NinoFormatError
+import v1.models.errors.VrnFormatError
 import v1.models.utils.JsonErrorValidators
 
-class NinoValidationSpec extends UnitSpec with JsonErrorValidators {
+class VrnValidationSpec extends UnitSpec with JsonErrorValidators {
 
   "validate" should {
     "return no errors" when {
-      "when a valid NINO is supplied" in {
-
-        val validNino = "AA123456A"
-        val validationResult = NinoValidation.validate(validNino)
+      "when a valid Vrn is supplied" in {
+        val validationResult = VrnValidation.validate(vrn = "123456789")
         validationResult.isEmpty shouldBe true
-
       }
     }
 
     "return an error" when {
-      "when an invalid NINO is supplied" in {
-
-        val invalidNino = "AA123456ABCBBCBCBC"
-        val validationResult = NinoValidation.validate(invalidNino)
+      "when an invalid Vrn is supplied" in {
+        val validationResult = VrnValidation.validate(vrn = "thisIsNotAVrn")
         validationResult.isEmpty shouldBe false
         validationResult.length shouldBe 1
-        validationResult.head shouldBe NinoFormatError
-
+        validationResult.head shouldBe VrnFormatError
       }
     }
-
   }
 }
