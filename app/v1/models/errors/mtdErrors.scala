@@ -24,6 +24,10 @@ object MtdError {
   implicit val writes: Writes[MtdError] = Json.writes[MtdError]
 }
 
+object MtdErrorWithCustomMessage {
+  def unapply(arg: MtdError): Option[String] = Some(arg.code)
+}
+
 object VrnFormatError extends MtdError(
   code = "FORMAT_VRN",
   message = "The format of the supplied VRN field is not valid"
