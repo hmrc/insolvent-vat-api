@@ -1,0 +1,1 @@
+PUT        /sample/:vrn       v1.controllers.AmendSampleController.amendSample(vrn: String)
