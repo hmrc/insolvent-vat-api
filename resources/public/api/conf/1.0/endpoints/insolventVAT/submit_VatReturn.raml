@@ -1,0 +1,20 @@
+is:
+  - headers.acceptJson
+  - headers.contentTypeJson
+  - headers.testScenarioHeader
+  - errors.formatVrn
+  - errors.clientOrAgentNotAuthorised
+  - errors.notFound
+displayName: Submit VAT Return for Insolvent Trader
+description: This endpoint has been created specifically for submissions from an external scanning provider. This endpoint allows a developer to submit a VAT return for a period.  These submissions relate to VAT traders that are insolvent.
+(annotations.sandboxData): !include ../scenarios/insolventVAT/submit_VatReturn.md
+(annotations.scope): "read:insolvent-VAT"
+securedBy: [ sec.oauth_2_0: { scopes: [ "read:insolvent-VAT" ] } ]
+body:
+  application/json:
+    type: !include ../schemas/insolventVAT/submit_VatReturn_response.json
+
+    headers:
+      X-CorrelationId:
+        example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+        description: Unique ID for operation tracking <br> String, 36 characters.
