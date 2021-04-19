@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers
+package v1.models.request.viewReturn
 
 import uk.gov.hmrc.domain.Vrn
-import v1.controllers.requestParsers.validators.AmendSampleValidator
-import v1.models.request.submit.{SubmitRawData, SubmitRequest, SubmitRequestBody}
 
-import javax.inject.Inject
-
-class AmendSampleRequestParser @Inject()(val validator: AmendSampleValidator)
-  extends RequestParser[SubmitRawData, SubmitRequest] {
-
-  override protected def requestFor(data: SubmitRawData): SubmitRequest =
-    SubmitRequest(Vrn(data.vrn), data.body.as[SubmitRequestBody])
-}
+case class ViewRequest(vrn: Vrn, periodKey: String)

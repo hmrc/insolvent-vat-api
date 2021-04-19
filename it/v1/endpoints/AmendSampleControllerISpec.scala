@@ -24,6 +24,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub}
+import v1.fixtures.SubmitFixture._
 
 class AmendSampleControllerISpec extends IntegrationBaseSpec {
 
@@ -42,14 +43,6 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
   }
-
-  val requestJson: JsValue = Json.parse(
-    """
-      |{
-      |  "data": "someData"
-      |}
-    """.stripMargin
-  )
 
   val mtdResponse: JsValue = Json.parse(
     """
@@ -75,7 +68,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
           DesStub.onSuccess(DesStub.PUT, desUri, NO_CONTENT)
         }
 
-        val response: WSResponse = await(request().put(requestJson))
+        val response: WSResponse = await(request().put(requestBodyJson))
         response.status shouldBe OK
         response.json shouldBe mtdResponse
         response.header("Content-Type") shouldBe Some("application/json")
@@ -94,7 +87,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
               AuthStub.authorised()
             }
 
-            val response: WSResponse = await(request().put(requestJson))
+            val response: WSResponse = await(request().put(requestBodyJson))
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
             response.header("Content-Type") shouldBe Some("application/json")
@@ -118,7 +111,7 @@ class AmendSampleControllerISpec extends IntegrationBaseSpec {
               DesStub.onError(DesStub.PUT, desUri, desStatus, errorBody(desCode))
             }
 
-            val response: WSResponse = await(request().put(requestJson))
+            val response: WSResponse = await(request().put(requestBodyJson))
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
           }

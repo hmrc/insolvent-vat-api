@@ -31,7 +31,7 @@ import v1.hateoas.AmendHateoasBodies
 import v1.models.audit.{AuditEvent, SampleAuditDetail, SampleAuditResponse}
 import v1.models.auth.UserDetails
 import v1.models.errors._
-import v1.models.request.amendSample.AmendSampleRawData
+import v1.models.request.submit.SubmitRawData
 import v1.services.{AmendSampleService, _}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +53,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
   def amendSample(vrn: String): Action[JsValue] =
     authorisedAction(vrn).async(parse.json) { implicit request =>
 
-      val rawData = AmendSampleRawData(
+      val rawData = SubmitRawData(
         vrn = vrn,
         body = request.body
       )
@@ -104,7 +104,7 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
     }
   }
 
-  private def createAuditDetails(rawData: AmendSampleRawData,
+  private def createAuditDetails(rawData: SubmitRawData,
                                  statusCode: Int,
                                  correlationId: String,
                                  userDetails: UserDetails,
