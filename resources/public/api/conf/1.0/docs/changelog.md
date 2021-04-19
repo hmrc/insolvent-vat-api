@@ -1,1 +1,1 @@
-You can find the changelog in the [mtd-api](https://github.com/hmrc/mtd-api/wiki/Changelog) GitHub wiki.
+You can find the changelog in the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/wiki) GitHub wiki.
