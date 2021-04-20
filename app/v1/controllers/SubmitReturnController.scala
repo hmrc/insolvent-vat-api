@@ -37,12 +37,12 @@ import v1.services.{AmendSampleService, _}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
-                                      appConfig: AppConfig,
-                                      requestParser: AmendSampleRequestParser,
-                                      service: AmendSampleService,
-                                      auditService: AuditService,
-                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
+class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
+                                       appConfig: AppConfig,
+                                       requestParser: AmendSampleRequestParser,
+                                       service: AmendSampleService,
+                                       auditService: AuditService,
+                                       cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {
 
   implicit val endpointLogContext: EndpointLogContext = EndpointLogContext(

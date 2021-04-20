@@ -26,18 +26,18 @@ class SubmitRequestBodySpec extends UnitSpec {
   val toDesJson: JsValue = Json.parse(
     """
       |{
-      |   "vatDueAcquisitions": 	2000,
-      |   "vatDueSales": 	1000,
-      |   "totalValuePurchasesExVAT":  9999999999999,
-      |   "totalAllAcquisitionsExVAT": 	9999999999999,
-      |   "agentReferenceNumber":"LARN0085901",
+      |   "vatDueAcquisitions": 2000,
+      |   "vatDueSales": 1000,
+      |   "totalValuePurchasesExVAT": 9999999999999,
+      |   "totalAllAcquisitionsExVAT": 9999999999999,
+      |   "agentReferenceNumber": "LARN0085901",
       |   "periodKey": "AB12",
-      |   "vatDueNet": 	99999999999.99,
-      |   "totalValueSalesExVAT": 	9999999999999,
-      |   "receivedAt":"2020-05-05T12:00:00Z",
-      |   "vatReclaimedCurrPeriod": 	99999999999.99,
-      |   "vatDueTotal": 	3000,
-      |   "totalValueGoodsSuppliedExVAT": 	9999999999999
+      |   "vatDueNet": 99999999999.99,
+      |   "totalValueSalesExVAT": 9999999999999,
+      |   "receivedAt": "2020-05-05T12:00:00Z",
+      |   "vatReclaimedCurrPeriod": 99999999999.99,
+      |   "vatDueTotal": 3000,
+      |   "totalValueGoodsSuppliedExVAT": 9999999999999
       |}
     """.stripMargin)
 
