@@ -22,16 +22,16 @@ object SubmitFixture {
 
     val requestBodyJson = Json.parse(
     """{
-      |        "periodKey" : "AB12",
+      |     "periodKey" : "AB12",
       |    "vatDueSales" : 1000.00,
-      |    "vatDueAcquisitions" : 	2000.00,
-      |    "totalVatDue" : 	3000.00,
-      |    "vatReclaimedCurrPeriod" : 	99999999999.99,
-      |    "netVatDue" :  99999999999.99,
-      |    "totalValueSalesExVAT" : 	9999999999999,
-      |    "totalValuePurchasesExVAT" : 	9999999999999,
-      |    "totalValueGoodsSuppliedExVAT" : 	9999999999999,
-      |    "totalAcquisitionsExVAT" : 	9999999999999,
+      |    "vatDueAcquisitions" : 2000.00,
+      |    "totalVatDue" : 3000.00,
+      |    "vatReclaimedCurrPeriod" : 99999999999.99,
+      |    "netVatDue" : 99999999999.99,
+      |    "totalValueSalesExVAT" : 9999999999999,
+      |    "totalValuePurchasesExVAT" : 9999999999999,
+      |    "totalValueGoodsSuppliedExVAT" : 9999999999999,
+      |    "totalAcquisitionsExVAT" : 9999999999999,
       |    "uniqueId" : "0123456789"
       |}
     """.stripMargin)
