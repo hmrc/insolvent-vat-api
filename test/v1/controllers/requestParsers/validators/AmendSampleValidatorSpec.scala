@@ -22,14 +22,24 @@ import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
 import v1.models.errors._
-import v1.models.request.amendSample.AmendSampleRawData
+import v1.models.request.submit.SubmitRawData
 
 class AmendSampleValidatorSpec extends UnitSpec {
 
   private val validVrn = "123456789"
   private val requestBodyJson = Json.parse(
     """{
-      |  "data" : "someData"
+      |      "periodKey" : "AB12",
+      |    "vatDueSales" : 1000.00,
+      |    "vatDueAcquisitions" : 	2000.00,
+      |    "totalVatDue" : 	3000.00,
+      |    "vatReclaimedCurrPeriod" : 	99999999999.99,
+      |    "netVatDue" :  99999999999.99,
+      |    "totalValueSalesExVAT" : 	9999999999999,
+      |    "totalValuePurchasesExVAT" : 	9999999999999,
+      |    "totalValueGoodsSuppliedExVAT" : 	9999999999999,
+      |    "totalAcquisitionsExVAT" : 	9999999999999,
+      |    "uniqueId" : "0123456789"
       |}
     """.stripMargin)
 
@@ -45,20 +55,20 @@ class AmendSampleValidatorSpec extends UnitSpec {
   "running a validation" should {
     "return no errors" when {
       "a valid request is supplied" in new Test {
-        validator.validate(AmendSampleRawData(validVrn, requestBodyJson)) shouldBe Nil
+        validator.validate(SubmitRawData(validVrn, requestBodyJson)) shouldBe Nil
       }
     }
 
     "return VrnFormatError error" when {
       "an invalid VRN is supplied" in new Test {
-        validator.validate(AmendSampleRawData("A12344A", requestBodyJson)) shouldBe
+        validator.validate(SubmitRawData("A12344A", requestBodyJson)) shouldBe
           List(VrnFormatError)
       }
     }
 
     "return multiple errors" when {
       "request supplied has multiple errors" in new Test {
-        validator.validate(AmendSampleRawData("A12344A", JsObject.empty)) shouldBe
+        validator.validate(SubmitRawData("A12344A", JsObject.empty)) shouldBe
           List(VrnFormatError, RuleIncorrectOrEmptyBodyError)
       }
     }
