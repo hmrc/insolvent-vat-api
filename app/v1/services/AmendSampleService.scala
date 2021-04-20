@@ -25,7 +25,7 @@ import v1.connectors.AmendSampleConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.submit.SubmitRequest
+import v1.models.request.amendSample.AmendSampleRequest
 import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendSampleService @Inject()(connector: AmendSampleConnector) extends DesResponseMappingSupport with Logging {
 
-  def amendSample(request: SubmitRequest)(
+  def amendSample(request: AmendSampleRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     logContext: EndpointLogContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {

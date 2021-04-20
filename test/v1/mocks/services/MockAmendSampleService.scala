@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.models.errors.ErrorWrapper
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.submit.SubmitRequest
+import v1.models.request.amendSample.AmendSampleRequest
 import v1.services.AmendSampleService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,9 +33,9 @@ trait MockAmendSampleService extends MockFactory {
 
   object MockAmendSampleService {
 
-    def amendSample(requestData: SubmitRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
+    def amendSample(requestData: AmendSampleRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
       (mockAmendSampleService
-        .amendSample(_: SubmitRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
+        .amendSample(_: AmendSampleRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
         .expects(requestData, *, *, *)
     }
   }

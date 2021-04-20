@@ -20,7 +20,7 @@ import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Vrn
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.submit.{SubmitRequest, SubmitRequestBody}
+import v1.models.request.amendSample.{AmendSampleRequest, AmendSampleRequestBody}
 
 import scala.concurrent.Future
 
@@ -28,23 +28,9 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
 
   val vrn: String = "123456789"
 
-  val request: SubmitRequest = SubmitRequest(
+  val request: AmendSampleRequest = AmendSampleRequest(
     vrn = Vrn(vrn),
-    body = SubmitRequestBody(
-      periodKey = "AB12",
-      vatDueSales = 1000.00,
-      vatDueAcquisitions = 2000.00,
-      totalVatDue = 3000.00,
-      vatReclaimedCurrPeriod = BigDecimal("99999999999.99"),
-      netVatDue = BigDecimal("99999999999.99"),
-      totalValueSalesExVAT = BigDecimal("9999999999999"),
-      totalValuePurchasesExVAT = BigDecimal("9999999999999"),
-      totalValueGoodsSuppliedExVAT = BigDecimal("9999999999999"),
-      totalAcquisitionsExVAT = BigDecimal("9999999999999"),
-      uniqueId = Some("0123456789"),
-      receivedAt = None,
-      agentReference = None
-    )
+    body = AmendSampleRequestBody("someData")
   )
 
   class Test extends MockHttpClient with MockAppConfig {

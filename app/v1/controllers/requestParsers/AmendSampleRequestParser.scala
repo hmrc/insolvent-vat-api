@@ -18,13 +18,13 @@ package v1.controllers.requestParsers
 
 import uk.gov.hmrc.domain.Vrn
 import v1.controllers.requestParsers.validators.AmendSampleValidator
-import v1.models.request.submit.{SubmitRawData, SubmitRequest, SubmitRequestBody}
+import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
 import javax.inject.Inject
 
 class AmendSampleRequestParser @Inject()(val validator: AmendSampleValidator)
-  extends RequestParser[SubmitRawData, SubmitRequest] {
+  extends RequestParser[AmendSampleRawData, AmendSampleRequest] {
 
-  override protected def requestFor(data: SubmitRawData): SubmitRequest =
-    SubmitRequest(Vrn(data.vrn), data.body.as[SubmitRequestBody])
+  override protected def requestFor(data: AmendSampleRawData): AmendSampleRequest =
+    AmendSampleRequest(Vrn(data.vrn), data.body.as[AmendSampleRequestBody])
 }

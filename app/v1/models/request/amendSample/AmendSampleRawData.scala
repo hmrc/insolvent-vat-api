@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package v1.models.request.viewReturn
+package v1.models.request.amendSample
 
+import play.api.libs.json.JsValue
 import v1.models.request.RawData
 
-case class ViewRawData(vrn: String, periodKey: String) extends RawData
+case class AmendSampleRawData(vrn: String, body: JsValue) extends RawData

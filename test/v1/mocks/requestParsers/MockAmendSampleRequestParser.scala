@@ -20,15 +20,15 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.AmendSampleRequestParser
 import v1.models.errors.ErrorWrapper
-import v1.models.request.submit.{SubmitRawData, SubmitRequest}
+import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest}
 
 trait MockAmendSampleRequestParser extends MockFactory {
 
   val mockAmendSampleRequestParser: AmendSampleRequestParser = mock[AmendSampleRequestParser]
 
   object MockAmendSampleRequestParser {
-    def parse(data: SubmitRawData): CallHandler[Either[ErrorWrapper, SubmitRequest]] = {
-      (mockAmendSampleRequestParser.parseRequest(_: SubmitRawData)).expects(data)
+    def parse(data: AmendSampleRawData): CallHandler[Either[ErrorWrapper, AmendSampleRequest]] = {
+      (mockAmendSampleRequestParser.parseRequest(_: AmendSampleRawData)).expects(data)
     }
   }
 
