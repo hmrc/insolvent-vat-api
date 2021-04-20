@@ -26,7 +26,7 @@ import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmen
 import v1.models.audit.{AuditError, AuditEvent, SampleAuditDetail, SampleAuditResponse}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.submit.{SubmitRawData, SubmitRequest, SubmitRequestBody}
+import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -50,28 +50,16 @@ class AmendSampleControllerSpec
     """.stripMargin
   )
 
-  val rawData: SubmitRawData = SubmitRawData(
+  val rawData: AmendSampleRawData = AmendSampleRawData(
     vrn = vrn,
     body = requestBodyJson
   )
 
-  val requestBody: SubmitRequestBody = SubmitRequestBody(
-    periodKey = "AB12",
-    vatDueSales = 1000.00,
-    vatDueAcquisitions = 2000.00,
-    totalVatDue = 3000.00,
-    vatReclaimedCurrPeriod = BigDecimal("99999999999.99"),
-    netVatDue = BigDecimal("99999999999.99"),
-    totalValueSalesExVAT = BigDecimal("9999999999999"),
-    totalValuePurchasesExVAT = BigDecimal("9999999999999"),
-    totalValueGoodsSuppliedExVAT = BigDecimal("9999999999999"),
-    totalAcquisitionsExVAT = BigDecimal("9999999999999"),
-    uniqueId = Some("0123456789"),
-    receivedAt = None,
-    agentReference = None
+  val requestBody: AmendSampleRequestBody = AmendSampleRequestBody(
+    data = "someData"
   )
 
-  val requestData: SubmitRequest = SubmitRequest(
+  val requestData: AmendSampleRequest = AmendSampleRequest(
     vrn = Vrn(vrn),
     body = requestBody
   )

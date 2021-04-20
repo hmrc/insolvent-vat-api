@@ -31,18 +31,18 @@ import v1.hateoas.AmendHateoasBodies
 import v1.models.audit.{AuditEvent, SampleAuditDetail, SampleAuditResponse}
 import v1.models.auth.UserDetails
 import v1.models.errors._
-import v1.models.request.submit.SubmitRawData
+import v1.models.request.amendSample.AmendSampleRawData
 import v1.services.{AmendSampleService, _}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
-                                       appConfig: AppConfig,
-                                       requestParser: AmendSampleRequestParser,
-                                       service: AmendSampleService,
-                                       auditService: AuditService,
-                                       cc: ControllerComponents)(implicit ec: ExecutionContext)
+class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
+                                      appConfig: AppConfig,
+                                      requestParser: AmendSampleRequestParser,
+                                      service: AmendSampleService,
+                                      auditService: AuditService,
+                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {
 
   implicit val endpointLogContext: EndpointLogContext = EndpointLogContext(
@@ -53,7 +53,7 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
   def amendSample(vrn: String): Action[JsValue] =
     authorisedAction(vrn).async(parse.json) { implicit request =>
 
-      val rawData = SubmitRawData(
+      val rawData = AmendSampleRawData(
         vrn = vrn,
         body = request.body
       )
@@ -104,7 +104,7 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
     }
   }
 
-  private def createAuditDetails(rawData: SubmitRawData,
+  private def createAuditDetails(rawData: AmendSampleRawData,
                                  statusCode: Int,
                                  correlationId: String,
                                  userDetails: UserDetails,

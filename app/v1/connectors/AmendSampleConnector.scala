@@ -19,7 +19,7 @@ package v1.connectors
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.models.request.submit.SubmitRequest
+import v1.models.request.amendSample.AmendSampleRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AmendSampleConnector @Inject()(val http: HttpClient,
                                      val appConfig: AppConfig) extends BaseDesConnector {
 
-  def amendSample(request: SubmitRequest)(
+  def amendSample(request: AmendSampleRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[DesOutcome[Unit]] = {
 

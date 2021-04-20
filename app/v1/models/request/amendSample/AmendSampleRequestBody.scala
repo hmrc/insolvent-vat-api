@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package v1.models.request.submit
+package v1.models.request.amendSample
 
-import uk.gov.hmrc.domain.Vrn
+import play.api.libs.json.{Json, OFormat}
 
-case class SubmitRequest(vrn: Vrn, body: SubmitRequestBody)
+case class AmendSampleRequestBody(data: String)
+
+object AmendSampleRequestBody {
+  implicit val format: OFormat[AmendSampleRequestBody] = Json.format[AmendSampleRequestBody]
+}

@@ -23,13 +23,20 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.stubs.{AuditStub, AuthStub, DesStub}
-import v1.fixtures.SubmitFixture._
 
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
     val vrn = "123456789"
     //val periodKey = "AB19"
+
+    val json: JsValue = Json.parse(
+      """
+        |{
+        |  "data": "someData"
+        |}
+      """.stripMargin
+    )
 
     def setupStubs(): StubMapping
 
@@ -51,7 +58,7 @@ class AuthISpec extends IntegrationBaseSpec {
           DesStub.serviceSuccess(vrn)
         }
 
-        val response: WSResponse = await(request().put(requestBodyJson))
+        val response: WSResponse = await(request().put(json))
         response.status shouldBe OK
       }
     }
@@ -65,7 +72,7 @@ class AuthISpec extends IntegrationBaseSpec {
           DesStub.serviceSuccess(vrn)
         }
 
-        val response: WSResponse = await(request().put(requestBodyJson))
+        val response: WSResponse = await(request().put(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -78,7 +85,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedNotLoggedIn()
         }
 
-        val response: WSResponse = await(request().put(requestBodyJson))
+        val response: WSResponse = await(request().put(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -91,7 +98,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedOther()
         }
 
-        val response: WSResponse = await(request().put(requestBodyJson))
+        val response: WSResponse = await(request().put(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }

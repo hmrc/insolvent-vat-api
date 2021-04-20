@@ -21,7 +21,7 @@ import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockAmendSampleConnector
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.submit.{SubmitRequest, SubmitRequestBody}
+import v1.models.request.amendSample.{AmendSampleRequest, AmendSampleRequestBody}
 
 import scala.concurrent.Future
 
@@ -30,23 +30,11 @@ class AmendSampleServiceSpec extends ServiceSpec {
   private val vrn = "123456789"
   private val correlationId = "X-123"
 
-  private val requestBody = SubmitRequestBody(
-    periodKey = "AB12",
-    vatDueSales = 1000.00,
-    vatDueAcquisitions = 2000.00,
-    totalVatDue = 3000.00,
-    vatReclaimedCurrPeriod = BigDecimal("99999999999.99"),
-    netVatDue = BigDecimal("99999999999.99"),
-    totalValueSalesExVAT = BigDecimal("9999999999999"),
-    totalValuePurchasesExVAT = BigDecimal("9999999999999"),
-    totalValueGoodsSuppliedExVAT = BigDecimal("9999999999999"),
-    totalAcquisitionsExVAT = BigDecimal("9999999999999"),
-    uniqueId = Some("0123456789"),
-    receivedAt = None,
-    agentReference = None
+  private val requestBody = AmendSampleRequestBody(
+    data = "someData"
   )
 
-  private val requestData = SubmitRequest(
+  private val requestData = AmendSampleRequest(
     vrn = Vrn(vrn),
     body = requestBody
   )

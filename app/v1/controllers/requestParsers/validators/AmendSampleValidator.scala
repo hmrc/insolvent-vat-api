@@ -18,25 +18,25 @@ package v1.controllers.requestParsers.validators
 
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
-import v1.models.request.submit.{SubmitRawData, SubmitRequestBody}
+import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequestBody}
 
-class AmendSampleValidator extends Validator[SubmitRawData] {
+class AmendSampleValidator extends Validator[AmendSampleRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
-  private def parameterFormatValidation: SubmitRawData => List[List[MtdError]] = (data: SubmitRawData) => {
+  private def parameterFormatValidation: AmendSampleRawData => List[List[MtdError]] = (data: AmendSampleRawData) => {
     List(
       VrnValidation.validate(data.vrn),
-      JsonFormatValidation.validate[SubmitRequestBody](data.body)
+      JsonFormatValidation.validate[AmendSampleRequestBody](data.body)
     )
   }
 
-  private def parameterRuleValidation: SubmitRawData => List[List[MtdError]] = { data =>
+  private def parameterRuleValidation: AmendSampleRawData => List[List[MtdError]] = { data =>
     List(
     )
   }
 
-  override def validate(data: SubmitRawData): List[MtdError] = {
+  override def validate(data: AmendSampleRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
 }

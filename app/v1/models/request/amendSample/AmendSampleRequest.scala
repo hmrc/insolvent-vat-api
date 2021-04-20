@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package v1.models.request.submit
+package v1.models.request.amendSample
 
-import play.api.libs.json.JsValue
-import v1.models.request.RawData
+import uk.gov.hmrc.domain.Vrn
 
-case class SubmitRawData(vrn: String, body: JsValue) extends RawData
+case class AmendSampleRequest(vrn: Vrn, body: AmendSampleRequestBody)

@@ -21,15 +21,20 @@ import support.UnitSpec
 import uk.gov.hmrc.domain.Vrn
 import v1.mocks.validators.MockAmendSampleValidator
 import v1.models.errors._
-import v1.models.request.submit.{SubmitRawData, SubmitRequest, SubmitRequestBody}
-import v1.fixtures.SubmitFixture._
+import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
 class AmendSampleRequestParserSpec extends UnitSpec {
   val vrn = "123456789"
   val taxYear = "2017-18"
   val calcId = "someCalcId"
 
-  val inputData: SubmitRawData = SubmitRawData(vrn, requestBodyJson)
+  private val requestBodyJson = Json.parse(
+    """{
+      |  "data" : "someData"
+      |}
+    """.stripMargin)
+
+  val inputData: AmendSampleRawData = AmendSampleRawData(vrn, requestBodyJson)
 
   trait Test extends MockAmendSampleValidator {
     lazy val parser = new AmendSampleRequestParser(mockAmendSampleValidator)
@@ -41,21 +46,7 @@ class AmendSampleRequestParserSpec extends UnitSpec {
         MockAmendSampleValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(SubmitRequest(Vrn(vrn), SubmitRequestBody(
-            periodKey = "AB12",
-            vatDueSales = 1000.00,
-            vatDueAcquisitions = 	2000.00,
-            totalVatDue = 	3000.00,
-            vatReclaimedCurrPeriod = 	BigDecimal("99999999999.99"),
-            netVatDue =  BigDecimal("99999999999.99"),
-            totalValueSalesExVAT = 	BigDecimal("9999999999999"),
-            totalValuePurchasesExVAT = 	BigDecimal("9999999999999"),
-            totalValueGoodsSuppliedExVAT = 	BigDecimal("9999999999999"),
-            totalAcquisitionsExVAT = 	BigDecimal("9999999999999"),
-            uniqueId = Some("0123456789"),
-            receivedAt = None,
-            agentReference = None
-          )))
+          Right(AmendSampleRequest(Vrn(vrn), AmendSampleRequestBody("someData")))
       }
     }
 
