@@ -8,8 +8,8 @@ is:
 displayName: Sample Submit Endpoint [test only]
 description: This endpoint allows a user to see an example submit endpoint.
 (annotations.sandboxData): !include ../scenarios/example_test_scenarios.md
-(annotations.scope): "write:self-assessment"
-securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+(annotations.scope): "write:vat"
+securedBy: [ sec.oauth_2_0: { scopes: [ "write:vat ] } ]
 body:
   application/json:
     type: !include ../schemas/sample_request.json
