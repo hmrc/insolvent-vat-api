@@ -29,11 +29,12 @@ uses:
   headers: headers.raml
 
 '/organisations/insolvent/vat':
-  /sample:
-    /{vrn}:
-      uriParameters:
+  uriParameters:
         vrn:
           description: VAT registration number. A nine-digit number.
           type: string
           example: "123456789"
+    /sample:
+        /{vrn}:
+
       put: !include endpoints/sample_put.raml
