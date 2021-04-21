@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "MTDFB - API 56 v1.0 Submit 9-Box Vat Return - Success response",  "description": "Submit 9-Box Vat Return - Success response",
+  "type": "object",
+  "required": [
+    "processingDate"
+  ],
+  "properties": {
+    "processingDate": {
+      "description": "The date the message was processed",
+      "type": "string",
+      "format": "date-time"
+    },
+    "formBundleNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{12}$"
+    },
+    "paymentIndicator": {
+      "description": "DD - if customer is on Direct Debit BANK - customer has provided bank  details",
+      "type": "string",
+      "enum": [
+        "DD",
+        "BANK"
+      ]
+    },
+    "chargeRefNumber": {
+      "description": "Not populated for NIL return, or when the submission relates to a claim",  "type": "string",
+      "minLength": 1,
+      "maxLength": 16
+    }
+  },
+  "additionalProperties": false
+}

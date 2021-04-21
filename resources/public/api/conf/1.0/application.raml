@@ -1,10 +1,12 @@
 #%RAML 1.0
 ---
-title: MTD Template
+title: Insolvent VAT (MTD)
+description: Submit VAT return.
 version: 1.0
 
 protocols: [ HTTPS ]
 baseUri: https://api.service.hmrc.gov.uk/
+mediaType: application/json
 
 documentation:
  - title: Overview
@@ -20,8 +22,6 @@ documentation:
  - title: Testing
    content: !include docs/testing.md
 
-mediaType: application/json
-
 uses:
   sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
@@ -30,11 +30,14 @@ uses:
   headers: headers.raml
 
 '/organisations/insolvent/vat':
+  uriParameters:
+    vrn:
+         description: VAT registration number. A nine-digit number.
+         type: string
+         example: "123456789"
+  /{vrn}:
+    /returns:
+      put: !include endpoints/sample_put.raml
   /sample:
     /{vrn}:
-      uriParameters:
-        vrn:
-          description: VAT registration number. A nine-digit number.
-          type: string
-          example: "123456789"
       put: !include endpoints/sample_put.raml
