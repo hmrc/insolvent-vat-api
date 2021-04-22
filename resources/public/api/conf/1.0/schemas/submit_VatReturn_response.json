@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "MTDFB - API 56 v1.0 Submit 9-Box Vat Return - Success response",  "description": "Submit 9-Box Vat Return - Success response",
+  "title": "MTDFB - API 56 v1.0 Submit 9-Box Vat Return - Success response",
+  "description": "Submit 9-Box Vat Return - Success response",
   "type": "object",
   "required": [
     "processingDate"
@@ -24,7 +25,8 @@
       ]
     },
     "chargeRefNumber": {
-      "description": "Not populated for NIL return, or when the submission relates to a claim",  "type": "string",
+      "description": "Not populated for NIL return, or when the submission relates to a claim",
+      "type": "string",
       "minLength": 1,
       "maxLength": 16
     }
