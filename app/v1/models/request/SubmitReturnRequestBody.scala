@@ -68,5 +68,3 @@ object SubmitReturnRequestBody {
     }
   }
 }
-
-
