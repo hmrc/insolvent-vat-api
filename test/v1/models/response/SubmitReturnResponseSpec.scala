@@ -22,7 +22,7 @@ import support.UnitSpec
 
 class SubmitReturnResponseSpec extends UnitSpec {
 
-  val fullDesJson: JsValue = Json.parse(
+  val fullJson: JsValue = Json.parse(
     """
       |{
       |  "processingDate": "2021-03-16T08:20:27.895Z",
@@ -33,7 +33,7 @@ class SubmitReturnResponseSpec extends UnitSpec {
     """.stripMargin
   )
 
-  val minDesJson: JsValue = Json.parse(
+  val minJson: JsValue = Json.parse(
     """
       |{
       |  "processingDate": "2021-03-16T08:20:27.895Z"
@@ -45,25 +45,6 @@ class SubmitReturnResponseSpec extends UnitSpec {
     """
       |{
       |  "processingDate": "2021-03-16T08:20:27.89Z"
-      |}
-    """.stripMargin
-  )
-
-  val fullMtdJson: JsValue = Json.parse(
-    """
-      |{
-      |  "processingDate": "2021-03-16T08:20:27.895Z",
-      |  "formBundleNumber": "256660290587",
-      |  "paymentIndicator": "BANK",
-      |  "chargeRefNumber": "aCxFaNx0FZsCvyWF"
-      |}
-    """.stripMargin
-  )
-
-  val minMtdJson: JsValue = Json.parse(
-    """
-      |{
-      |  "processingDate": "2021-03-16T08:20:27.895Z"
       |}
     """.stripMargin
   )
@@ -100,11 +81,11 @@ class SubmitReturnResponseSpec extends UnitSpec {
   "SubmitReturnResponse" should {
     "return a SubmitReturnResponse model" when {
       "only mandatory fields are provided" in {
-        minDesJson.as[SubmitReturnResponse] shouldBe minResponseModel
+        minJson.as[SubmitReturnResponse] shouldBe minResponseModel
       }
 
       "all fields are provided" in {
-        fullDesJson.as[SubmitReturnResponse] shouldBe fullResponseModel
+        fullJson.as[SubmitReturnResponse] shouldBe fullResponseModel
       }
 
       "the processing date is provided without milliseconds" in {
@@ -121,11 +102,11 @@ class SubmitReturnResponseSpec extends UnitSpec {
 
     "write to json" when {
       "a full model is provided" in {
-        Json.toJson(fullResponseModel) shouldBe fullMtdJson
+        Json.toJson(fullResponseModel) shouldBe fullJson
       }
 
       "a model with only mandatory fields is provided" in {
-        Json.toJson(minResponseModel) shouldBe minMtdJson
+        Json.toJson(minResponseModel) shouldBe minJson
       }
 
       "the processing date has been provided without milliseconds" in {
