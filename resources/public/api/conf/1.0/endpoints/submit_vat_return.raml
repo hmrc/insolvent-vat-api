@@ -7,7 +7,6 @@ is:
   - errors.incorrectOrEmptyBody
   - errors.formatValue
   - errors.formatUniqueId
-  - errors.clientOrAgentNotAuthorised
 displayName: Submit VAT Return for Insolvent Trader [test only]
 description: This endpoint has been created specifically for submissions from an external scanning provider. This endpoint allows a developer to submit a VAT return for a period.  These submissions relate to VAT traders that are insolvent.
 (annotations.sandboxData): !include ../scenarios/common.md
@@ -25,10 +24,6 @@ body:
         value: !include ../examples/submit_vat_return_request_hash.json
 responses:
   201:
-    body:
-      application/json:
-        type: !include ../schemas/submit_vat_return_response.json
-        example: !include ../examples/submit_vat_return_response.json
     headers:
       X-CorrelationId:
         example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253

@@ -1,5 +1,5 @@
 {
-  "periodKey": "A001",
+  "periodKey": "18A1",
   "vatDueSales": 105.50,
   "vatDueAcquisitions": -100.45,
   "totalVatDue": 5.05,
@@ -9,5 +9,6 @@
   "totalValuePurchasesExVAT": 300,
   "totalValueGoodsSuppliedExVAT": 3000,
   "totalAcquisitionsExVAT": 3000,
+  "receivedAt": "2020-05-05T12:01:00Z",
   "uniqueId": "0123456789"
 }

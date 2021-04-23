@@ -2,17 +2,6 @@
 uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 traits:
-  clientOrAgentNotAuthorised:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              clientOrAgentNotAuthorised:
-                description: 'The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.'
-                value:
-                  code: CLIENT_OR_AGENT_NOT_AUTHORISED
   formatVrn:
     responses:
       400:
@@ -32,7 +21,7 @@ traits:
             type: types.errorResponse
             examples:
               formatPeriodKey:
-                description: 'The format of the supplied  period key is not valid.'
+                description: 'The format of the supplied period key is not valid. It must be a 4 character string.'
                 value:
                   code: FORMAT_PERIOD_KEY
   incorrectOrEmptyBody:
@@ -65,6 +54,6 @@ traits:
             type: types.errorResponse
             examples:
               formatUniqueId:
-                description: 'The Unique ID format is invalid.'
+                description: 'The format of the Unique ID is invalid.'
                 value:
                   code: FORMAT_UNIQUE_ID

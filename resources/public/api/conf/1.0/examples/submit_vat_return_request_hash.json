@@ -9,5 +9,6 @@
   "totalValuePurchasesExVAT": 500,
   "totalValueGoodsSuppliedExVAT": 500,
   "totalAcquisitionsExVAT": 500,
+  "receivedAt": "2020-05-05T12:01:00Z",
   "uniqueId": "0112233445"
 }
