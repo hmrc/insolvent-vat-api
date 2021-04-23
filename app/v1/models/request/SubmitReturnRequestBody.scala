@@ -17,7 +17,7 @@
 package v1.models.request
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, _}
 
 case class SubmitReturnRequestBody(periodKey: String,
                                    vatDueSales: BigDecimal,
@@ -29,8 +29,8 @@ case class SubmitReturnRequestBody(periodKey: String,
                                    totalValuePurchasesExVAT: BigDecimal,
                                    totalValueGoodsSuppliedExVAT: BigDecimal,
                                    totalAcquisitionsExVAT: BigDecimal,
+                                   receivedAt: String,
                                    uniqueId: String,
-                                   receivedAt: Option[String] = None,
                                    agentReference: Option[String] = None)
 
 object SubmitReturnRequestBody {
@@ -45,8 +45,8 @@ object SubmitReturnRequestBody {
       (JsPath \ "totalValuePurchasesExVAT").read[BigDecimal] and
       (JsPath \ "totalValueGoodsSuppliedExVAT").read[BigDecimal] and
       (JsPath \ "totalAcquisitionsExVAT").read[BigDecimal] and
+      (JsPath \ "receivedAt").read[String] and
       (JsPath \ "uniqueId").read[String] and
-      Reads.pure(None) and
       Reads.pure(None)
     ) (SubmitReturnRequestBody.apply _)
 
@@ -62,9 +62,9 @@ object SubmitReturnRequestBody {
         Json.obj("totalValuePurchasesExVAT" -> response.totalValuePurchasesExVAT) ++
         Json.obj("totalValueGoodsSuppliedExVAT" -> response.totalValueGoodsSuppliedExVAT) ++
         Json.obj("totalAllAcquisitionsExVAT" -> response.totalAcquisitionsExVAT) ++
+        Json.obj("receivedAt" -> response.receivedAt) ++
         Json.obj("uniqueID" -> response.uniqueId) ++
-        response.agentReference.fold(Json.obj())(value => Json.obj("agentReferenceNumber" -> value)) ++
-        response.receivedAt.fold(Json.obj())(value => Json.obj("receivedAt" -> value))
+        response.agentReference.fold(Json.obj())(value => Json.obj("agentReferenceNumber" -> value))
     }
   }
 }

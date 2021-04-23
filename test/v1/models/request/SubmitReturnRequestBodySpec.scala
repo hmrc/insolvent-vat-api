@@ -34,6 +34,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValuePurchasesExVAT": 999999999.00,
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
       |   "totalAcquisitionsExVAT": 999999999.00,
+      |   "receivedAt": "2020-05-05T12:01:00Z",
       |   "uniqueId": "0123456789"
       |}
     """.stripMargin
@@ -53,7 +54,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
       |   "totalAllAcquisitionsExVAT": 999999999.00,
       |   "uniqueID": "0123456789",
-      |   "receivedAt":"2020-05-05T12:00:00Z",
+      |   "receivedAt": "2020-05-05T12:01:00Z",
       |   "agentReferenceNumber": "LARN0085901"
       |}
     """.stripMargin
@@ -72,6 +73,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValuePurchasesExVAT": 999999999.00,
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
       |   "totalAllAcquisitionsExVAT": 999999999.00,
+      |   "receivedAt": "2020-05-05T12:01:00Z",
       |   "uniqueID": "0123456789"
       |}
     """.stripMargin
@@ -89,7 +91,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
     uniqueId = "0123456789",
-    receivedAt = None,
+    receivedAt = "2020-05-05T12:01:00Z",
     agentReference = None
   )
 
@@ -105,7 +107,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
     uniqueId = "0123456789",
-    receivedAt = Some("2020-05-05T12:00:00Z"),
+    receivedAt = "2020-05-05T12:01:00Z",
     agentReference = Some("LARN0085901")
   )
 
