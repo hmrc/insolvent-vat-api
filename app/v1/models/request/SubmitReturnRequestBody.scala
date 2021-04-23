@@ -29,7 +29,7 @@ case class SubmitReturnRequestBody(periodKey: String,
                                    totalValuePurchasesExVAT: BigDecimal,
                                    totalValueGoodsSuppliedExVAT: BigDecimal,
                                    totalAcquisitionsExVAT: BigDecimal,
-                                   uniqueId: Option[String],
+                                   uniqueId: String,
                                    receivedAt: Option[String] = None,
                                    agentReference: Option[String] = None)
 
@@ -45,7 +45,7 @@ object SubmitReturnRequestBody {
       (JsPath \ "totalValuePurchasesExVAT").read[BigDecimal] and
       (JsPath \ "totalValueGoodsSuppliedExVAT").read[BigDecimal] and
       (JsPath \ "totalAcquisitionsExVAT").read[BigDecimal] and
-      (JsPath \ "uniqueId").readNullable[String] and
+      (JsPath \ "uniqueId").read[String] and
       Reads.pure(None) and
       Reads.pure(None)
     ) (SubmitReturnRequestBody.apply _)
@@ -62,7 +62,7 @@ object SubmitReturnRequestBody {
         Json.obj("totalValuePurchasesExVAT" -> response.totalValuePurchasesExVAT) ++
         Json.obj("totalValueGoodsSuppliedExVAT" -> response.totalValueGoodsSuppliedExVAT) ++
         Json.obj("totalAllAcquisitionsExVAT" -> response.totalAcquisitionsExVAT) ++
-        response.uniqueId.fold(Json.obj())(value => Json.obj("uniqueID" -> value)) ++
+        Json.obj("uniqueID" -> response.uniqueId) ++
         response.agentReference.fold(Json.obj())(value => Json.obj("agentReferenceNumber" -> value)) ++
         response.receivedAt.fold(Json.obj())(value => Json.obj("receivedAt" -> value))
     }

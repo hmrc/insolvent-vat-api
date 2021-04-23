@@ -71,7 +71,8 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValueSalesExVAT": 999999999.00,
       |   "totalValuePurchasesExVAT": 999999999.00,
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
-      |   "totalAllAcquisitionsExVAT": 999999999.00
+      |   "totalAllAcquisitionsExVAT": 999999999.00,
+      |   "uniqueID": "0123456789"
       |}
     """.stripMargin
   )
@@ -87,7 +88,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValuePurchasesExVAT = 999999999.00,
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
-    uniqueId = Some("0123456789"),
+    uniqueId = "0123456789",
     receivedAt = None,
     agentReference = None
   )
@@ -103,7 +104,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValuePurchasesExVAT = 999999999.00,
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
-    uniqueId = Some("0123456789"),
+    uniqueId = "0123456789",
     receivedAt = Some("2020-05-05T12:00:00Z"),
     agentReference = Some("LARN0085901")
   )
@@ -128,7 +129,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       }
 
       "a valid model with only mandatory fields is provided" in {
-        Json.toJson(requestBodyModel.copy(uniqueId = None)) shouldBe minDesJson
+        Json.toJson(requestBodyModel) shouldBe minDesJson
       }
     }
   }
