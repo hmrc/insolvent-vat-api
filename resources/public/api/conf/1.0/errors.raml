@@ -1,9 +1,18 @@
 #%RAML 1.0 Library
-
 uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
-
 traits:
+  clientOrAgentNotAuthorised:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              clientOrAgentNotAuthorised:
+                description: 'The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.'
+                value:
+                  code: CLIENT_OR_AGENT_NOT_AUTHORISED
   formatVrn:
     responses:
       400:
@@ -12,31 +21,31 @@ traits:
             type: types.errorResponse
             examples:
               formatVrn:
-                description: 'The format of the supplied VRN field is not valid'
+                description: 'The format of the supplied VRN field is not valid.'
                 value:
                   code: FORMAT_VRN
   formatPeriodKey:
-        responses:
-          400:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  formatPeriodKey:
-                    description: 'The format of the supplied  period key is not valid.'
-                    value:
-                      code: FORMAT_PERIOD_KEY
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              formatPeriodKey:
+                description: 'The format of the supplied  period key is not valid.'
+                value:
+                  code: FORMAT_PERIOD_KEY
   incorrectOrEmptyBody:
-        responses:
-          400:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  incorrectOrEmptyBody:
-                    description: 'An empty or non-matching body was submitted'
-                    value:
-                      code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              incorrectOrEmptyBody:
+                description: 'An empty or non-matching body was submitted.'
+                value:
+                  code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
   formatValue:
     responses:
       400:
@@ -48,26 +57,14 @@ traits:
                 description: 'One or more values have been added with the incorrect format.'
                 value:
                   code: FORMAT_VALUE
-
-  ruleNotFinalised:
-        responses:
-          400:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  ruleNotFinalised:
-                    description: 'The supplied finalised field must be set to true.'
-                    value:
-                      code: RULE_NOT_FINALISED
- formatUniqueId:
-        responses:
-          400:
-            body:
-              application/json:
-                type: types.errorResponse
-                examples:
-                  formatUniqueId:
-                    description: 'The Unique ID format is invalid.'
-                    value:
-                      code: FORMAT_UNIQUE_ID
+  formatUniqueId:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              formatUniqueId:
+                description: 'The Unique ID format is invalid.'
+                value:
+                  code: FORMAT_UNIQUE_ID
