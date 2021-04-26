@@ -24,7 +24,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
   val mtdJson: JsValue = Json.parse(
     """
       |{
-      |   "periodKey": "AB12",
+      |   "periodKey": "18A1",
       |   "vatDueSales": 1000.00,
       |   "vatDueAcquisitions": 2000.00,
       |   "totalVatDue": 3000.00,
@@ -43,7 +43,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
   val desJson: JsValue = Json.parse(
     """
       |{
-      |   "periodKey": "AB12",
+      |   "periodKey": "18A1",
       |   "vatDueSales": 1000.00,
       |   "vatDueAcquisitions": 2000.00,
       |   "vatDueTotal": 3000.00,
@@ -54,33 +54,13 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
       |   "totalAllAcquisitionsExVAT": 999999999.00,
       |   "uniqueID": "0123456789",
-      |   "receivedAt": "2020-05-05T12:01:00Z",
-      |   "agentReferenceNumber": "LARN0085901"
-      |}
-    """.stripMargin
-  )
-
-  val minDesJson: JsValue = Json.parse(
-    """
-      |{
-      |   "periodKey": "AB12",
-      |   "vatDueSales": 1000.00,
-      |   "vatDueAcquisitions": 2000.00,
-      |   "vatDueTotal": 3000.00,
-      |   "vatReclaimedCurrPeriod": 1500.00,
-      |   "vatDueNet": 1500.00,
-      |   "totalValueSalesExVAT": 999999999.00,
-      |   "totalValuePurchasesExVAT": 999999999.00,
-      |   "totalValueGoodsSuppliedExVAT": 999999999.00,
-      |   "totalAllAcquisitionsExVAT": 999999999.00,
-      |   "receivedAt": "2020-05-05T12:01:00Z",
-      |   "uniqueID": "0123456789"
+      |   "receivedAt": "2020-05-05T12:01:00Z"
       |}
     """.stripMargin
   )
 
   val requestBodyModel: SubmitReturnRequestBody = SubmitReturnRequestBody(
-    periodKey = "AB12",
+    periodKey = "18A1",
     vatDueSales = 1000.00,
     vatDueAcquisitions = 2000.00,
     totalVatDue = 3000.00,
@@ -91,12 +71,11 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
     uniqueId = "0123456789",
-    receivedAt = "2020-05-05T12:01:00Z",
-    agentReference = None
+    receivedAt = "2020-05-05T12:01:00Z"
   )
 
   val requestBodyToDesModel: SubmitReturnRequestBody = SubmitReturnRequestBody(
-    periodKey = "AB12",
+    periodKey = "18A1",
     vatDueSales = 1000.00,
     vatDueAcquisitions = 2000.00,
     totalVatDue = 3000.00,
@@ -107,8 +86,7 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     totalValueGoodsSuppliedExVAT = 999999999.00,
     totalAcquisitionsExVAT = 999999999.00,
     uniqueId = "0123456789",
-    receivedAt = "2020-05-05T12:01:00Z",
-    agentReference = Some("LARN0085901")
+    receivedAt = "2020-05-05T12:01:00Z"
   )
 
   "SubmitReturnRequestBody" should {
@@ -128,10 +106,6 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
     "write valid Json" when {
       "a full valid model is provided" in {
         Json.toJson(requestBodyToDesModel) shouldBe desJson
-      }
-
-      "a valid model with only mandatory fields is provided" in {
-        Json.toJson(requestBodyModel) shouldBe minDesJson
       }
     }
   }

@@ -28,7 +28,14 @@ trait ConnectorSpec extends UnitSpec
   with HeaderNames {
 
   lazy val baseUrl = "test-BaseUrl"
-  val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+
+  val requiredDesHeaders: Seq[(String, String)] = Seq(
+    "Authorization" -> s"Bearer des-token",
+    "Environment" -> "des-environment",
+    "Content-Type" -> "application/json",
+    "OriginatorID" -> "SCAN"
+  )
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global

@@ -33,6 +33,11 @@ object VrnFormatError extends MtdError(
   message = "The format of the supplied VRN field is not valid"
 )
 
+object PeriodKeyFormatError extends MtdError(
+  code = "FORMAT_PERIOD_KEY",
+  message = "The format of the supplied period key is not valid. It must be a 4 character string"
+)
+
 // Rule Errors
 object RuleIncorrectOrEmptyBodyError extends MtdError(
   code = "RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED",

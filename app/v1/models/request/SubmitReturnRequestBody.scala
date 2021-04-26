@@ -30,8 +30,7 @@ case class SubmitReturnRequestBody(periodKey: String,
                                    totalValueGoodsSuppliedExVAT: BigDecimal,
                                    totalAcquisitionsExVAT: BigDecimal,
                                    receivedAt: String,
-                                   uniqueId: String,
-                                   agentReference: Option[String] = None)
+                                   uniqueId: String)
 
 object SubmitReturnRequestBody {
   implicit val reads: Reads[SubmitReturnRequestBody] = (
@@ -46,25 +45,23 @@ object SubmitReturnRequestBody {
       (JsPath \ "totalValueGoodsSuppliedExVAT").read[BigDecimal] and
       (JsPath \ "totalAcquisitionsExVAT").read[BigDecimal] and
       (JsPath \ "receivedAt").read[String] and
-      (JsPath \ "uniqueId").read[String] and
-      Reads.pure(None)
+      (JsPath \ "uniqueId").read[String]
     ) (SubmitReturnRequestBody.apply _)
 
   implicit val writes: OWrites[SubmitReturnRequestBody] = new OWrites[SubmitReturnRequestBody] {
-    def writes(response: SubmitReturnRequestBody): JsObject = {
-      Json.obj("periodKey" -> response.periodKey) ++
-        Json.obj("vatDueSales" -> response.vatDueSales) ++
-        Json.obj("vatDueAcquisitions" -> response.vatDueAcquisitions) ++
-        Json.obj("vatDueTotal" -> response.totalVatDue) ++
-        Json.obj("vatReclaimedCurrPeriod" -> response.vatReclaimedCurrPeriod) ++
-        Json.obj("vatDueNet" -> response.netVatDue) ++
-        Json.obj("totalValueSalesExVAT" -> response.totalValueSalesExVAT) ++
-        Json.obj("totalValuePurchasesExVAT" -> response.totalValuePurchasesExVAT) ++
-        Json.obj("totalValueGoodsSuppliedExVAT" -> response.totalValueGoodsSuppliedExVAT) ++
-        Json.obj("totalAllAcquisitionsExVAT" -> response.totalAcquisitionsExVAT) ++
-        Json.obj("receivedAt" -> response.receivedAt) ++
-        Json.obj("uniqueID" -> response.uniqueId) ++
-        response.agentReference.fold(Json.obj())(value => Json.obj("agentReferenceNumber" -> value))
+    def writes(requestBody: SubmitReturnRequestBody): JsObject = {
+      Json.obj("periodKey" -> requestBody.periodKey,
+        "vatDueSales" -> requestBody.vatDueSales,
+        "vatDueAcquisitions" -> requestBody.vatDueAcquisitions,
+        "vatDueTotal" -> requestBody.totalVatDue,
+        "vatReclaimedCurrPeriod" -> requestBody.vatReclaimedCurrPeriod,
+        "vatDueNet" -> requestBody.netVatDue,
+        "totalValueSalesExVAT" -> requestBody.totalValueSalesExVAT,
+        "totalValuePurchasesExVAT" -> requestBody.totalValuePurchasesExVAT,
+        "totalValueGoodsSuppliedExVAT" -> requestBody.totalValueGoodsSuppliedExVAT,
+        "totalAllAcquisitionsExVAT" -> requestBody.totalAcquisitionsExVAT,
+        "receivedAt" -> requestBody.receivedAt,
+        "uniqueID" -> requestBody.uniqueId)
     }
   }
 }
