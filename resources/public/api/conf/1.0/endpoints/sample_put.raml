@@ -3,11 +3,9 @@ is:
   - headers.contentTypeJson
   - headers.testScenarioHeader
   - errors.formatVrn
-  - errors.clientOrAgentNotAuthorised
-  - errors.notFound
 displayName: Sample Submit Endpoint [test only]
 description: This endpoint allows a user to see an example submit endpoint.
-(annotations.sandboxData): !include ../scenarios/example_test_scenarios.md
+(annotations.sandboxData): !include ../scenarios/common.md
 (annotations.scope): "write:vat"
 securedBy: [ sec.oauth_2_0: { scopes: [ "write:vat" ] } ]
 body:

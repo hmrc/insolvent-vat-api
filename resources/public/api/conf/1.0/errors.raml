@@ -1,30 +1,7 @@
 #%RAML 1.0 Library
-
 uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
-
 traits:
-  notFound:
-    responses:
-      404:
-        body:
-          application/json:
-            type: types.errorResponse
-            example:
-              description: The matching resource is not found.
-              value:
-                code: MATCHING_RESOURCE_NOT_FOUND
-  clientOrAgentNotAuthorised:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              clientOrAgentNotAuthorised:
-                description: 'The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf'
-                value:
-                  code: CLIENT_OR_AGENT_NOT_AUTHORISED
   formatVrn:
     responses:
       400:
@@ -33,9 +10,20 @@ traits:
             type: types.errorResponse
             examples:
               formatVrn:
-                description: The format of the supplied VRN field is not valid
+                description: 'The format of the supplied VRN field is not valid.'
                 value:
                   code: FORMAT_VRN
+  formatPeriodKey:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              formatPeriodKey:
+                description: 'The format of the supplied period key is not valid. It must be a 4 character string.'
+                value:
+                  code: FORMAT_PERIOD_KEY
   incorrectOrEmptyBody:
     responses:
       400:
@@ -44,61 +32,28 @@ traits:
             type: types.errorResponse
             examples:
               incorrectOrEmptyBody:
-                description: An empty or non-matching body was submitted
+                description: 'An empty or non-matching body was submitted.'
                 value:
                   code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
-  ruleTaxYearNotSupported:
+  formatValue:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              rule_TaxYearNotSupported:
-                description: The specified tax year is not supported. That is, the tax year specified is before the minimum tax year value.
+              formatValue:
+                description: 'One or more values have been added with the incorrect format.'
                 value:
-                  code: RULE_TAX_YEAR_NOT_SUPPORTED
-  ruleTaxYearRangeExceeded:
+                  code: FORMAT_VALUE
+  formatUniqueId:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              ruleTaxYearRangeExceeded:
-                description: Tax year range exceeded. A tax year range of one year is required.
+              formatUniqueId:
+                description: 'The format of the Unique ID is invalid.'
                 value:
-                  code: RULE_TAX_YEAR_RANGE_EXCEEDED
-  ruleTaxYearNotEnded:
-      responses:
-        400:
-          body:
-            application/json:
-              type: types.errorResponse
-              examples:
-                ruleTaxYearNotEnded:
-                  description: A brought forward loss is entered before the end of the tax year in which it was generated.
-                  value:
-                    code: RULE_TAX_YEAR_NOT_ENDED
-  formatSelfEmploymentId:
-    responses:
-      400:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              formatSelfEmploymentId:
-                description: The format of the self-employment ID is not valid.
-                value:
-                  code: FORMAT_SELF_EMPLOYMENT_ID
-  ruleSelfEmploymentId:
-    responses:
-      400:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleSelfEmploymentId:
-                description: A self-employment ID can only be supplied for a self-employment business type
-                value:
-                  code: RULE_SELF_EMPLOYMENT_ID
+                  code: FORMAT_UNIQUE_ID
