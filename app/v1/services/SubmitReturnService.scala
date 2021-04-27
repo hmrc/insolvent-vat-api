@@ -21,35 +21,43 @@ import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
-import v1.connectors.AmendSampleConnector
+import v1.connectors.SubmitReturnConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.amendSample.AmendSampleRequest
+import v1.models.request.SubmitReturnRequest
 import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendSampleService @Inject()(connector: AmendSampleConnector) extends DesResponseMappingSupport with Logging {
+class SubmitReturnService @Inject()(connector: SubmitReturnConnector) extends DesResponseMappingSupport with Logging {
 
-  def amendSample(request: AmendSampleRequest)(
+  def submitReturn(request: SubmitReturnRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     logContext: EndpointLogContext,
     correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.amendSample(request)).leftMap(mapDesErrors(desErrorMap))
-    } yield desResponseWrapper.map(des => des) // For any additional mapping
+      desResponseWrapper <- EitherT(connector.submitReturn(request)).leftMap(mapDesErrors(desErrorMap))
+    } yield desResponseWrapper
 
     result.value
   }
 
-  private def desErrorMap: Map[String, MtdError] = Map(
-    "INVALID_VRN" -> VrnFormatError,
-    "NOT_FOUND" -> NotFoundError,
-    "SERVER_ERROR" -> DownstreamError,
-    "SERVICE_UNAVAILABLE" -> DownstreamError
-  )
+  private def desErrorMap: Map[String, MtdError] =
+    Map(
+      "INVALID_VRN" -> VrnFormatError,
+      "INVALID_ORIGINATOR_ID" -> DownstreamError,
+      "INVALID_PAYLOAD" -> DownstreamError,
+      "INVALID_SUBMISSION" -> DownstreamError,
+      "INVALID_PERIODKEY" -> PeriodKeyFormatError,
+      "INSOLVENT_TRADER" -> DownstreamError,
+      "DUPLICATE_SUBMISSION" -> DownstreamError,
+      "TAX_PERIOD_NOT_ENDED" -> DownstreamError,
+      "NOT_FOUND_VRN" -> DownstreamError,
+      "SERVER_ERROR" -> DownstreamError,
+      "SERVICE_UNAVAILABLE" -> DownstreamError
+    )
 }

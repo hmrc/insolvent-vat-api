@@ -30,41 +30,23 @@ case class SubmitReturnRequestBody(periodKey: String,
                                    totalValueGoodsSuppliedExVAT: BigDecimal,
                                    totalAcquisitionsExVAT: BigDecimal,
                                    receivedAt: String,
-                                   uniqueId: String,
-                                   agentReference: Option[String] = None)
+                                   uniqueId: String)
 
 object SubmitReturnRequestBody {
-  implicit val reads: Reads[SubmitReturnRequestBody] = (
-    (JsPath \ "periodKey").read[String] and
-      (JsPath \ "vatDueSales").read[BigDecimal] and
-      (JsPath \ "vatDueAcquisitions").read[BigDecimal] and
-      (JsPath \ "totalVatDue").read[BigDecimal] and
-      (JsPath \ "vatReclaimedCurrPeriod").read[BigDecimal] and
-      (JsPath \ "netVatDue").read[BigDecimal] and
-      (JsPath \ "totalValueSalesExVAT").read[BigDecimal] and
-      (JsPath \ "totalValuePurchasesExVAT").read[BigDecimal] and
-      (JsPath \ "totalValueGoodsSuppliedExVAT").read[BigDecimal] and
-      (JsPath \ "totalAcquisitionsExVAT").read[BigDecimal] and
-      (JsPath \ "receivedAt").read[String] and
-      (JsPath \ "uniqueId").read[String] and
-      Reads.pure(None)
-    ) (SubmitReturnRequestBody.apply _)
+  implicit val reads: Reads[SubmitReturnRequestBody] = Json.reads[SubmitReturnRequestBody]
 
-  implicit val writes: OWrites[SubmitReturnRequestBody] = new OWrites[SubmitReturnRequestBody] {
-    def writes(response: SubmitReturnRequestBody): JsObject = {
-      Json.obj("periodKey" -> response.periodKey) ++
-        Json.obj("vatDueSales" -> response.vatDueSales) ++
-        Json.obj("vatDueAcquisitions" -> response.vatDueAcquisitions) ++
-        Json.obj("vatDueTotal" -> response.totalVatDue) ++
-        Json.obj("vatReclaimedCurrPeriod" -> response.vatReclaimedCurrPeriod) ++
-        Json.obj("vatDueNet" -> response.netVatDue) ++
-        Json.obj("totalValueSalesExVAT" -> response.totalValueSalesExVAT) ++
-        Json.obj("totalValuePurchasesExVAT" -> response.totalValuePurchasesExVAT) ++
-        Json.obj("totalValueGoodsSuppliedExVAT" -> response.totalValueGoodsSuppliedExVAT) ++
-        Json.obj("totalAllAcquisitionsExVAT" -> response.totalAcquisitionsExVAT) ++
-        Json.obj("receivedAt" -> response.receivedAt) ++
-        Json.obj("uniqueID" -> response.uniqueId) ++
-        response.agentReference.fold(Json.obj())(value => Json.obj("agentReferenceNumber" -> value))
-    }
-  }
+  implicit val writes: OWrites[SubmitReturnRequestBody] = (
+    (JsPath \ "periodKey").write[String] and
+      (JsPath \ "vatDueSales").write[BigDecimal] and
+      (JsPath \ "vatDueAcquisitions").write[BigDecimal] and
+      (JsPath \ "vatDueTotal").write[BigDecimal] and
+      (JsPath \ "vatReclaimedCurrPeriod").write[BigDecimal] and
+      (JsPath \ "vatDueNet").write[BigDecimal] and
+      (JsPath \ "totalValueSalesExVAT").write[BigDecimal] and
+      (JsPath \ "totalValuePurchasesExVAT").write[BigDecimal] and
+      (JsPath \ "totalValueGoodsSuppliedExVAT").write[BigDecimal] and
+      (JsPath \ "totalAllAcquisitionsExVAT").write[BigDecimal] and
+      (JsPath \ "receivedAt").write[String] and
+      (JsPath \ "uniqueID").write[String]
+    ) (unlift(SubmitReturnRequestBody.unapply))
 }

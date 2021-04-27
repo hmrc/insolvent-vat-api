@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package v1.services
+package utils
 
-import play.api.http.{HeaderNames, MimeTypes, Status}
-import support.UnitSpec
-import uk.gov.hmrc.http.HeaderCarrier
+import java.util.UUID
 
-import scala.concurrent.ExecutionContext
+import javax.inject.Singleton
 
-trait ServiceSpec extends UnitSpec
-  with Status
-  with MimeTypes
-  with HeaderNames {
+@Singleton
+class IdGenerator {
 
-  implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
-
+  def generateCorrelationId: String = UUID.randomUUID().toString
 }

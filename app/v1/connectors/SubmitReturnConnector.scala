@@ -19,15 +19,15 @@ package v1.connectors
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.models.request.amendSample.AmendSampleRequest
+import v1.models.request.SubmitReturnRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendSampleConnector @Inject()(val http: HttpClient,
-                                     val appConfig: AppConfig) extends BaseDesConnector {
+class SubmitReturnConnector @Inject()(val http: HttpClient,
+                                      val appConfig: AppConfig) extends BaseDesConnector {
 
-  def amendSample(request: AmendSampleRequest)(
+  def submitReturn(request: SubmitReturnRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     correlationId: String): Future[DesOutcome[Unit]] = {
@@ -36,9 +36,9 @@ class AmendSampleConnector @Inject()(val http: HttpClient,
 
     val vrn = request.vrn.vrn
 
-    put(
+    post(
       body = request.body,
-      DesUri[Unit](s"some-placeholder/template/$vrn")
+      uri = DesUri[Unit](s"enterprise/return/vat/$vrn")
     )
   }
 }

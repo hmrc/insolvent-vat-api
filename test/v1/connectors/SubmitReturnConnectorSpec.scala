@@ -20,22 +20,37 @@ import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Vrn
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.amendSample.{AmendSampleRequest, AmendSampleRequestBody}
+import v1.models.request.{SubmitReturnRequest, SubmitReturnRequestBody}
 
 import scala.concurrent.Future
 
-class AmendSampleConnectorSpec extends ConnectorSpec {
+class SubmitReturnConnectorSpec extends ConnectorSpec {
 
   val vrn: String = "123456789"
 
-  val request: AmendSampleRequest = AmendSampleRequest(
+  val submitReturnRequestBody: SubmitReturnRequestBody = SubmitReturnRequestBody(
+    periodKey = "18A1",
+    vatDueSales = 1000.00,
+    vatDueAcquisitions = 2000.00,
+    totalVatDue = 3000.00,
+    vatReclaimedCurrPeriod = 1500.00,
+    netVatDue = 1500.00,
+    totalValueSalesExVAT = 999999999.00,
+    totalValuePurchasesExVAT = 999999999.00,
+    totalValueGoodsSuppliedExVAT = 999999999.00,
+    totalAcquisitionsExVAT = 999999999.00,
+    uniqueId = "0123456789",
+    receivedAt = "2021-05-05T12:01:00Z"
+  )
+
+  val submitReturnRequest: SubmitReturnRequest = SubmitReturnRequest(
     vrn = Vrn(vrn),
-    body = AmendSampleRequestBody("someData")
+    body = submitReturnRequestBody
   )
 
   class Test extends MockHttpClient with MockAppConfig {
 
-    val connector: AmendSampleConnector = new AmendSampleConnector(
+    val connector: SubmitReturnConnector = new SubmitReturnConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
     )
@@ -45,19 +60,19 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
     MockedAppConfig.desEnvironment returns "des-environment"
   }
 
-  "AmendSampleConnector" when {
-    "amendSample" must {
-      "return a 204 status for a success scenario" in new Test {
+  "SubmitReturnConnector" when {
+    "submitReturn" should {
+      "return correct status upon HttpClient success" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
         MockedHttpClient
-          .put(
-            url = s"$baseUrl/some-placeholder/template/$vrn",
-            body = request.body,
+          .post(
+            url = s"$baseUrl/enterprise/return/vat/$vrn",
+            body = submitReturnRequestBody,
             requiredHeaders = requiredDesHeaders :_*
           ).returns(Future.successful(outcome))
 
-        await(connector.amendSample(request)) shouldBe outcome
+        await(connector.submitReturn(submitReturnRequest)) shouldBe outcome
       }
     }
   }

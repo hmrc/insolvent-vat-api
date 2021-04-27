@@ -52,37 +52,24 @@ class BaseDesConnectorSpec extends ConnectorSpec {
   "post" must {
     "posts with the required des headers and returns the result" in new Test {
       MockedHttpClient
-        .post(absoluteUrl, body, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-        .returns(Future.successful(outcome))
+        .post(
+          url = absoluteUrl,
+          body = body,
+          requiredHeaders = requiredDesHeaders :_*
+        ).returns(Future.successful(outcome))
 
       await(connector.post(body, DesUri[Result](url))) shouldBe outcome
     }
   }
 
-  "get" must {
-    "get with the required des headers and return the result" in new Test {
-      MockedHttpClient
-        .get(absoluteUrl, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-        .returns(Future.successful(outcome))
-
-      await(connector.get(DesUri[Result](url))) shouldBe outcome
-    }
-  }
-
-  "delete" must {
-    "delete with the required des headers and return the result" in new Test {
-      MockedHttpClient
-        .delete(absoluteUrl, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-        .returns(Future.successful(outcome))
-
-      await(connector.delete(DesUri[Result](url))) shouldBe outcome
-    }
-  }
-
   "put" must {
     "put with the required des headers and return result" in new Test {
-      MockedHttpClient.put(absoluteUrl, body, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-        .returns(Future.successful(outcome))
+      MockedHttpClient
+        .put(
+          url = absoluteUrl,
+          body = body,
+          requiredHeaders = requiredDesHeaders :_*
+        ).returns(Future.successful(outcome))
 
       await(connector.put(body, DesUri[Result](url))) shouldBe outcome
     }

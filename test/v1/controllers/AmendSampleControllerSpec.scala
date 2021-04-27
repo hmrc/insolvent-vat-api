@@ -21,6 +21,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
+import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendSampleRequestParser
 import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmentsAuthService}
 import v1.models.audit.{AuditError, AuditEvent, SampleAuditDetail, SampleAuditResponse}
@@ -37,7 +38,8 @@ class AmendSampleControllerSpec
     with MockAppConfig
     with MockAmendSampleService
     with MockAmendSampleRequestParser
-    with MockAuditService {
+    with MockAuditService
+    with MockIdGenerator {
 
   val vrn: String = "123456789"
   val correlationId: String = "X-123"
@@ -73,11 +75,13 @@ class AmendSampleControllerSpec
       requestParser = mockAmendSampleRequestParser,
       service = mockAmendSampleService,
       auditService = mockAuditService,
-      cc = cc
+      cc = cc,
+      idGenerator = mockIdGenerator
     )
 
     MockEnrolmentsAuthService.authoriseUser()
     MockedAppConfig.apiGatewayContext.returns("organisations/insolvent/vat").anyNumberOfTimes()
+    MockIdGenerator.generateCorrelationId.returns(correlationId)
   }
 
   val responseBody: JsValue = Json.parse(
@@ -142,7 +146,7 @@ class AmendSampleControllerSpec
 
             MockAmendSampleRequestParser
               .parse(rawData)
-              .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
+              .returns(Left(ErrorWrapper(correlationId, error, None)))
 
             val result: Future[Result] = controller.amendSample(vrn)(
               fakePutRequest(requestBodyJson)
@@ -193,7 +197,7 @@ class AmendSampleControllerSpec
 
             MockAmendSampleService
               .amendSample(requestData)
-              .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
+              .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
             val result: Future[Result] = controller.amendSample(vrn)(
               fakePutRequest(requestBodyJson)
