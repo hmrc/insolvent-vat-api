@@ -28,12 +28,33 @@ class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
     val vrn = "123456789"
-    //val periodKey = "AB19"
+
+    val desResponse: JsValue = Json.parse(
+      """
+        |{
+        |  "processingDate": "2017-10-18T00:01:00Z",
+        |  "formBundleNumber": "123456789012",
+        |  "paymentIndicator": "DD",
+        |  "chargeRefNumber": "SKDJGFH9URGT"
+        |}
+      """.stripMargin
+    )
 
     val json: JsValue = Json.parse(
       """
         |{
-        |  "data": "someData"
+        |  "periodKey": "18A1",
+        |  "vatDueSales": 105.50,
+        |  "vatDueAcquisitions": -100.45,
+        |  "totalVatDue": 5.05,
+        |  "vatReclaimedCurrPeriod": 105.15,
+        |  "netVatDue": 100.10,
+        |  "totalValueSalesExVAT": 300,
+        |  "totalValuePurchasesExVAT": 300,
+        |  "totalValueGoodsSuppliedExVAT": 3000,
+        |  "totalAcquisitionsExVAT": 3000,
+        |  "receivedAt": "2020-05-05T12:01:00Z",
+        |  "uniqueId": "0123456789"
         |}
       """.stripMargin
     )
@@ -42,24 +63,25 @@ class AuthISpec extends IntegrationBaseSpec {
 
     def request(): WSRequest = {
       setupStubs()
-      //buildRequest(s"/$vrn/returns/$periodKey") //TODO: Use this endpoint instead once it is built.
-      buildRequest(s"/sample/$vrn")
+      buildRequest(s"/$vrn/returns")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
   }
 
-  "Calling the template endpoint" when {
+  "Calling the Insolvent Submit VAT Return endpoint" when {
     "the user is authorised" should {
       "return 200" in new Test {
+
+        def desUrl: String = s"/enterprise/return/vat/$vrn"
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
-          DesStub.serviceSuccess(vrn)
+          DesStub.onSuccess(DesStub.POST, desUrl, OK, desResponse)
         }
 
-        val response: WSResponse = await(request().put(json))
-        response.status shouldBe OK
+        val response: WSResponse = await(request().post(json))
+        response.status shouldBe CREATED
       }
     }
 
@@ -72,7 +94,7 @@ class AuthISpec extends IntegrationBaseSpec {
           DesStub.serviceSuccess(vrn)
         }
 
-        val response: WSResponse = await(request().put(json))
+        val response: WSResponse = await(request().post(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -85,7 +107,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedNotLoggedIn()
         }
 
-        val response: WSResponse = await(request().put(json))
+        val response: WSResponse = await(request().post(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
@@ -98,7 +120,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedOther()
         }
 
-        val response: WSResponse = await(request().put(json))
+        val response: WSResponse = await(request().post(json))
         response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }

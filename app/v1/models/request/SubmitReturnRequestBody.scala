@@ -17,7 +17,7 @@
 package v1.models.request
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Json, _}
+import play.api.libs.json._
 
 case class SubmitReturnRequestBody(periodKey: String,
                                    vatDueSales: BigDecimal,

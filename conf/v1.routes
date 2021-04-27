@@ -1,3 +1,1 @@
-PUT        /sample/:vrn       v1.controllers.AmendSampleController.amendSample(vrn: String)
-
 POST        /:vrn/returns        v1.controllers.SubmitReturnController.submitReturn(vrn: String)
