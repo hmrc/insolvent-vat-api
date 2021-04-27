@@ -52,8 +52,11 @@ class BaseDesConnectorSpec extends ConnectorSpec {
   "post" must {
     "posts with the required des headers and returns the result" in new Test {
       MockedHttpClient
-        .post(absoluteUrl, body, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token", "OriginatorID" -> "SCAN")
-        .returns(Future.successful(outcome))
+        .post(
+          url = absoluteUrl,
+          body = body,
+          requiredHeaders = requiredDesHeaders :_*
+        ).returns(Future.successful(outcome))
 
       await(connector.post(body, DesUri[Result](url))) shouldBe outcome
     }
@@ -61,8 +64,12 @@ class BaseDesConnectorSpec extends ConnectorSpec {
 
   "put" must {
     "put with the required des headers and return result" in new Test {
-      MockedHttpClient.put(absoluteUrl, body, "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token", "OriginatorID" -> "SCAN")
-        .returns(Future.successful(outcome))
+      MockedHttpClient
+        .put(
+          url = absoluteUrl,
+          body = body,
+          requiredHeaders = requiredDesHeaders :_*
+        ).returns(Future.successful(outcome))
 
       await(connector.put(body, DesUri[Result](url))) shouldBe outcome
     }
