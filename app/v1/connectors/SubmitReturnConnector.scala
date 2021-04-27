@@ -20,7 +20,6 @@ import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.models.request.SubmitReturnRequest
-import v1.models.response.SubmitReturnResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +29,8 @@ class SubmitReturnConnector @Inject()(val http: HttpClient,
 
   def submitReturn(request: SubmitReturnRequest)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[DesOutcome[SubmitReturnResponse]] = {
+    ec: ExecutionContext,
+    correlationId: String): Future[DesOutcome[Unit]] = {
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
 
@@ -38,7 +38,7 @@ class SubmitReturnConnector @Inject()(val http: HttpClient,
 
     post(
       body = request.body,
-      uri = DesUri[SubmitReturnResponse](s"enterprise/return/vat/$vrn")
+      uri = DesUri[Unit](s"enterprise/return/vat/$vrn")
     )
   }
 }

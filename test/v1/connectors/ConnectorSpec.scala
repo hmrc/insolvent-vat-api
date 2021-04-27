@@ -28,13 +28,13 @@ trait ConnectorSpec extends UnitSpec
   with HeaderNames {
 
   lazy val baseUrl = "test-BaseUrl"
-  val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val requiredDesHeaders: Seq[(String, String)] = Seq(
     "Authorization" -> s"Bearer des-token",
     "Environment" -> "des-environment",
-    "Content-Type" -> "application/json",
-    "OriginatorID" -> "SCAN"
+    "OriginatorID" -> "SCAN",
+    "CorrelationId" -> s"$correlationId"
   )
 
   implicit val hc: HeaderCarrier = HeaderCarrier()

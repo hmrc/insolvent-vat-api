@@ -40,11 +40,6 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
-    )
-
     MockedAppConfig.desBaseUrl returns baseUrl
     MockedAppConfig.desToken returns "des-token"
     MockedAppConfig.desEnvironment returns "des-environment"
@@ -59,7 +54,7 @@ class AmendSampleConnectorSpec extends ConnectorSpec {
           .put(
             url = s"$baseUrl/some-placeholder/template/$vrn",
             body = request.body,
-            requiredHeaders = desRequestHeaders: _*
+            requiredHeaders = requiredDesHeaders :_*
           ).returns(Future.successful(outcome))
 
         await(connector.amendSample(request)) shouldBe outcome

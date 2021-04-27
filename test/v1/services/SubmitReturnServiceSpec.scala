@@ -16,21 +16,18 @@
 
 package v1.services
 
-import org.joda.time.DateTime
 import uk.gov.hmrc.domain.Vrn
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockSubmitReturnConnector
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRequest, SubmitReturnRequestBody}
-import v1.models.response.SubmitReturnResponse
 
 import scala.concurrent.Future
 
 class SubmitReturnServiceSpec extends ServiceSpec {
 
   val vrn: String = "123456789"
-  val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val submitReturnRequestBody: SubmitReturnRequestBody = SubmitReturnRequestBody(
     periodKey = "18A1",
@@ -52,13 +49,6 @@ class SubmitReturnServiceSpec extends ServiceSpec {
     body = submitReturnRequestBody
   )
 
-  val submitReturnResponse: SubmitReturnResponse = SubmitReturnResponse(
-    processingDate = new DateTime("2021-03-16T08:20:27.895+0000"),
-    formBundleNumber = Some("256660290587"),
-    paymentIndicator = Some("BANK"),
-    chargeRefNumber = Some("aCxFaNx0FZsCvyWF")
-  )
-
   trait Test extends MockSubmitReturnConnector {
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
@@ -70,7 +60,7 @@ class SubmitReturnServiceSpec extends ServiceSpec {
   "SubmitReturnService" when {
     "submitReturn" must {
       "return correct result for a success" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, submitReturnResponse))
+        val outcome = Right(ResponseWrapper(correlationId, ()))
 
         MockSubmitReturnConnector.submitReturn(submitReturnRequest)
           .returns(Future.successful(outcome))
@@ -86,7 +76,7 @@ class SubmitReturnServiceSpec extends ServiceSpec {
             MockSubmitReturnConnector.submitReturn(submitReturnRequest)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
-            await(service.submitReturn(submitReturnRequest)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
+            await(service.submitReturn(submitReturnRequest)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
         val input: Seq[(String, MtdError)] = Seq(

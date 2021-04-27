@@ -17,12 +17,10 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import org.joda.time.DateTime
 import uk.gov.hmrc.domain.Vrn
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRequest, SubmitReturnRequestBody}
-import v1.models.response.SubmitReturnResponse
 
 import scala.concurrent.Future
 
@@ -50,13 +48,6 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
     body = submitReturnRequestBody
   )
 
-  val submitReturnResponse: SubmitReturnResponse = SubmitReturnResponse(
-    processingDate = new DateTime("2021-03-16T08:20:27.895+0000"),
-    formBundleNumber = Some("256660290587"),
-    paymentIndicator = Some("BANK"),
-    chargeRefNumber = Some("aCxFaNx0FZsCvyWF")
-  )
-
   class Test extends MockHttpClient with MockAppConfig {
 
     val connector: SubmitReturnConnector = new SubmitReturnConnector(
@@ -71,8 +62,8 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
 
   "SubmitReturnConnector" when {
     "submitReturn" should {
-      "return a 200 status upon HttpClient success" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, submitReturnResponse))
+      "return correct status upon HttpClient success" in new Test {
+        val outcome = Right(ResponseWrapper(correlationId, ()))
 
         MockedHttpClient
           .post(

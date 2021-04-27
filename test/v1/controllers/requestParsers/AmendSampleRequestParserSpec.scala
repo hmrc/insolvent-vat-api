@@ -24,9 +24,10 @@ import v1.models.errors._
 import v1.models.request.amendSample.{AmendSampleRawData, AmendSampleRequest, AmendSampleRequestBody}
 
 class AmendSampleRequestParserSpec extends UnitSpec {
-  val vrn = "123456789"
-  val taxYear = "2017-18"
-  val calcId = "someCalcId"
+  val vrn: String = "123456789"
+  val taxYear: String = "2017-18"
+  val calcId: String = "someCalcId"
+  implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val requestBodyJson = Json.parse(
     """{
@@ -56,7 +57,7 @@ class AmendSampleRequestParserSpec extends UnitSpec {
           .returns(List(VrnFormatError))
 
         parser.parseRequest(inputData) shouldBe
-          Left(ErrorWrapper(None, VrnFormatError, None))
+          Left(ErrorWrapper(correlationId, VrnFormatError, None))
       }
 
       "multiple validation errors occur" in new Test {
@@ -64,7 +65,7 @@ class AmendSampleRequestParserSpec extends UnitSpec {
           .returns(List(VrnFormatError, RuleIncorrectOrEmptyBodyError))
 
         parser.parseRequest(inputData.copy(body = JsObject.empty)) shouldBe
-          Left(ErrorWrapper(None, BadRequestError, Some(Seq(VrnFormatError, RuleIncorrectOrEmptyBodyError))))
+          Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(VrnFormatError, RuleIncorrectOrEmptyBodyError))))
       }
     }
   }

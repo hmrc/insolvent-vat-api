@@ -16,7 +16,6 @@
 
 package v1.support
 
-import play.api.libs.json.{JsObject, Json, Writes}
 import utils.Logging
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
@@ -24,14 +23,6 @@ import v1.models.outcomes.ResponseWrapper
 
 trait DesResponseMappingSupport {
   self: Logging =>
-
-  final def validateRetrieveResponse[T: Writes](desResponseWrapper: ResponseWrapper[T]): Either[ErrorWrapper, ResponseWrapper[T]] = {
-    if (Json.toJson(desResponseWrapper.responseData) == JsObject.empty) {
-      Left(ErrorWrapper(Some(desResponseWrapper.correlationId), NotFoundError, None))
-    } else {
-      Right(desResponseWrapper)
-    }
-  }
 
   final def mapDesErrors[D](errorCodeMap: PartialFunction[String, MtdError])(desResponseWrapper: ResponseWrapper[DesError])(
     implicit logContext: EndpointLogContext): ErrorWrapper = {
@@ -43,7 +34,7 @@ trait DesResponseMappingSupport {
 
     desResponseWrapper match {
       case ResponseWrapper(correlationId, DesErrors(error :: Nil)) =>
-        ErrorWrapper(Some(correlationId), errorCodeMap.applyOrElse(error.code, defaultErrorCodeMapping), None)
+        ErrorWrapper(correlationId, errorCodeMap.applyOrElse(error.code, defaultErrorCodeMapping), None)
 
       case ResponseWrapper(correlationId, DesErrors(errorCodes)) =>
         val mtdErrors = errorCodes.map(error => errorCodeMap.applyOrElse(error.code, defaultErrorCodeMapping))
@@ -52,13 +43,13 @@ trait DesResponseMappingSupport {
           logger.info(
             s"[${logContext.controllerName}] [${logContext.endpointName}] [CorrelationId - $correlationId]" +
               s" - downstream returned ${errorCodes.map(_.code).mkString(",")}. Revert to ISE")
-          ErrorWrapper(Some(correlationId), DownstreamError, None)
+          ErrorWrapper(correlationId, DownstreamError, None)
         } else {
-          ErrorWrapper(Some(correlationId), BadRequestError, Some(mtdErrors))
+          ErrorWrapper(correlationId, BadRequestError, Some(mtdErrors))
         }
 
       case ResponseWrapper(correlationId, OutboundError(error, errors)) =>
-        ErrorWrapper(Some(correlationId), error, errors)
+        ErrorWrapper(correlationId, error, errors)
     }
   }
 }

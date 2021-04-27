@@ -28,7 +28,6 @@ import scala.concurrent.Future
 class AmendSampleServiceSpec extends ServiceSpec {
 
   private val vrn = "123456789"
-  private val correlationId = "X-123"
 
   private val requestBody = AmendSampleRequestBody(
     data = "someData"
@@ -67,7 +66,7 @@ class AmendSampleServiceSpec extends ServiceSpec {
           MockAmendSampleConnector.amendSample(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
-          await(service.amendSample(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
+          await(service.amendSample(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
       val input = Seq(
