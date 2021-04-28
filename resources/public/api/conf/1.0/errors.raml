@@ -57,3 +57,14 @@ traits:
                 description: 'The format of the Unique ID is invalid.'
                 value:
                   code: FORMAT_UNIQUE_ID
+  formatReceivedAt:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              formatReceivedAt:
+                description: 'The format of Received At is invalid.'
+                value:
+                  code: FORMAT_RECEIVED_AT
