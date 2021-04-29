@@ -21,14 +21,16 @@ import v1.models.errors.{MtdError, ValueFormatError}
 object NonDecimalValueValidation extends ValueFormatErrorMessages {
 
   def validate(amount: BigDecimal,
+               maxScale: Int = 2,
                minValue: BigDecimal = -9999999999999.0,
                maxValue: BigDecimal = 9999999999999.0,
                path: String,
                message: String = BIG_NONDECIMAL_MINIMUM_INCLUSIVE): List[MtdError] = {
 
-    val rangeCheck = !(amount > maxValue || amount < minValue)
+    val amountScaleIsCorrect = amount.scale <= maxScale
+    val amountIsInRange = amount >= minValue && amount <= maxValue
 
-    if (rangeCheck && amount.isWhole()) NoValidationErrors else List(
+    if (amountScaleIsCorrect && amountIsInRange && amount.isWhole()) NoValidationErrors else List(
       ValueFormatError.copy(
         message = message,
         paths = Some(Seq(path))

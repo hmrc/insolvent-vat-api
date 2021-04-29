@@ -19,18 +19,18 @@ package v1.controllers.requestParsers.validators.validations
 import support.UnitSpec
 import v1.models.errors.ReceivedAtFormatError
 
-class DateFormatValidationSpec extends UnitSpec {
+class DateTimeFormatValidationSpec extends UnitSpec {
 
   "DateFormatValidation" when {
     "validate" must {
       "return an empty list for a valid date" in {
-        DateFormatValidation.validate(
+        DateTimeFormatValidation.validate(
           date = "2020-05-05T12:01:00Z"
         ) shouldBe NoValidationErrors
       }
 
       "return a ReceivedAtFormatError for an invalid date" in {
-        DateFormatValidation.validate(
+        DateTimeFormatValidation.validate(
           date = "28-07-2021"
         ) shouldBe List(ReceivedAtFormatError)
       }

@@ -186,7 +186,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
     }
 
     "return VrnFormatError errors" when {
-      "a valid request is supplied" in new Test {
+      "a invalid VRN is supplied" in new Test {
         validator.validate(SubmitReturnRawData("notAVrn", validRawRequestBody)) shouldBe
           List(VrnFormatError)
       }
@@ -204,30 +204,24 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
       }
     }
 
-    "return PeriodKeyFormatError errors" when {
-      "a valid request is supplied" in new Test {
+    "return a PeriodKeyFormatError error" when {
+      "a request with an invalid period key is supplied" in new Test {
         validator.validate(SubmitReturnRawData(validVrn, invalidPeriodKeyRequestBody)) shouldBe
-          List(PeriodKeyFormatError.copy(
-            paths = Some(Seq("/periodKey"))
-          ))
+          List(PeriodKeyFormatError)
       }
     }
 
-    "return ReceivedAtFormatError errors" when {
-      "a valid request is supplied" in new Test {
+    "return a ReceivedAtFormatError error" when {
+      "a request with an invalid receivedAt date is supplied" in new Test {
         validator.validate(SubmitReturnRawData(validVrn, invalidReceivedAtRequestBody)) shouldBe
-          List(ReceivedAtFormatError.copy(
-            paths = Some(Seq("/receivedAt"))
-          ))
+          List(ReceivedAtFormatError)
       }
     }
 
-    "return UniqueIDFormatError errors" when {
-      "a valid request is supplied" in new Test {
+    "return a UniqueIDFormatError error" when {
+      "a request with an invalid unique ID is supplied" in new Test {
         validator.validate(SubmitReturnRawData(validVrn, invalidUniqueIdRequestBody)) shouldBe
-          List(UniqueIDFormatError.copy(
-            paths = Some(Seq("/uniqueId"))
-          ))
+          List(UniqueIDFormatError)
       }
     }
 
@@ -244,9 +238,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
         "multiple fields fail value validation" in new Test {
           validator.validate(SubmitReturnRawData(validVrn, allInvalidValueRawRequestBody)) shouldBe
             List(
-              ReceivedAtFormatError.copy(
-                paths = Some(Seq("/receivedAt"))
-              ),
+              ReceivedAtFormatError,
               ValueFormatError.copy(
                 paths = Some(List(
                   "/vatDueSales",
@@ -256,9 +248,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
                 )),
                 message = BIG_DECIMAL_MINIMUM_INCLUSIVE
               ),
-              UniqueIDFormatError.copy(
-                paths = Some(Seq("/uniqueId"))
-              ),
+              UniqueIDFormatError,
               ValueFormatError.copy(
                 paths = Some(List(
                   "/totalValueSalesExVAT",
@@ -268,9 +258,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
                 )),
                 message = BIG_NONDECIMAL_MINIMUM_INCLUSIVE
               ),
-              PeriodKeyFormatError.copy(
-                paths = Some(Seq("/periodKey"))
-              ),
+              PeriodKeyFormatError,
               ValueFormatError.copy(
                 paths = Some(List(
                   "/netVatDue"

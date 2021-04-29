@@ -16,17 +16,22 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations.{DateFormatValidation, DecimalValueValidation, JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation}
+import v1.controllers.requestParsers.validators.validations.{DateTimeFormatValidation, DecimalValueValidation, JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation}
 import v1.models.errors.MtdError
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequestBody}
 
 class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFormatErrorMessages{
 
-  private val validationSet = List(parameterFormatValidation, bodyValueValidator)
+  private val validationSet = List(parameterFormatValidation, bodyFormatValidation, bodyValueValidator)
 
   private def parameterFormatValidation: SubmitReturnRawData => List[List[MtdError]] = (data: SubmitReturnRawData) => {
     List(
-      VrnValidation.validate(data.vrn),
+      VrnValidation.validate(data.vrn)
+    )
+  }
+
+  private def bodyFormatValidation: SubmitReturnRawData => List[List[MtdError]] = (data: SubmitReturnRawData) => {
+    List(
       JsonFormatValidation.validate[SubmitReturnRequestBody](data.body.json)
     )
   }
@@ -35,9 +40,7 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
     val requestBodyData = data.body.json.as[SubmitReturnRequestBody]
 
     List(Validator.flattenErrors(List(
-      PeriodKeyValidation.validate(requestBodyData.periodKey).map(
-        _.copy(paths = Some(Seq(s"/periodKey")))
-      ),
+      PeriodKeyValidation.validate(requestBodyData.periodKey),
       DecimalValueValidation.validate(
         amount = requestBodyData.vatDueSales,
         path = "/vatDueSales",
@@ -80,12 +83,8 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
         amount = requestBodyData.totalAcquisitionsExVAT,
         path = "/totalAcquisitionsExVAT"
       ),
-      DateFormatValidation.validate(requestBodyData.receivedAt).map(
-        _.copy(paths = Some(Seq(s"/receivedAt")))
-      ),
-      UniqueIDValidation.validate(requestBodyData.uniqueId).map(
-        _.copy(paths = Some(Seq(s"/uniqueId")))
-      )
+      DateTimeFormatValidation.validate(requestBodyData.receivedAt),
+      UniqueIDValidation.validate(requestBodyData.uniqueId)
     )))
   }
 
