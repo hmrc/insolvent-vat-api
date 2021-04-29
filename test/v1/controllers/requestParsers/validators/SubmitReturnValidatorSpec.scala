@@ -258,13 +258,13 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
                 )),
                 message = BIG_NONDECIMAL_MINIMUM_INCLUSIVE
               ),
-              PeriodKeyFormatError,
               ValueFormatError.copy(
                 paths = Some(List(
                   "/netVatDue"
                 )),
                 message = ZERO_MINIMUM_INCLUSIVE
-              )
+              ),
+              PeriodKeyFormatError
             )
         }
       }

@@ -50,32 +50,5 @@ class DecimalValueValidationSpec extends UnitSpec with ValueFormatErrorMessages 
         ) shouldBe List(ValueFormatError.copy(message = BIG_DECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
       }
     }
-
-    "validateOptional" should {
-      "return an empty list for a value of 'None' with minValue of -99999999999.99" in {
-        DecimalValueValidation.validateOptional(
-          amount = None,
-          minValue = -99999999999.99,
-          path = "/path",
-          message = BIG_DECIMAL_MINIMUM_INCLUSIVE
-        ) shouldBe NoValidationErrors
-      }
-
-      "validate correctly for some valid decimal value" in {
-        DecimalValueValidation.validateOptional(
-          amount = Some(100),
-          path = "/path"
-        ) shouldBe NoValidationErrors
-      }
-
-      "validate correctly for some invalid decimal value with minValue of -99999999999.99" in {
-        DecimalValueValidation.validateOptional(
-          amount = Some(100000000000000.99),
-          minValue = -99999999999.99,
-          path = "/path",
-          message = BIG_DECIMAL_MINIMUM_INCLUSIVE
-        ) shouldBe List(ValueFormatError.copy(message = BIG_DECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
-      }
-    }
   }
 }

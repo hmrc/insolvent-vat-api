@@ -134,7 +134,7 @@ class SubmitReturnRequestParserSpec extends UnitSpec {
             paths = Some(List(
               "/netVatDue"
             )),
-            message = "The field should be between 0 and 99999999999.99"
+            message = "The field should be between 0.00 and 99999999999.99"
           ),
           ValueFormatError.copy(
             paths = Some(List(

@@ -19,9 +19,9 @@ package v1.controllers.requestParsers.validators.validations
 import v1.models.errors.{MtdError, PeriodKeyFormatError}
 
 object PeriodKeyValidation {
-  private val vrnRegex = """(^[0-9]{2}[A-Z][A-Z0-9]$)|(^#[0-9]{3}$)|(^[0-9]{4}$)"""
+  private val periodKeyRegex = """(^[0-9]{2}[A-Z][A-Z0-9]$)|(^#[0-9]{3}$)|(^[0-9]{4}$)"""
 
   def validate(periodKey: String): List[MtdError] = {
-    if (periodKey.matches(vrnRegex)) NoValidationErrors else List(PeriodKeyFormatError)
+    if (periodKey.matches(periodKeyRegex)) NoValidationErrors else List(PeriodKeyFormatError)
   }
 }

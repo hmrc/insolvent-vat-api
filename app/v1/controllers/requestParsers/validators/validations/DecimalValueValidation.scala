@@ -20,23 +20,6 @@ import v1.models.errors.{MtdError, ValueFormatError}
 
 object DecimalValueValidation extends ValueFormatErrorMessages {
 
-  def validateOptional(amount: Option[BigDecimal],
-                       maxScale: Int = 2,
-                       minValue: BigDecimal = 0,
-                       maxValue: BigDecimal = 9999999999999.99,
-                       path: String,
-                       message: String = BIG_DECIMAL_MINIMUM_INCLUSIVE): List[MtdError] = amount match {
-    case None => NoValidationErrors
-    case Some(value) => validate(
-      amount = value,
-      maxScale = maxScale,
-      minValue = minValue,
-      maxValue = maxValue,
-      path = path,
-      message = message
-    )
-  }
-
   def validate(amount: BigDecimal,
                maxScale: Int = 2,
                minValue: BigDecimal = 0,
