@@ -18,11 +18,9 @@ package v1.controllers.requestParsers.validators.validations
 
 import java.time.LocalDateTime
 import java.time.format.{DateTimeFormatter, ResolverStyle}
-
 import v1.models.errors.{MtdError, ReceivedAtFormatError}
 
 import scala.util.{Failure, Success, Try}
-
 
 object DateTimeFormatValidation {
 

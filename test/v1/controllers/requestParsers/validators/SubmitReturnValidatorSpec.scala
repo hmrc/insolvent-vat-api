@@ -16,9 +16,7 @@
 
 package v1.controllers.requestParsers.validators
 
-import config.AppConfig
-import mocks.MockAppConfig
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import support.UnitSpec
 import v1.controllers.requestParsers.validators.validations.ValueFormatErrorMessages
@@ -142,21 +140,21 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
           """.stripMargin
   )
 
-  private val emptyRequestBodyJson: JsValue = Json.parse("""{}""")
+  private val emptyRequestBodyJson: JsValue = JsObject.empty
 
   private val nonValidRequestBodyJson: JsValue = Json.parse(
     """
       |{
-      |  "periodKey": "period",
-      |  "vatDueSales": 105.505,
-      |  "vatDueAcquisitions": -100.453,
-      |  "totalVatDue": 5.052,
-      |  "vatReclaimedCurrPeriod": 105.154,
-      |  "netVatDue": 100.102,
-      |  "totalValueSalesExVAT": 300.99,
-      |  "totalValueGoodsSuppliedExVAT": 3000.99,
-      |  "totalAcquisitionsExVAT": 3000.99,
-      |  "totalValuePurchasesExVAT": 300.99
+      |  "periodKey": true,
+      |  "vatDueSales": 105.50,
+      |  "vatDueAcquisitions": -100.45,
+      |  "totalVatDue": 5.05,
+      |  "vatReclaimedCurrPeriod": 105.15,
+      |  "netVatDue": 100.10,
+      |  "totalValueSalesExVAT": 300,
+      |  "totalValuePurchasesExVAT": 300,
+      |  "totalValueGoodsSuppliedExVAT": 3000,
+      |  "totalAcquisitionsExVAT": 3000
       |}
     """.stripMargin
   )
@@ -170,59 +168,57 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
   private val invalidVatDueSalesRequestBody = AnyContentAsJson(invalidVatDueSalesRequestBodyJson)
   private val allInvalidValueRawRequestBody = AnyContentAsJson(allInvalidValueRequestBodyJson)
 
-  class Test {
-    val validator: SubmitReturnValidator = new SubmitReturnValidator()
-  }
+  val validator: SubmitReturnValidator = new SubmitReturnValidator()
 
   "running a validation" should {
     "return no errors" when {
-      "a valid request is supplied" in new Test {
+      "a valid request is supplied" in {
         validator.validate(SubmitReturnRawData(validVrn, validRawRequestBody)) shouldBe Nil
       }
     }
 
     "return a VrnFormatError error" when {
-      "a invalid VRN is supplied" in new Test {
+      "a invalid VRN is supplied" in {
         validator.validate(SubmitReturnRawData("notAVrn", validRawRequestBody)) shouldBe
           List(VrnFormatError)
       }
     }
 
-    "return RuleIncorrectOrEmptyBodyError error" when {
-      "an empty JSON body is submitted" in new Test {
+    "return a RuleIncorrectOrEmptyBodyError error" when {
+      "an empty JSON body is submitted" in {
         validator.validate(SubmitReturnRawData(validVrn, emptyRawRequestBody)) shouldBe
           List(RuleIncorrectOrEmptyBodyError)
       }
 
-      "the submitted request body is not in the correct format" in new Test {
+      "the submitted request body is not in the correct format and mandatory fields are missing" in {
         validator.validate(SubmitReturnRawData(validVrn, nonValidRawRequestBody)) shouldBe
-          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/uniqueId"))))
+          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey"))))
       }
     }
 
     "return a PeriodKeyFormatError error" when {
-      "a request with an invalid period key is supplied" in new Test {
+      "a request with an invalid period key is supplied" in {
         validator.validate(SubmitReturnRawData(validVrn, invalidPeriodKeyRequestBody)) shouldBe
           List(PeriodKeyFormatError)
       }
     }
 
     "return a ReceivedAtFormatError error" when {
-      "a request with an invalid receivedAt date is supplied" in new Test {
+      "a request with an invalid receivedAt date is supplied" in {
         validator.validate(SubmitReturnRawData(validVrn, invalidReceivedAtRequestBody)) shouldBe
           List(ReceivedAtFormatError)
       }
     }
 
     "return a UniqueIDFormatError error" when {
-      "a request with an invalid unique ID is supplied" in new Test {
+      "a request with an invalid unique ID is supplied" in {
         validator.validate(SubmitReturnRawData(validVrn, invalidUniqueIdRequestBody)) shouldBe
           List(UniqueIDFormatError)
       }
     }
 
-    "return ValueFormatError error (single failure)" when {
-      "one field fails value validation (vatDueSales)" in new Test {
+    "return a ValueFormatError error (single failure)" when {
+      "one field fails value validation (vatDueSales)" in {
         validator.validate(SubmitReturnRawData(validVrn, invalidVatDueSalesRequestBody)) shouldBe
           List(ValueFormatError.copy(
             message = BIG_DECIMAL_MINIMUM_INCLUSIVE,
@@ -230,8 +226,8 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
           ))
       }
 
-      "return ValueFormatError error (multiple failures)" when {
-        "multiple fields fail value validation" in new Test {
+      "return multiple errors (multiple failures)" when {
+        "multiple fields fail value validation" in {
           validator.validate(SubmitReturnRawData(validVrn, allInvalidValueRawRequestBody)) shouldBe
             List(
               ReceivedAtFormatError,

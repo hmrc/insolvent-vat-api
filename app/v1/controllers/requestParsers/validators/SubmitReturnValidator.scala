@@ -76,7 +76,7 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
         path = "/totalValuePurchasesExVAT"
       ),
       NonDecimalValueValidation.validate(
-        amount = requestBodyData.	totalValueGoodsSuppliedExVAT,
+        amount = requestBodyData.totalValueGoodsSuppliedExVAT,
         path = "/totalValueGoodsSuppliedExVAT"
       ),
       NonDecimalValueValidation.validate(
