@@ -16,10 +16,25 @@
 
 package v1.controllers.requestParsers.validators.validations
 
-protected[validators] trait ValueFormatErrorMessages {
-  val ZERO_MINIMUM_INCLUSIVE = "The field should be between 0 and 99999999999.99"
-  val ZERO_MINIMUM_INTEGER_INCLUSIVE = "The field should be between 0 and 99"
-  val ZERO_MINIMUM_BIG_INTEGER_INCLUSIVE = "The field should be 0 or more"
-  val BIG_DECIMAL_MINIMUM_INCLUSIVE = "The field should be between -9999999999999.99 and 9999999999999.99"
-  val BIG_NONDECIMAL_MINIMUM_INCLUSIVE = "The field should be between -9999999999999 and 9999999999999"
+import support.UnitSpec
+import v1.models.errors.ReceivedAtFormatError
+
+class DateFormatValidationSpec extends UnitSpec {
+
+  "DateFormatValidation" when {
+    "validate" must {
+      "return an empty list for a valid date" in {
+        DateFormatValidation.validate(
+          date = "2020-05-05T12:01:00Z"
+        ) shouldBe NoValidationErrors
+      }
+
+      "return a ReceivedAtFormatError for an invalid date" in {
+        DateFormatValidation.validate(
+          date = "28-07-2021"
+        ) shouldBe List(ReceivedAtFormatError)
+      }
+
+    }
+  }
 }

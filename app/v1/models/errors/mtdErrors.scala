@@ -28,6 +28,7 @@ object MtdErrorWithCustomMessage {
   def unapply(arg: MtdError): Option[String] = Some(arg.code)
 }
 
+// Format Errors
 object VrnFormatError extends MtdError(
   code = "FORMAT_VRN",
   message = "The format of the supplied VRN field is not valid"
@@ -36,6 +37,18 @@ object VrnFormatError extends MtdError(
 object PeriodKeyFormatError extends MtdError(
   code = "FORMAT_PERIOD_KEY",
   message = "The format of the supplied period key is not valid. It must be a 4 character string"
+)
+
+object ValueFormatError extends MtdError("FORMAT_VALUE", "")
+
+object UniqueIDFormatError extends MtdError(
+  code = "FORMAT_UNIQUE_ID",
+  message = "The format of the Unique ID is invalid"
+)
+
+object ReceivedAtFormatError extends MtdError(
+  code = "FORMAT_RECEIVED_AT",
+  message = "The format of Received At is invalid"
 )
 
 // Rule Errors

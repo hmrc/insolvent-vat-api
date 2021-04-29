@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,14 @@ import v1.models.errors.{MtdError, ValueFormatError}
 object NonDecimalValueValidation extends ValueFormatErrorMessages {
 
   def validate(amount: BigDecimal,
-               minValue: BigDecimal,
-               maxValue: BigDecimal,
+               minValue: BigDecimal = -9999999999999.0,
+               maxValue: BigDecimal = 9999999999999.0,
                path: String,
                message: String = BIG_NONDECIMAL_MINIMUM_INCLUSIVE): List[MtdError] = {
 
-    if (amount.isWhole()) NoValidationErrors else List(
+    val rangeCheck = !(amount > maxValue || amount < minValue)
+
+    if (rangeCheck && amount.isWhole()) NoValidationErrors else List(
       ValueFormatError.copy(
         message = message,
         paths = Some(Seq(path))

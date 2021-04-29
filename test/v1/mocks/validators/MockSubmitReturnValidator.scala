@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers
+package v1.mocks.validators
 
-import uk.gov.hmrc.domain.Vrn
+import org.scalamock.handlers.CallHandler1
+import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.validators.SubmitReturnValidator
-import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest, SubmitReturnRequestBody}
+import v1.models.errors.MtdError
+import v1.models.request.SubmitReturnRawData
 
-import javax.inject.Inject
+trait MockSubmitReturnValidator extends MockFactory {
+  val mockSubmitReturnValidator: SubmitReturnValidator = mock[SubmitReturnValidator]
 
-class SubmitReturnRequestParser @Inject()(val validator: SubmitReturnValidator)
-  extends RequestParser[SubmitReturnRawData, SubmitReturnRequest] {
+  object MockSubmitReturnValidator {
 
-  override protected def requestFor(data: SubmitReturnRawData): SubmitReturnRequest =
-    SubmitReturnRequest(Vrn(data.vrn), data.body.json.as[SubmitReturnRequestBody])
+    def validate(data: SubmitReturnRawData):  CallHandler1[SubmitReturnRawData, List[MtdError]] = {
+      (mockSubmitReturnValidator
+        .validate(_: SubmitReturnRawData))
+        .expects(data)
+    }
+  }
 }

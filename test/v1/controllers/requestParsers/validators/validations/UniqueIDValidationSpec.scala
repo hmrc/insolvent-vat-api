@@ -16,10 +16,24 @@
 
 package v1.controllers.requestParsers.validators.validations
 
-protected[validators] trait ValueFormatErrorMessages {
-  val ZERO_MINIMUM_INCLUSIVE = "The field should be between 0 and 99999999999.99"
-  val ZERO_MINIMUM_INTEGER_INCLUSIVE = "The field should be between 0 and 99"
-  val ZERO_MINIMUM_BIG_INTEGER_INCLUSIVE = "The field should be 0 or more"
-  val BIG_DECIMAL_MINIMUM_INCLUSIVE = "The field should be between -9999999999999.99 and 9999999999999.99"
-  val BIG_NONDECIMAL_MINIMUM_INCLUSIVE = "The field should be between -9999999999999 and 9999999999999"
+import support.UnitSpec
+import v1.models.errors.UniqueIDFormatError
+
+class UniqueIDValidationSpec extends UnitSpec {
+
+  "UniqueIDValidation" when {
+    "validate" must {
+      "return an empty list for a valid uniqueId" in {
+        UniqueIDValidation.validate(
+          uniqueId = "0123456789"
+        ) shouldBe NoValidationErrors
+      }
+
+      "return a UniqueIDFormatError for an invalid uniqueId" in {
+        UniqueIDValidation.validate(
+          uniqueId = "0123456789123"
+        ) shouldBe List(UniqueIDFormatError)
+      }
+    }
+  }
 }

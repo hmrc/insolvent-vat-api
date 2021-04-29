@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,19 @@ package v1.controllers.requestParsers.validators.validations
 
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, ResolverStyle}
-
-import v1.models.errors.MtdError
+import v1.models.errors.{MtdError, ReceivedAtFormatError}
 
 import scala.util.{Failure, Success, Try}
 
+
 object DateFormatValidation {
-  private val dateFormatRegex = """^[0-9]{2}[A-Z][A-Z0-9]$)|(^#[0-9]{3}$)|(^[0-9]{4}$"""
 
   val dateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withResolverStyle(ResolverStyle.STRICT)
 
-  def validate(receivedAt: String): List[MtdError] = {
-    if (receivedAt.matches(dateFormatRegex)) NoValidationErrors else List(ReceivedAtFormatError)
+  def validate(date: String): List[MtdError] = Try {
+    LocalDate.parse(date, dateTimeFormat)
+  } match {
+    case Success(_) => NoValidationErrors
+    case Failure(_) => List(ReceivedAtFormatError)
   }
 }

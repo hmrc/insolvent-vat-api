@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,12 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
   }
 
   private def bodyValueValidator: SubmitReturnRawData => List[List[MtdError]] = { data =>
-
     val requestBodyData = data.body.json.as[SubmitReturnRequestBody]
 
-    List(
-      PeriodKeyValidation.validate(requestBodyData.periodKey),
+    List(Validator.flattenErrors(List(
+      PeriodKeyValidation.validate(requestBodyData.periodKey).map(
+        _.copy(paths = Some(Seq(s"/periodKey")))
+      ),
       DecimalValueValidation.validate(
         amount = requestBodyData.vatDueSales,
         path = "/vatDueSales",
@@ -65,31 +66,27 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
       ),
       NonDecimalValueValidation.validate(
         amount = requestBodyData.totalValueSalesExVAT,
-        path = "/totalValueSalesExVAT",
-        minValue = -9999999999999.00,
-        maxValue = 9999999999999.00
+        path = "/totalValueSalesExVAT"
       ),
       NonDecimalValueValidation.validate(
         amount = requestBodyData.totalValuePurchasesExVAT,
-        path = "/totalValuePurchasesExVAT",
-        minValue = -9999999999999.00,
-        maxValue = 9999999999999.00
+        path = "/totalValuePurchasesExVAT"
       ),
       NonDecimalValueValidation.validate(
         amount = requestBodyData.	totalValueGoodsSuppliedExVAT,
-        path = "/totalValueGoodsSuppliedExVAT",
-        minValue = -9999999999999.00,
-        maxValue = 9999999999999.00
+        path = "/totalValueGoodsSuppliedExVAT"
       ),
       NonDecimalValueValidation.validate(
         amount = requestBodyData.totalAcquisitionsExVAT,
-        path = "/totalAcquisitionsExVAT",
-        minValue = -9999999999999.00,
-        maxValue = 9999999999999.00
+        path = "/totalAcquisitionsExVAT"
       ),
-      DateFormatValidation.validate(requestBodyData.receivedAt),
-      UniqueIDValidation.validate(requestBodyData.uniqueId)
-    )
+      DateFormatValidation.validate(requestBodyData.receivedAt).map(
+        _.copy(paths = Some(Seq(s"/receivedAt")))
+      ),
+      UniqueIDValidation.validate(requestBodyData.uniqueId).map(
+        _.copy(paths = Some(Seq(s"/uniqueId")))
+      )
+    )))
   }
 
   override def validate(data: SubmitReturnRawData): List[MtdError] = {

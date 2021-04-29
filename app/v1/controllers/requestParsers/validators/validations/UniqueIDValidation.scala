@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package v1.controllers.requestParsers.validators.validations
 
-import v1.models.errors.MtdError
+import v1.models.errors.{MtdError, UniqueIDFormatError}
 
 object UniqueIDValidation {
-  private val uIDRegex = """^[0-9]{2}[A-Z][A-Z0-9]$)|(^#[0-9]{3}$)|(^[0-9]{4}$"""
+  private val uIDRegex = """(^[A-Za-z0-9 \-,.&'\/()!]{1,10}$)"""
 
   def validate(uniqueId: String): List[MtdError] = {
     if (uniqueId.matches(uIDRegex)) NoValidationErrors else List(UniqueIDFormatError)
