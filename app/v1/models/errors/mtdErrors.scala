@@ -39,7 +39,10 @@ object PeriodKeyFormatError extends MtdError(
   message = "The format of the supplied period key is not valid. It must be a 4 character string"
 )
 
-object ValueFormatError extends MtdError("FORMAT_VALUE", "")
+object ValueFormatError extends MtdError(
+  code = "FORMAT_VALUE",
+  message = ""
+)
 
 object UniqueIDFormatError extends MtdError(
   code = "FORMAT_UNIQUE_ID",
