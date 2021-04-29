@@ -25,7 +25,7 @@ object NonDecimalValueValidation extends ValueFormatErrorMessages {
                minValue: BigDecimal = -9999999999999.0,
                maxValue: BigDecimal = 9999999999999.0,
                path: String,
-               message: String = BIG_NONDECIMAL_MINIMUM_INCLUSIVE): List[MtdError] = {
+               message: String = BIG_NON_DECIMAL_MINIMUM_INCLUSIVE): List[MtdError] = {
 
     val amountScaleIsCorrect = amount.scale <= maxScale
     val amountIsInRange = amount >= minValue && amount <= maxValue

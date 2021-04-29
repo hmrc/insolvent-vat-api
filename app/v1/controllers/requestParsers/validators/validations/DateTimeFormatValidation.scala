@@ -16,7 +16,7 @@
 
 package v1.controllers.requestParsers.validators.validations
 
-import java.time.{LocalDateTime}
+import java.time.LocalDateTime
 import java.time.format.{DateTimeFormatter, ResolverStyle}
 
 import v1.models.errors.{MtdError, ReceivedAtFormatError}
@@ -28,8 +28,8 @@ object DateTimeFormatValidation {
 
   val dateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withResolverStyle(ResolverStyle.STRICT)
 
-  def validate(date: String): List[MtdError] = Try {
-    LocalDateTime.parse(date, dateTimeFormat)
+  def validate(dateTime: String): List[MtdError] = Try {
+    LocalDateTime.parse(dateTime, dateTimeFormat)
   } match {
     case Success(_) => NoValidationErrors
     case Failure(_) => List(ReceivedAtFormatError)

@@ -37,14 +37,14 @@ class NonDecimalValueValidationSpec extends UnitSpec with ValueFormatErrorMessag
         NonDecimalValueValidation.validate(
           amount = 9999999999999.9,
           path = "/path"
-        ) shouldBe List(ValueFormatError.copy(message = BIG_NONDECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
+        ) shouldBe List(ValueFormatError.copy(message = BIG_NON_DECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
       }
 
       "there is pence to two places on a non-decimal field" in {
         NonDecimalValueValidation.validate(
           amount = 9999999999999.99,
           path = "/path"
-        ) shouldBe List(ValueFormatError.copy(message = BIG_NONDECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
+        ) shouldBe List(ValueFormatError.copy(message = BIG_NON_DECIMAL_MINIMUM_INCLUSIVE, paths = Some(Seq("/path"))))
       }
     }
   }

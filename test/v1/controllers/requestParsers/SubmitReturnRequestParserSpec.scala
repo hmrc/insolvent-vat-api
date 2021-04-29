@@ -118,9 +118,7 @@ class SubmitReturnRequestParserSpec extends UnitSpec {
         private val allInvalidValueRawRequestBody = AnyContentAsJson(allInvalidValueRequestBodyJson)
 
         private val allInvalidValueErrors = List(
-          PeriodKeyFormatError.copy(
-            paths = Some(List("/periodKey"))
-          ),
+          PeriodKeyFormatError,
           ValueFormatError.copy(
             paths = Some(List(
               "/vatDueSales",
@@ -143,14 +141,10 @@ class SubmitReturnRequestParserSpec extends UnitSpec {
               "/totalValueGoodsSuppliedExVAT",
               "/totalAcquisitionsExVAT"
             )),
-            message = "The field should be between -9999999999999.99 and 9999999999999.99"
+            message = "The field should be between -9999999999999 and 9999999999999"
           ),
-          ReceivedAtFormatError.copy(
-            paths = Some(List("/receivedAt"))
-          ),
-          UniqueIDFormatError.copy(
-            paths = Some(List("/uniqueId"))
-          )
+          ReceivedAtFormatError,
+          UniqueIDFormatError
         )
 
         MockSubmitReturnValidator.validate(submitReturnRawData.copy(body = allInvalidValueRawRequestBody))

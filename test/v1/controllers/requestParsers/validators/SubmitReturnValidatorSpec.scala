@@ -170,12 +170,8 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
   private val invalidVatDueSalesRequestBody = AnyContentAsJson(invalidVatDueSalesRequestBodyJson)
   private val allInvalidValueRawRequestBody = AnyContentAsJson(allInvalidValueRequestBodyJson)
 
-  class Test extends MockAppConfig {
-
-    implicit val appConfig: AppConfig = mockAppConfig
-
-    val validator = new SubmitReturnValidator()
-
+  class Test {
+    val validator: SubmitReturnValidator = new SubmitReturnValidator()
   }
 
   "running a validation" should {
@@ -185,7 +181,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
       }
     }
 
-    "return VrnFormatError errors" when {
+    "return a VrnFormatError error" when {
       "a invalid VRN is supplied" in new Test {
         validator.validate(SubmitReturnRawData("notAVrn", validRawRequestBody)) shouldBe
           List(VrnFormatError)
@@ -256,7 +252,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
                   "/totalValueGoodsSuppliedExVAT",
                   "/totalAcquisitionsExVAT"
                 )),
-                message = BIG_NONDECIMAL_MINIMUM_INCLUSIVE
+                message = BIG_NON_DECIMAL_MINIMUM_INCLUSIVE
               ),
               ValueFormatError.copy(
                 paths = Some(List(

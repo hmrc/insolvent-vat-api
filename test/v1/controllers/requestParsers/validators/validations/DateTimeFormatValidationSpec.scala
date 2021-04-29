@@ -21,17 +21,17 @@ import v1.models.errors.ReceivedAtFormatError
 
 class DateTimeFormatValidationSpec extends UnitSpec {
 
-  "DateFormatValidation" when {
+  "DateTimeFormatValidation" when {
     "validate" must {
-      "return an empty list for a valid date" in {
+      "return no format errors when supplied with a valid date" in {
         DateTimeFormatValidation.validate(
-          date = "2020-05-05T12:01:00Z"
+          dateTime = "2020-05-05T12:01:00Z"
         ) shouldBe NoValidationErrors
       }
 
-      "return a ReceivedAtFormatError for an invalid date" in {
+      "return a ReceivedAtFormatError when supplied with an invalid date" in {
         DateTimeFormatValidation.validate(
-          date = "28-07-2021"
+          dateTime = "28-07-2021"
         ) shouldBe List(ReceivedAtFormatError)
       }
 
