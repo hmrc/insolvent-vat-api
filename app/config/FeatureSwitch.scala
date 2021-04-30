@@ -22,19 +22,19 @@ case class FeatureSwitch(value: Option[Configuration]) {
 
   private val versionRegex = """(\d)\.\d""".r
 
-  def isWhiteListingEnabled: Boolean = {
+  def isAllowListEnabled: Boolean = {
     value match {
-      case Some(config) => config.getOptional[Boolean]("white-list.enabled").getOrElse(false)
+      case Some(config) => config.getOptional[Boolean]("allow-list.enabled").getOrElse(false)
       case None         => false
     }
   }
 
-  def whiteListedApplicationIds: Seq[String] = {
+  def allowListApplicationIds: Seq[String] = {
     value match {
       case Some(config) =>
         config
-          .getOptional[Seq[String]]("white-list.applicationIds")
-          .getOrElse(throw new RuntimeException(s"feature-switch.white-list.applicationIds is not configured"))
+          .getOptional[Seq[String]]("allow-list.applicationIds")
+          .getOrElse(throw new RuntimeException(s"feature-switch.allow-list.applicationIds is not configured"))
       case None => Seq()
     }
   }

@@ -38,23 +38,9 @@ class ApiDefinitionFactorySpec extends UnitSpec {
         MockedAppConfig.apiStatus returns "BETA"
         MockedAppConfig.endpointsEnabled returns true
 
-        private val readScope = "read:vat"
-        private val writeScope = "write:vat"
-
         apiDefinitionFactory.definition shouldBe
           Definition(
-            scopes = Seq(
-              Scope(
-                key = readScope,
-                name = "View your VAT information",
-                description = "Allow read access to VAT data"
-              ),
-              Scope(
-                key = writeScope,
-                name = "Change your VAT information",
-                description = "Allow write access to VAT data"
-              )
-            ),
+            scopes = Seq(),
             api = APIDefinition(
               name = "Insolvent VAT (MTD)",
               description = "An API for providing VAT data for insolvent traders",
@@ -63,7 +49,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = VERSION_1,
-                  access = None,
+                  access = Some(Access("PRIVATE", allowListApplicationIds = Seq())),
                   status = BETA,
                   endpointsEnabled = true
                 )
@@ -91,34 +77,34 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     }
   }
 
-  "buildWhiteListingAccess" when {
+  "buildAllowListAccess" when {
     "the 'featureSwitch' parameter is not present" should {
       "return None" in new Test {
         MockedAppConfig.featureSwitch returns None
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe None
+        apiDefinitionFactory.buildAllowListAccess() shouldBe None
       }
     }
 
-    "the 'featureSwitch' parameter is present and white listing is enabled" should {
+    "the 'featureSwitch' parameter is present and allow list is enabled" should {
       "return the correct Access object" in new Test {
 
         private val someString =
           """
             |{
-            |   white-list.enabled = true
-            |   white-list.applicationIds = ["anId"]
+            |   allow-list.enabled = true
+            |   allow-list.applicationIds = ["anId"]
             |}
           """.stripMargin
 
         MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString(someString)))
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe Some(Access("PRIVATE", Seq("anId")))
+        apiDefinitionFactory.buildAllowListAccess() shouldBe Some(Access("PRIVATE", Seq("anId")))
       }
     }
 
-    "the 'featureSwitch' parameter is present and white listing is not enabled" should {
+    "the 'featureSwitch' parameter is present and allow list is not enabled" should {
       "return None" in new Test {
-        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString("""white-list.enabled = false""")))
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe None
+        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString("""allow-list.enabled = false""")))
+        apiDefinitionFactory.buildAllowListAccess() shouldBe None
       }
     }
   }

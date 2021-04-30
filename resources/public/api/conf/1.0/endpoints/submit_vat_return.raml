@@ -11,8 +11,7 @@ is:
 displayName: Submit VAT Return for Insolvent Trader [test only]
 description: This endpoint has been created specifically for submissions from an external scanning provider. This endpoint allows a developer to submit a VAT return for a period.  These submissions relate to VAT traders that are insolvent.
 (annotations.sandboxData): !include ../scenarios/common.md
-(annotations.scope): "write:vat"
-securedBy: [ sec.oauth_2_0: { scopes: [ "write:vat" ] } ]
+securedBy: [ sec.oauth_2_0: { scopes: [ ] } ]
 body:
   application/json:
     type: !include ../schemas/submit_vat_return_request.json

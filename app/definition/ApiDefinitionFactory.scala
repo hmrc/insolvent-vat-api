@@ -24,24 +24,11 @@ import play.api.Logger
 @Singleton
 class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
 
-  private val readScope = "read:vat"
-  private val writeScope = "write:vat"
   private val logger: Logger = Logger(this.getClass)
 
   lazy val definition: Definition =
     Definition(
-      scopes = Seq(
-        Scope(
-          key = readScope,
-          name = "View your VAT information",
-          description = "Allow read access to VAT data"
-        ),
-        Scope(
-          key = writeScope,
-          name = "Change your VAT information",
-          description = "Allow write access to VAT data"
-        )
-      ),
+      scopes = Seq(),
       api = APIDefinition(
         name = "Insolvent VAT (MTD)",
         description = "An API for providing VAT data for insolvent traders",
@@ -50,7 +37,7 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         versions = Seq(
           APIVersion(
             version = VERSION_1,
-            access = buildWhiteListingAccess(),
+            access = buildAllowListAccess(),
             status = buildAPIStatus(VERSION_1),
             endpointsEnabled = appConfig.endpointsEnabled(VERSION_1)
           )
@@ -67,8 +54,8 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
       }
   }
 
-  private[definition] def buildWhiteListingAccess(): Option[Access] = {
+  private[definition] def buildAllowListAccess(): Option[Access] = {
     val featureSwitch = FeatureSwitch(appConfig.featureSwitch)
-    if (featureSwitch.isWhiteListingEnabled) Some(Access("PRIVATE", featureSwitch.whiteListedApplicationIds)) else None
+    if (featureSwitch.isAllowListEnabled) Some(Access("PRIVATE", featureSwitch.allowListApplicationIds)) else None
   }
 }
