@@ -22,14 +22,13 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{DateUtils, MockMetrics}
-import v1.mocks.requestParsers.MockAmendSampleRequestParser
-import v1.mocks.services.{MockAmendSampleService, MockAuditService, MockEnrolmentsAuthService}
-import v1.models.audit.{AuditDetail, AuditError, AuditEvent, AuditResponse, SampleAuditResponse}
+import utils._
+import v1.mocks.requestParsers.MockSubmitReturnRequestParser
+import v1.mocks.{MockCurrentDateTime, MockIdGenerator}
+import v1.mocks.services.{MockSubmitReturnRequestService, _}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest, SubmitReturnRequestBody}
-import v1.models.response.SubmitReturnResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,8 +37,8 @@ class SubmitReturnControllerSpec
   extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockAppConfig
-    with MockAmendSampleService
-    with MockAmendSampleRequestParser
+    with MockSubmitReturnRequestParser
+    with MockSubmitReturnRequestService
     with MockCurrentDateTime
     with MockIdGenerator
     with MockAuditService {
@@ -54,72 +53,22 @@ class SubmitReturnControllerSpec
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
 
-    val mockedMetrics: Metrics = new MockMetrics
-
     val controller: SubmitReturnController = new SubmitReturnController(
-      authService = mockEnrolmentsAuthService,
-      requestParser = mockAmendSampleRequestParser,
-      mockAmendSampleService,
-      auditService = mockAuditService,
-      cc,
-      idGenerator = mockIdGenerator
+      mockEnrolmentsAuthService,
+      requestParser = mockSubmitReturnRequestParser,
+      service = mockSubmitReturnRequestService,
+      cc = cc,
+      idGenerator = mockIdGenerator,
       dateTime = mockCurrentDateTime,
-      mockedMetrics
+      appConfig = mockAppConfig
     )
 
     MockEnrolmentsAuthService.authoriseUser()
     MockCurrentDateTime.getCurrentDate.returns(date).anyNumberOfTimes()
     MockIdGenerator.getUid.returns(uid).once()
     MockIdGenerator.getUid.returns(correlationId).anyNumberOfTimes()
+    MockedAppConfig.apiGatewayContext.returns("baseUrl").anyNumberOfTimes()
   }
-
-  def event(auditResponse: AuditResponse): AuditEvent[AuditDetail] =
-    AuditEvent(
-      auditType = "AmendACustomEmployment",
-      transactionName = "amend-a-custom-employment",
-      detail = AuditDetail(
-        userType = "Individual",
-        agentReferenceNumber = None,
-        params = Map("vrn" -> vrn),
-        request = Some(requestBodyJson),
-        `X-CorrelationId` = correlationId,
-        response = auditResponse
-      )
-    )
-
-  private val requestBodyJson: JsValue = Json.parse(
-    """
-      |{
-      |   "periodKey": "#001",
-      |   "vatDueSales": 	7000.00,
-      |   "vatDueAcquisitions": 	3000.00,
-      |   "vatDueTotal": 	10000,
-      |   "vatReclaimedCurrPeriod": 	1000,
-      |   "vatDueNet": 	9000,
-      |   "totalValueSalesExVAT": 	1000,
-      |   "totalValuePurchasesExVAT": 	200,
-      |   "totalValueGoodsSuppliedExVAT": 	100,
-      |   "totalAllAcquisitionsExVAT": 	540,
-      |   "receivedAt":  "2020-05-05T12:01:00Z",
-      |   "uniqueId": "0123456789"
-      |}
-    """.stripMargin
-  )
-
-  val submitRequestBody: SubmitReturnRequestBody = SubmitReturnRequestBody(
-    periodKey = "#001",
-    vatDueSales = 7000.00,
-    vatDueAcquisitions = 3000,
-    totalVatDue = 10000,
-    vatReclaimedCurrPeriod = 1000,
-    netVatDue = 9000,
-    totalValueSalesExVAT = 1000,
-    totalValuePurchasesExVAT = 200,
-    totalValueGoodsSuppliedExVAT = 100,
-    totalAcquisitionsExVAT = 540,
-    receivedAt = "2020-05-05T12:01:00Z",
-    uniqueId = "0123456789"
-  )
 
   val submitRequestBodyJson: JsValue = Json.parse(
     """
@@ -148,14 +97,14 @@ class SubmitReturnControllerSpec
   val requestBody: SubmitReturnRequestBody = SubmitReturnRequestBody(
     periodKey = "#001",
     vatDueSales = 7000.00,
-    vatDueAcquisitions = 3000,
-    totalVatDue = 10000,
-    vatReclaimedCurrPeriod = 1000,
-    netVatDue = 9000,
-    totalValueSalesExVAT = 1000,
-    totalValuePurchasesExVAT = 200,
-    totalValueGoodsSuppliedExVAT = 100,
-    totalAcquisitionsExVAT = 540,
+    vatDueAcquisitions = 3000.00,
+    totalVatDue = 10000.00,
+    vatReclaimedCurrPeriod = 1000.00,
+    netVatDue = 9000.00,
+    totalValueSalesExVAT = 1000.00,
+    totalValuePurchasesExVAT = 200.00,
+    totalValueGoodsSuppliedExVAT = 100.00,
+    totalAcquisitionsExVAT = 540.00,
     receivedAt = "2020-05-05T12:01:00Z",
     uniqueId = "0123456789"
   )
@@ -163,15 +112,7 @@ class SubmitReturnControllerSpec
   val submitReturnRequest: SubmitReturnRequest =
     SubmitReturnRequest(
       vrn = Vrn(vrn),
-      SubmitReturnRequestBody
-    )
-
-  val submitReturnResponse: SubmitReturnResponse =
-    SubmitReturnResponse(
-      processingDate = DateTime.parse("2017-01-01T00:00:00.000Z"),
-      paymentIndicator = Some("DD"),
-      formBundleNumber = Some("123456789012"),
-      chargeRefNumber = Some("SKDJGFH9URGT")
+      body = requestBody
     )
 
   val submitReturnResponseJson: JsValue = Json.parse(
@@ -185,95 +126,22 @@ class SubmitReturnControllerSpec
       |""".stripMargin
   )
 
-  val hateoasResponse: JsValue = Json.parse(
-    s"""
-       |{
-       |   "links":[
-       |      {
-       |         "href":"/insolvent/vat-api/$vrn",
-       |         "rel":"submit-return",
-       |         "method":"POST"
-       |      },
-       |   ]
-       |}
-    """.stripMargin
-  )
-
   "submitReturn" when {
-    "a valid request is supplied" should {
-      "return the expected data on a successful service call" in new Test {
+    "return OK" should {
+      "happy path" in new Test {
 
-        MockAmendSampleRequestParser
+        MockSubmitReturnRequestParser
           .parse(submitRequestRawData)
           .returns(Right(submitReturnRequest))
 
-        MockAmendSampleService
-          .amendSample(submitReturnRequest)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, submitReturnResponse))))
+        MockSubmitReturnService
+          .submitReturn(submitReturnRequest)
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         private val result: Future[Result] = controller.submitReturn(vrn)(fakePostRequest(submitRequestBodyJson))
 
         status(result) shouldBe CREATED
-        contentAsJson(result) shouldBe submitReturnResponseJson
         header("X-CorrelationId", result) shouldBe Some(correlationId)
-        header("Receipt-Timestamp", result).getOrElse("No Header") should fullyMatch.regex(DateUtils.isoInstantDateRegex)
-
-        val auditResponse: AuditResponse = AuditResponse(CREATED, None, Some(submitReturnResponseJson))
-        MockedAuditService.verifyAuditEvent(event(auditResponse)).once
-      }
-    }
-
-    "submitted request is not obeying the RULE validations" should {
-      "return the errors" in new Test {
-
-        val submitRequestBodyJsonWithInvalidFinalisedFormat: JsValue = Json.parse(
-          """
-            |{
-            |   "periodKey": "#001",
-            |   "vatDueSales": 	7000.00,
-            |   "vatDueAcquisitions": 	3000.00,
-            |   "totalVatDue": 	4000,
-            |   "vatReclaimedCurrPeriod": 	1000,
-            |   "netVatDue": 	9000,
-            |   "totalValueSalesExVAT": 	1000,
-            |   "totalValuePurchasesExVAT": 	200,
-            |   "totalValueGoodsSuppliedExVAT": 	100,
-            |   "totalAllAcquisitionsExVAT": 	540,
-            |   "receivedAt":  "2020-05-05T12:01:00Z",
-            |   "uniqueId": "0123456789"
-            |}
-            |""".stripMargin
-        )
-
-        val expectedError: JsValue = Json.parse(
-          s"""
-             |{
-             |        "code" : "INVALID_REQUEST",
-             |        "message" : "Invalid request",
-             |        "errors" : [ {
-             |          "code" : "VAT_TOTAL_VALUE",
-             |          "message" : "totalVatDue should be equal to vatDueSales + vatDueAcquisitions",
-             |          "path" : "/totalVatDue"
-             |        }, {
-             |          "code" : "VAT_NET_VALUE",
-             |          "message" : "netVatDue should be the difference between the largest and the smallest values among totalVatDue and vatReclaimedCurrPeriod",
-             |          "path" : "/netVatDue"
-             |        } ]
-             |      }
-      """.stripMargin)
-
-        MockAmendSampleRequestParser
-          .parse(submitRequestRawData)
-          .returns(Left(ErrorWrapper(correlationId, BadRequestError)))
-
-        private val result: Future[Result] = controller.submitReturn(vrn)(fakePostRequest(submitRequestBodyJsonWithInvalidFinalisedFormat))
-
-        status(result) shouldBe BAD_REQUEST
-        contentAsJson(result) shouldBe expectedError
-        header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-        val auditResponse: AuditResponse = AuditResponse (OK, None, Some(hateoasResponse))
-        MockedAuditService.verifyAuditEvent(event(auditResponse)).once
       }
     }
 
@@ -282,7 +150,7 @@ class SubmitReturnControllerSpec
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
           s"a ${error.code} error is returned from the parser" in new Test {
 
-            MockAmendSampleRequestParser
+            MockSubmitReturnRequestParser
               .parse(submitRequestRawData)
               .returns(Left(ErrorWrapper(correlationId, error, None)))
 
@@ -291,9 +159,6 @@ class SubmitReturnControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(error.code))), None)
-            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
@@ -309,12 +174,12 @@ class SubmitReturnControllerSpec
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
           s"a ${mtdError.code} error is returned from the service" in new Test {
 
-            MockAmendSampleRequestParser
+            MockSubmitReturnRequestParser
               .parse(submitRequestRawData)
               .returns(Right(submitReturnRequest))
 
-            MockAmendSampleService
-              .amendSample(submitReturnRequest)
+            MockSubmitReturnService
+              .submitReturn(submitReturnRequest)
               .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
             val result: Future[Result] = controller.submitReturn(vrn)(fakePostRequest(submitRequestBodyJson))
@@ -322,22 +187,17 @@ class SubmitReturnControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
-            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
         val input = Seq(
-          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
-          (VrnFormatErrorDes, BAD_REQUEST),
-          (BadRequestError, BAD_REQUEST),
           (VrnFormatError, BAD_REQUEST),
-          (PeriodKeyFormatErrorDes, BAD_REQUEST),
           (PeriodKeyFormatError, BAD_REQUEST),
-          (FormatValueError, BAD_REQUEST),
-          (FormatUniqueIDError, BAD_REQUEST),
-          (PeriodKeyFormatErrorDes, BAD_REQUEST),
+          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
+          (ValueFormatError, BAD_REQUEST),
+          (UniqueIDFormatError, BAD_REQUEST),
+          (ReceivedAtFormatError, BAD_REQUEST),
+          (BadRequestError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )

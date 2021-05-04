@@ -33,18 +33,7 @@ class AuthISpec extends IntegrationBaseSpec {
     val json: JsValue = Json.parse(
       """
         |{
-        |   "periodKey": 1,
-        |   "vatDueSales": 	Invalid Json,
-        |   "vatDueAcquisitions": 	3000.00,
-        |   "totalVatDue": 	10000,
-        |   "vatReclaimedCurrPeriod": 	1000,
-        |   "netVatDue": 	9000,
-        |   "totalValueSalesExVAT": 	1000,
-        |   "totalValuePurchasesExVAT": 	200,
-        |   "totalValueGoodsSuppliedExVAT": 	100000,
-        |   "totalAcquisitionsExVAT": 	540,
-        |   "receivedAt":  "2020-05-05T12:01:00Z",
-        |   "uniqueId": "0123456789"
+        |  "data": "someData"
         |}
       """.stripMargin
     )

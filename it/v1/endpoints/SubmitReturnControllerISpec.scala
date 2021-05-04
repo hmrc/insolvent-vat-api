@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.WSRequest
+import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub}
@@ -29,28 +29,19 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
     val vrn = "123456789"
+    val periodKey: String = "#001"
 
-    val desResponseJson: JsValue = Json.parse(
-      """
-        |{
-        |    "processingDate": "2018-03-01T11:43:43.195Z",
-        |    "paymentIndicator": "BANK",
-        |    "formBundleNumber": "891713832155"
-        |    "chargeRefNumber" = "aCxFaNx0FZsCvyWF"
-        |}
-    """.stripMargin
+    val desResponse: JsValue = Json.parse(
+      s"""
+         |{
+         |  "processingDate": "2017-10-18T00:01:00Z",
+         |  "formBundleNumber": "123456789012",
+         |  "paymentIndicator": "DD",
+         |  "chargeRefNumber": "SKDJGFH9URGT"
+         |}
+         |""".stripMargin
     )
 
-    val mtdResponseJson: JsValue = Json.parse(
-      """
-        |{
-        |	"processingDate": "2018-03-01T11:43:43.195Z",
-        |	"paymentIndicator": "BANK",
-        |	"formBundleNumber": "891713832155"
-        | "chargeRefNumber" = "aCxFaNx0FZsCvyWF"
-        |}
-    """.stripMargin
-    )
 
     val requestJson: JsValue = Json.parse(
       s"""
@@ -77,8 +68,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
     def request(): WSRequest = {
       setupStubs()
-
-      buildRequest(s"/sample/$vrn")
+      buildRequest(uri)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
@@ -92,53 +82,64 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
   }
 
-  "Submit VAT Return endpoint" when {
-    "return a 201 status code with expected body" should {
+  val mtdResponse: JsValue = Json.parse(
+    s"""
+       |{
+       |   "links":[
+       |      {
+       |         "href":"/insolvent-vat-api/vrn",
+       |         "method":"POST",
+       |         "rel":"submit-return"
+       |      }
+       |   ]
+       |}
+    """.stripMargin
+  )
+
+  "Submit Insolvent-Vat submitReturn endpoint" when {
+    "return a 200 status code with expected body" should {
       "a valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
-          DesStub.onSuccess(DesStub.POST, desUrl, OK, desResponseJson)
+          DesStub.onSuccess(DesStub.POST, desUrl, OK, desResponse)
         }
 
-        private val response = await(request.post(requestJson))
-        response.status shouldBe CREATED
-        response.json shouldBe mtdResponseJson
+        val response: WSResponse = await(request().post(requestJson))
+        response.status shouldBe OK
+        response.json shouldBe mtdResponse
         response.header("Content-Type") shouldBe Some("application/json")
       }
     }
 
-    "return a 400 status code with VRN_INVALID" should {
-      "a request is made with invalid vrn and body" in new Test {
+    "return error according to spec" when {
 
-        override val vrn = "123456789a"
-        val submitRequestBodyJsonWithInvalidFinalisedFormat: String =
-          """
-            |{
-            |   "periodKey": 1,
-            |   "vatDueSales": 	Invalid Json,
-            |   "vatDueAcquisitions": 	3000.00,
-            |   "totalVatDue": 	10000,
-            |   "vatReclaimedCurrPeriod": 	1000,
-            |   "netVatDue": 	9000,
-            |   "totalValueSalesExVAT": 	1000,
-            |   "totalValuePurchasesExVAT": 	200,
-            |   "totalValueGoodsSuppliedExVAT": 	100000,
-            |   "totalAcquisitionsExVAT": 	540,
-            |   "receivedAt":  "2020-05-05T12:01:00Z",
-            |   "uniqueId": "0123456789"
-            |}
-            |""".stripMargin
+      def validationErrorTest(requestVrn: String,
+                              requestPeriodKey: String,
+                              expectedStatus: Int,
+                              expectedBody: MtdError): Unit = {
+        s"validation fails with ${expectedBody.code} error" in new Test {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
+          override val vrn: String = requestVrn
+          override val periodKey: String = requestPeriodKey
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+          }
+
+          val response: WSResponse = await(request().post(requestJson))
+          response.status shouldBe expectedStatus
+          response.json shouldBe Json.toJson(expectedBody)
+          response.header("Content-Type") shouldBe Some("application/json")
         }
-
-        private val response = await(request.post(submitRequestBodyJsonWithInvalidFinalisedFormat))
-        response.status shouldBe BAD_REQUEST
-        response.json shouldBe Json.toJson(VrnFormatError)
       }
+
+      val input = Seq(
+        ("badVrn", "AA11", BAD_REQUEST, VrnFormatError)
+      )
+
+      input.foreach(args => (validationErrorTest _).tupled(args))
     }
 
     "des service error" when {
@@ -150,21 +151,19 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
             DesStub.onError(DesStub.POST, desUrl, desStatus, errorBody(desCode))
           }
 
-          private val response = await(request.post(requestJson))
+          val response: WSResponse = await(request().post(requestJson))
           response.status shouldBe expectedStatus
           response.json shouldBe Json.toJson(expectedBody)
-          response.header("Content-Type") shouldBe Some("application/json")
         }
       }
-
       val input = Seq(
-        (BAD_REQUEST, "INVALID_VRN", BAD_REQUEST, VrnFormatErrorDes),
-        (BAD_REQUEST, "INVALID_PERIODKEY", BAD_REQUEST, PeriodKeyFormatErrorDes),
-        (BAD_REQUEST, "INVALID_PAYLOAD", BAD_REQUEST, BadRequestError),
-        (FORBIDDEN, "TAX_PERIOD_NOT_ENDED", FORBIDDEN, TaxPeriodNotEnded),
-        (CONFLICT, "DUPLICATE_SUBMISSION", FORBIDDEN, DuplicateVatSubmission),
+        (BAD_REQUEST, "INVALID_VRN", BAD_REQUEST, VrnFormatError),
+        (BAD_REQUEST, "INVALID_PERIODKEY", BAD_REQUEST, PeriodKeyFormatError),
+        (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, DownstreamError),
+        (FORBIDDEN, "TAX_PERIOD_NOT_ENDED", INTERNAL_SERVER_ERROR, DownstreamError),
+        (CONFLICT, "DUPLICATE_SUBMISSION", INTERNAL_SERVER_ERROR, DownstreamError),
         (FORBIDDEN, "NOT_FOUND_VRN", INTERNAL_SERVER_ERROR, DownstreamError),
-        (FORBIDDEN, "INSOLVENT_TRADER", FORBIDDEN, RuleInsolventTraderError),
+        (FORBIDDEN, "INSOLVENT_TRADER", INTERNAL_SERVER_ERROR, DownstreamError),
         (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
         (BAD_REQUEST, "INVALID_ORIGINATOR_ID", INTERNAL_SERVER_ERROR, DownstreamError),
         (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),

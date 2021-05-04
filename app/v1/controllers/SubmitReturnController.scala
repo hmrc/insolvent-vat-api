@@ -23,14 +23,11 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils._
-import v1.controllers.requestParsers.AmendSampleRequestParser
+import v1.controllers.requestParsers.SubmitReturnRequestParser
 import v1.hateoas.AmendHateoasBodies
-import v1.models.audit.{AuditEvent, AuditDetail, AuditResponse}
 import v1.models.errors._
-import v1.models.request._
+import v1.models.request.SubmitReturnRawData
 import v1.services._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,12 +35,12 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
                                        appConfig: AppConfig,
-                                       requestParser: AmendSampleRequestParser,
-                                       service: AmendSampleService,
-                                       auditService: AuditService,
+                                       requestParser: SubmitReturnRequestParser,
+                                       service: SubmitReturnService,
                                        idGenerator: IdGenerator,
                                        dateTime: CurrentDateTime,
-                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
+                                       cc: ControllerComponents)
+                                      (implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {
 
   implicit val endpointLogContext: EndpointLogContext = EndpointLogContext(
@@ -54,36 +51,29 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
   def submitReturn(vrn: String): Action[JsValue] =
     authorisedAction(vrn).async(parse.json) { implicit request =>
 
-      implicit val correlationId: String = idGenerator.getUid
+      implicit val correlationId: String = idGenerator.generateCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"Submitting Vat Return for VRN : $vrn with correlationId : $correlationId")
 
-      val rawRequest: SubmitReturnRawData = SubmitReturnRawData(
+      val rawData: SubmitReturnRawData = SubmitReturnRawData(
         vrn,
         AnyContentAsJson(request.body)
       )
 
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawRequest))
-          serviceResponse <- EitherT(service.amendSample(parsedRequest))
+          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          serviceResponse <- EitherT(service.submitReturn(parsedRequest))
         } yield {
 
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          auditSubmission(
-            AuditDetail(
-              request.userDetails, Map("vrn" -> vrn), Some(request.body), serviceResponse.correlationId,
-              AuditResponse(httpStatus = OK, response = Right(Some(amendSampleHateoasBody(appConfig, vrn))))
-            )
-          )
-
-          Ok(amendSampleHateoasBody(appConfig, vrn))
-          .withApiHeaders(serviceResponse.correlationId)
-          .as(MimeTypes.JSON)
-          }
+          Created
+            .withApiHeaders(serviceResponse.correlationId)
+            .as(MimeTypes.JSON)
+        }
 
     result.leftMap { errorWrapper =>
       val resCorrelationId = errorWrapper.correlationId
@@ -92,31 +82,17 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
         s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
           s"Error response received with CorrelationId: $resCorrelationId")
 
-      auditSubmission(
-        AuditDetail(
-          request.userDetails, Map("vrn" -> vrn), Some(request.body),
-          resCorrelationId, AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))        )
-      )
-
       result
     }.merge
   }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case VrnFormatError | VrnFormatErrorDes | BadRequestError |
-           PeriodKeyFormatError | PeriodKeyFormatErrorDes | BodyPeriodKeyFormatError |
-           RuleIncorrectOrEmptyBodyError | FormatUniqueIDError => BadRequest(Json.toJson(errorWrapper))
-      case TaxPeriodNotEnded | DuplicateVatSubmission | RuleInsolventTraderError => Forbidden(Json.toJson(errorWrapper))
+      case VrnFormatError | PeriodKeyFormatError | RuleIncorrectOrEmptyBodyError | ValueFormatError |
+           UniqueIDFormatError | ReceivedAtFormatError => BadRequest(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case _: MtdError => BadRequest(Json.toJson(errorWrapper))
     }
-  }
-
-  private def auditSubmission(details: AuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
-    val event = AuditEvent("SubmitReturn", "submit-return", details)
-    auditService.auditEvent(event)
   }
 }

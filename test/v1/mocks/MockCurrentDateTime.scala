@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package v1.models.audit
+package v1.mocks
 
-import play.api.libs.json.{JsValue, Json, OWrites}
+import org.joda.time.DateTime
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
+import utils.CurrentDateTime
 
-case class AuditResponse(httpStatus: Int, errors: Option[Seq[AuditError]], body: Option[JsValue])
 
-object AuditResponse {
-  implicit val writes: OWrites[AuditResponse] = Json.writes[AuditResponse]
+trait MockCurrentDateTime extends MockFactory {
 
-  def apply(httpStatus: Int, response: Either[Seq[AuditError], Option[JsValue]]): AuditResponse =
-    response match {
-      case Right(body) => AuditResponse(httpStatus, None, body)
-      case Left(errs)  => AuditResponse(httpStatus, Some(errs), None)
-    }
+  val mockCurrentDateTime: CurrentDateTime = mock[CurrentDateTime]
+
+  object MockCurrentDateTime {
+    def getCurrentDate: CallHandler[DateTime] = (mockCurrentDateTime.getDateTime _).expects()
+  }
 }

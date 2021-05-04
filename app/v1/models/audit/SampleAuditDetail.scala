@@ -27,4 +27,3 @@ case class SampleAuditDetail(userType: String,
 object SampleAuditDetail {
   implicit val writes: OWrites[SampleAuditDetail] = Json.writes[SampleAuditDetail]
 }
-

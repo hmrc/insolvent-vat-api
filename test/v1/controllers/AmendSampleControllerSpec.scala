@@ -81,7 +81,7 @@ class AmendSampleControllerSpec
 
     MockEnrolmentsAuthService.authoriseUser()
     MockedAppConfig.apiGatewayContext.returns("organisations/insolvent/vat").anyNumberOfTimes()
-    MockIdGenerator.generateCorrelationId.returns(correlationId)
+    MockIdGenerator.getUid.returns(correlationId)
   }
 
   val responseBody: JsValue = Json.parse(

@@ -74,11 +74,11 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
           auditSubmission(createAuditDetails(
-              rawData = rawData,
-              statusCode = OK,
-              correlationId = serviceResponse.correlationId,
-              userDetails = request.userDetails
-            ))
+            rawData = rawData,
+            statusCode = OK,
+            correlationId = serviceResponse.correlationId,
+            userDetails = request.userDetails
+          ))
 
           Ok(amendSampleHateoasBody(appConfig, vrn))
             .withApiHeaders(serviceResponse.correlationId)
@@ -93,12 +93,12 @@ class AmendSampleController @Inject()(val authService: EnrolmentsAuthService,
             s"Error response received with CorrelationId: $resCorrelationId")
 
         auditSubmission(createAuditDetails(
-            rawData = rawData,
-            statusCode = result.header.status,
-            correlationId = resCorrelationId,
-            userDetails = request.userDetails,
-            errorWrapper = Some(errorWrapper)
-          ))
+          rawData = rawData,
+          statusCode = result.header.status,
+          correlationId = resCorrelationId,
+          userDetails = request.userDetails,
+          errorWrapper = Some(errorWrapper)
+        ))
 
         result
       }.merge
