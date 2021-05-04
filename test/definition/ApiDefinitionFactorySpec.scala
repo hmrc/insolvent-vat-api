@@ -38,9 +38,17 @@ class ApiDefinitionFactorySpec extends UnitSpec {
         MockedAppConfig.apiStatus returns "BETA"
         MockedAppConfig.endpointsEnabled returns true
 
+        private val writeScope = "write:insolvent-vat"
+
         apiDefinitionFactory.definition shouldBe
           Definition(
-            scopes = Seq(),
+            scopes = Seq(
+              Scope(
+                key = writeScope,
+                name = "Change your VAT information",
+                description = "Allow write access to VAT data"
+              )
+            ),
             api = APIDefinition(
               name = "Insolvent VAT (MTD)",
               description = "An API for providing VAT data for insolvent traders",

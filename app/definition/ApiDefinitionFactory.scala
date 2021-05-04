@@ -24,11 +24,18 @@ import play.api.Logger
 @Singleton
 class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
 
+  private val writeScope = "write:insolvent-vat"
   private val logger: Logger = Logger(this.getClass)
 
   lazy val definition: Definition =
     Definition(
-      scopes = Seq(),
+      scopes = Seq(
+        Scope(
+          key = writeScope,
+          name = "Change your Insolvent VAT information",
+          description = "Allow write access to Insolvent VAT data"
+        )
+      ),
       api = APIDefinition(
         name = "Insolvent VAT (MTD)",
         description = "An API for providing VAT data for insolvent traders",
