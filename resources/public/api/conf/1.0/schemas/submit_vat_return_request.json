@@ -49,10 +49,10 @@
       "$ref": "#/definitions/monetaryPosNegZeroDec13"
     },
     "receivedAt": {
-      "description": "The date & time the return was received. UTC timezone",
+      "description": "The date & time the return was received. UTC timezone. It must be provided in the format YYYY-MM-DDThh:mm:ssZ",
       "type": "string",
       "format": "date-time",
-      "example": "2020-05-05T12:01:00Z"
+      "example": "2021-06-05T14:00:00Z"
     },
     "uniqueId": {
       "description": "A unique scan reference ID must be provided for an externally scanned submission.",
