@@ -58,9 +58,7 @@ class SubmitReturnControllerSpec
       requestParser = mockSubmitReturnRequestParser,
       service = mockSubmitReturnRequestService,
       cc = cc,
-      idGenerator = mockIdGenerator,
-      dateTime = mockCurrentDateTime,
-      appConfig = mockAppConfig
+      idGenerator = mockIdGenerator
     )
 
     MockEnrolmentsAuthService.authoriseUser()

@@ -17,8 +17,6 @@
 package v1.controllers
 
 import cats.data.EitherT
-import config.AppConfig
-
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
@@ -34,11 +32,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
-                                       appConfig: AppConfig,
                                        requestParser: SubmitReturnRequestParser,
                                        service: SubmitReturnService,
                                        idGenerator: IdGenerator,
-                                       dateTime: CurrentDateTime,
                                        cc: ControllerComponents)
                                       (implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {

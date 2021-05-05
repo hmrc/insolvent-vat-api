@@ -42,7 +42,6 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
          |""".stripMargin
     )
 
-
     val requestJson: JsValue = Json.parse(
       s"""
          |{
@@ -82,22 +81,8 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
   }
 
-  val mtdResponse: JsValue = Json.parse(
-    s"""
-       |{
-       |   "links":[
-       |      {
-       |         "href":"/insolvent-vat-api/vrn",
-       |         "method":"POST",
-       |         "rel":"submit-return"
-       |      }
-       |   ]
-       |}
-    """.stripMargin
-  )
-
   "Submit Insolvent-Vat submitReturn endpoint" when {
-    "return a 200 status code with expected body" should {
+    "return a 201 status code with expected body" should {
       "a valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
@@ -108,7 +93,6 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().post(requestJson))
         response.status shouldBe CREATED
- //       response.json shouldBe mtdResponse
         response.header("Content-Type") shouldBe Some("application/json")
       }
     }
