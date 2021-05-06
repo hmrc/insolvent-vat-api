@@ -16,16 +16,13 @@
 
 package v1.controllers
 
-import mocks.MockAppConfig
-import org.joda.time.DateTime
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
 import uk.gov.hmrc.domain.Vrn
 import uk.gov.hmrc.http.HeaderCarrier
-import utils._
 import v1.mocks.requestParsers.MockSubmitReturnRequestParser
-import v1.mocks.{MockCurrentDateTime, MockIdGenerator}
-import v1.mocks.services.{MockSubmitReturnRequestService, _}
+import v1.mocks.MockIdGenerator
+import v1.mocks.services.{MockSubmitReturnService, _}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest, SubmitReturnRequestBody}
@@ -36,19 +33,12 @@ import scala.concurrent.Future
 class SubmitReturnControllerSpec
   extends ControllerBaseSpec
     with MockEnrolmentsAuthService
-    with MockAppConfig
     with MockSubmitReturnRequestParser
-    with MockSubmitReturnRequestService
-    with MockCurrentDateTime
-    with MockIdGenerator
-    with MockAuditService {
+    with MockSubmitReturnService
+    with MockIdGenerator {
 
-  val date: DateTime = DateTime.parse("2017-01-01T00:00:00.000Z")
-  val fmt: String = DateUtils.dateTimePattern
   val vrn: String = "123456789"
   val correlationId: String = "X-ID"
-  val uid: String = "a5894863-9cd7-4d0d-9eee-301ae79cbae6"
-  val periodKey: String = "A1A2"
 
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
@@ -56,35 +46,32 @@ class SubmitReturnControllerSpec
     val controller: SubmitReturnController = new SubmitReturnController(
       mockEnrolmentsAuthService,
       requestParser = mockSubmitReturnRequestParser,
-      service = mockSubmitReturnRequestService,
+      service = mockSubmitReturnService,
       cc = cc,
       idGenerator = mockIdGenerator
     )
 
     MockEnrolmentsAuthService.authoriseUser()
-    MockCurrentDateTime.getCurrentDate.returns(date).anyNumberOfTimes()
-    MockIdGenerator.getUid.returns(uid).once()
     MockIdGenerator.getUid.returns(correlationId).anyNumberOfTimes()
-    MockedAppConfig.apiGatewayContext.returns("baseUrl").anyNumberOfTimes()
   }
 
   val submitRequestBodyJson: JsValue = Json.parse(
     """
       |{
       |   "periodKey": "#001",
-      |   "vatDueSales": 	7000.00,
-      |   "vatDueAcquisitions": 	3000.00,
-      |   "vatDueTotal": 	10000,
-      |   "vatReclaimedCurrPeriod": 	1000,
-      |   "vatDueNet": 	9000,
-      |   "totalValueSalesExVAT": 	1000,
-      |   "totalValuePurchasesExVAT": 	200,
-      |   "totalValueGoodsSuppliedExVAT": 	100,
-      |   "totalAllAcquisitionsExVAT": 	540,
-      |   "receivedAt":  "2020-05-05T12:01:00Z",
+      |   "vatDueSales": 7000.00,
+      |   "vatDueAcquisitions": 3000.00,
+      |   "vatDueTotal": 10000,
+      |   "vatReclaimedCurrPeriod": 1000,
+      |   "vatDueNet": 9000,
+      |   "totalValueSalesExVAT": 1000,
+      |   "totalValuePurchasesExVAT": 200,
+      |   "totalValueGoodsSuppliedExVAT": 100,
+      |   "totalAllAcquisitionsExVAT": 540,
+      |   "receivedAt": "2020-05-05T12:01:00Z",
       |   "uniqueId": "0123456789"
       |}
-      |""".stripMargin
+    """.stripMargin
   )
 
   val submitRequestRawData: SubmitReturnRawData = SubmitReturnRawData(
@@ -107,25 +94,13 @@ class SubmitReturnControllerSpec
     uniqueId = "0123456789"
   )
 
-  val submitReturnRequest: SubmitReturnRequest =
-    SubmitReturnRequest(
-      vrn = Vrn(vrn),
-      body = requestBody
-    )
-
-  val submitReturnResponseJson: JsValue = Json.parse(
-    """
-      |{
-      |   "processingDate": "2017-01-01T00:00:00.000Z",
-      |   "formBundleNumber": "123456789012",
-      |   "paymentIndicator": "DD",
-      |   "chargeRefNumber": "SKDJGFH9URGT"
-      |}
-      |""".stripMargin
+  val submitReturnRequest: SubmitReturnRequest = SubmitReturnRequest(
+    vrn = Vrn(vrn),
+    body = requestBody
   )
 
   "submitReturn" when {
-    "return OK" should {
+    "return CREATED" should {
       "happy path" in new Test {
 
         MockSubmitReturnRequestParser
@@ -162,7 +137,12 @@ class SubmitReturnControllerSpec
 
         val input = Seq(
           (VrnFormatError, BAD_REQUEST),
-          (PeriodKeyFormatError, BAD_REQUEST),
+          (ValueFormatError, BAD_REQUEST),
+          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
+          (UniqueIDFormatError, BAD_REQUEST),
+          (ReceivedAtFormatError, BAD_REQUEST),
+          (BadRequestError, BAD_REQUEST),
+          (PeriodKeyFormatError, BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
@@ -191,12 +171,6 @@ class SubmitReturnControllerSpec
         val input = Seq(
           (VrnFormatError, BAD_REQUEST),
           (PeriodKeyFormatError, BAD_REQUEST),
-          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
-          (ValueFormatError, BAD_REQUEST),
-          (UniqueIDFormatError, BAD_REQUEST),
-          (ReceivedAtFormatError, BAD_REQUEST),
-          (BadRequestError, BAD_REQUEST),
-          (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 

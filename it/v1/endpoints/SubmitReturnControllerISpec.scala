@@ -19,7 +19,7 @@ package v1.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
@@ -28,37 +28,37 @@ import v1.stubs.{AuditStub, AuthStub, DesStub}
 class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val vrn = "123456789"
-    val periodKey: String = "#001"
+    val vrn: String = "123456789"
 
     val desResponse: JsValue = Json.parse(
-      s"""
-         |{
-         |  "processingDate": "2017-10-18T00:01:00Z",
-         |  "formBundleNumber": "123456789012",
-         |  "paymentIndicator": "DD",
-         |  "chargeRefNumber": "SKDJGFH9URGT"
-         |}
-         |""".stripMargin
+      """
+        |{
+        |  "processingDate": "2017-10-18T00:01:00Z",
+        |  "formBundleNumber": "123456789012",
+        |  "paymentIndicator": "DD",
+        |  "chargeRefNumber": "SKDJGFH9URGT"
+        |}
+      """.stripMargin
     )
 
     val requestJson: JsValue = Json.parse(
-      s"""
-         |{
-         |        "periodKey" : "18A1",
-         |        "vatDueSales" : 1000,
-         |        "vatDueAcquisitions" : -1000,
-         |        "totalVatDue" : 0,
-         |        "vatReclaimedCurrPeriod" : 100,
-         |        "netVatDue" : 100,
-         |        "totalValueSalesExVAT" : 5000,
-         |        "totalValuePurchasesExVAT" : 1000,
-         |        "totalValueGoodsSuppliedExVAT" : 9999999999999,
-         |        "totalAcquisitionsExVAT" : 9999999999999,
-         |        "receivedAt":  "2020-05-05T12:01:00Z",
-         |        "uniqueId": "0123456789"
-         |}
-    """.stripMargin)
+      """
+        |{
+        |  "periodKey": "18A1",
+        |  "vatDueSales": 105.50,
+        |  "vatDueAcquisitions": -100.45,
+        |  "totalVatDue": 5.05,
+        |  "vatReclaimedCurrPeriod": 105.15,
+        |  "netVatDue": 100.10,
+        |  "totalValueSalesExVAT": 300,
+        |  "totalValuePurchasesExVAT": 300,
+        |  "totalValueGoodsSuppliedExVAT": 3000,
+        |  "totalAcquisitionsExVAT": 3000,
+        |  "receivedAt": "2020-05-05T12:01:00Z",
+        |  "uniqueId": "0123456789"
+        |}
+      """.stripMargin
+    )
 
     def uri: String = s"/$vrn/returns"
     def desUrl: String = s"/enterprise/return/vat/$vrn"
@@ -73,15 +73,15 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
     def errorBody(code: String): String =
     s"""
-       |      {
-       |        "code": "$code",
-       |        "reason": "des message"
-       |      }
+       |{
+       |   "code": "$code",
+       |   "reason": "des message"
+       |}
     """.stripMargin
 
   }
 
-  "Submit Insolvent-Vat submitReturn endpoint" when {
+  "Calling the Insolvent Submit VAT Return endpoint" when {
     "return a 201 status code with expected body" should {
       "a valid request is made" in new Test {
 
@@ -99,14 +99,184 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
 
-      def validationErrorTest(requestVrn: String,
-                              requestPeriodKey: String,
-                              expectedStatus: Int,
-                              expectedBody: MtdError): Unit = {
-        s"validation fails with ${expectedBody.code} error" in new Test {
+      val validRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "18A1",
+          |  "vatDueSales": 105.50,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000,
+          |  "receivedAt": "2020-05-05T12:01:00Z",
+          |  "uniqueId": "0123456789"
+          |}
+        """.stripMargin
+      )
+
+      val invalidPeriodKeyRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "period",
+          |  "vatDueSales": 105.50,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000,
+          |  "receivedAt": "2020-05-05T12:01:00Z",
+          |  "uniqueId": "0123456789"
+          |}
+        """.stripMargin
+      )
+
+      val invalidReceivedAtRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "18A1",
+          |  "vatDueSales": 105.50,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000,
+          |  "receivedAt": "datetime",
+          |  "uniqueId": "0123456789"
+          |}
+        """.stripMargin
+      )
+
+      val invalidUniqueIdRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "18A1",
+          |  "vatDueSales": 105.50,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000,
+          |  "receivedAt": "2020-05-05T12:01:00Z",
+          |  "uniqueId": "0123456789123"
+          |}
+        """.stripMargin
+      )
+
+      val invalidVatDueSalesRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "18A1",
+          |  "vatDueSales": 105.505,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000,
+          |  "receivedAt": "2020-05-05T12:01:00Z",
+          |  "uniqueId": "0123456789"
+          |}
+        """.stripMargin
+      )
+
+      val allInvalidValueRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": "period",
+          |  "vatDueSales": 105.505,
+          |  "vatDueAcquisitions": -100.453,
+          |  "totalVatDue": 5.052,
+          |  "vatReclaimedCurrPeriod": 105.154,
+          |  "netVatDue": 100.102,
+          |  "totalValueSalesExVAT": 300.99,
+          |  "totalValuePurchasesExVAT": 300.99,
+          |  "totalValueGoodsSuppliedExVAT": 3000.99,
+          |  "totalAcquisitionsExVAT": 3000.99,
+          |  "receivedAt": "time",
+          |  "uniqueId": "0123456789123"
+          |}
+        """.stripMargin
+      )
+
+      val nonValidRequestBodyJson: JsValue = Json.parse(
+        """
+          |{
+          |  "periodKey": true,
+          |  "vatDueSales": 105.50,
+          |  "vatDueAcquisitions": -100.45,
+          |  "totalVatDue": 5.05,
+          |  "vatReclaimedCurrPeriod": 105.15,
+          |  "netVatDue": 100.10,
+          |  "totalValueSalesExVAT": 300,
+          |  "totalValuePurchasesExVAT": 300,
+          |  "totalValueGoodsSuppliedExVAT": 3000,
+          |  "totalAcquisitionsExVAT": 3000
+          |}
+        """.stripMargin
+      )
+
+      val emptyRequestBodyJson: JsValue = JsObject.empty
+
+      val valueFormatError: MtdError = ValueFormatError.copy(
+        message = "The field should be between -9999999999999.99 and 9999999999999.99",
+        paths = Some(Seq("/vatDueSales"))
+      )
+
+      val allInvalidValueErrors: Seq[MtdError] = Seq(
+        ReceivedAtFormatError,
+        ValueFormatError.copy(
+          paths = Some(List(
+            "/vatDueSales",
+            "/vatDueAcquisitions",
+            "/totalVatDue",
+            "/vatReclaimedCurrPeriod"
+          )),
+          message = "The field should be between -9999999999999.99 and 9999999999999.99"
+        ),
+        UniqueIDFormatError,
+        ValueFormatError.copy(
+          paths = Some(List(
+            "/totalValueSalesExVAT",
+            "/totalValuePurchasesExVAT",
+            "/totalValueGoodsSuppliedExVAT",
+            "/totalAcquisitionsExVAT"
+          )),
+          message = "The field should be between -9999999999999 and 9999999999999"
+        ),
+        ValueFormatError.copy(
+          paths = Some(List(
+            "/netVatDue"
+          )),
+          message = "The field should be between 0.00 and 99999999999.99"
+        ),
+        PeriodKeyFormatError
+      )
+
+      val nonValidRequestBodyErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
+        paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey"))
+      )
+
+      def validationErrorTest(requestVrn: String, requestBody: JsValue, expectedStatus: Int,
+                              expectedBody: ErrorWrapper, scenario: Option[String]): Unit = {
+        s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new Test {
 
           override val vrn: String = requestVrn
-          override val periodKey: String = requestPeriodKey
+          override val requestJson: JsValue = requestBody
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -120,7 +290,14 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
       }
 
       val input = Seq(
-        ("badVrn", "AA11", BAD_REQUEST, VrnFormatError)
+        ("badVrn", validRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", VrnFormatError, None),None),
+        ("123456789", invalidPeriodKeyRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", PeriodKeyFormatError, None),None),
+        ("123456789", invalidReceivedAtRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", ReceivedAtFormatError, None),None),
+        ("123456789", invalidUniqueIdRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", UniqueIDFormatError, None),None),
+        ("123456789", emptyRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", RuleIncorrectOrEmptyBodyError),None),
+        ("123456789", invalidVatDueSalesRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", valueFormatError),None),
+        ("123456789", allInvalidValueRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", BadRequestError, Some(allInvalidValueErrors)),None),
+        ("123456789", nonValidRequestBodyJson, BAD_REQUEST, ErrorWrapper("X-123", nonValidRequestBodyErrors), Some("invalid request body format and missing mandatory fields"))
       )
 
       input.foreach(args => (validationErrorTest _).tupled(args))

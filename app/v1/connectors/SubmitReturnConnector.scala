@@ -18,7 +18,6 @@ package v1.connectors
 
 import config.AppConfig
 import controllers.Assets.OK
-
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.models.request.SubmitReturnRequest

@@ -27,14 +27,14 @@ import v1.services.SubmitReturnService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockSubmitReturnRequestService extends MockFactory {
+trait MockSubmitReturnService extends MockFactory {
 
-  val mockSubmitReturnRequestService: SubmitReturnService = mock[SubmitReturnService]
+  val mockSubmitReturnService: SubmitReturnService = mock[SubmitReturnService]
 
   object MockSubmitReturnService {
 
     def submitReturn(request: SubmitReturnRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
-      (mockSubmitReturnRequestService
+      (mockSubmitReturnService
         .submitReturn(_: SubmitReturnRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
         .expects(request, *, *, *, *)
     }

@@ -23,7 +23,6 @@ import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
 import utils._
 import v1.controllers.requestParsers.SubmitReturnRequestParser
-import v1.hateoas.AmendHateoasBodies
 import v1.models.errors._
 import v1.models.request.SubmitReturnRawData
 import v1.services._
@@ -37,7 +36,7 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
                                        idGenerator: IdGenerator,
                                        cc: ControllerComponents)
                                       (implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {
+  extends AuthorisedController(cc) with BaseController with Logging {
 
   implicit val endpointLogContext: EndpointLogContext = EndpointLogContext(
     controllerName = "SubmitReturnController",
@@ -84,11 +83,11 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case VrnFormatError | PeriodKeyFormatError | RuleIncorrectOrEmptyBodyError | ValueFormatError |
+      case BadRequestError | VrnFormatError| PeriodKeyFormatError |
+           MtdErrorWithCustomMessage(RuleIncorrectOrEmptyBodyError.code) |
+           MtdErrorWithCustomMessage(ValueFormatError.code)|
            UniqueIDFormatError | ReceivedAtFormatError => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case _: MtdError => BadRequest(Json.toJson(errorWrapper))
     }
   }
 }
