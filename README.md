@@ -1,6 +1,6 @@
 insolvent-vat-api
 ========================
-**Add overview documentation here and use the title of the API and not the URL e.g. "Business details API" and not "business-details-api"**
+The Insolvent VAT API enables Third Party suppliers to submit scanned copies of VAT Returns of insolvent companies.
 
 ## Requirements 
 - Scala 2.12.x
@@ -10,9 +10,9 @@ insolvent-vat-api
  
 ## Development Setup
   
-Run from the console using: `sbt run` (starts on port 7676 by default)
+Run from the console using: `sbt run` (starts on port 9676 by default)
   
-Start the service manager profile: `sm --start MTDFB_INSOLVENT_VAT`
+Start the service manager profile: `sm --start MTDFB_VAT`
 
 # Running tests
 ```
@@ -22,15 +22,15 @@ sbt it:test
 
 ## Viewing RAML
 
-To view documentation locally ensure the **add api name** API is running, and run api-documentation-frontend:
+To view documentation locally ensure the Insolvent VAT API is running, and run api-documentation-frontend:
 `./run_local_with_dependencies.sh`
 
 Then go to http://localhost:9680/api-documentation/docs/api/preview and use this port and version:
-`http://localhost:XXXX/api/conf/1.0/application.raml`
+`http://localhost:9676/api/conf/1.0/application.raml`
 
 ## Reporting Issues
 
-You can create a GitHub issue [here](**https://github.com/hmrc/insolvent-vat-api/issues**)
+You can create a GitHub issue [here](https://github.com/hmrc/insolvent-vat-api/issues)
 
 
 ## API Reference / Documentation 
