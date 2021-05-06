@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package v1.mocks
+package v1.mocks.requestParsers
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import utils.IdGenerator
+import v1.controllers.requestParsers.SubmitReturnRequestParser
+import v1.models.errors.ErrorWrapper
+import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest}
 
-trait MockIdGenerator extends MockFactory {
+trait MockSubmitReturnRequestParser extends MockFactory {
 
-  val mockIdGenerator: IdGenerator = mock[IdGenerator]
+  val mockSubmitReturnRequestParser: SubmitReturnRequestParser = mock[SubmitReturnRequestParser]
 
-  object MockIdGenerator {
-    def getUid: CallHandler[String] = (mockIdGenerator.generateCorrelationId _).expects()
+  object MockSubmitReturnRequestParser{
+
+    def parse(rawData: SubmitReturnRawData): CallHandler[Either[ErrorWrapper, SubmitReturnRequest]] = {
+      (mockSubmitReturnRequestParser.parseRequest(_: SubmitReturnRawData)(_: String)).expects(rawData, *)
+    }
   }
+
 }
