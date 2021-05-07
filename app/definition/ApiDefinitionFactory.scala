@@ -44,7 +44,7 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         versions = Seq(
           APIVersion(
             version = VERSION_1,
-            access = buildAllowListAccess(),
+            access = Some(Access("PRIVATE")),
             status = buildAPIStatus(VERSION_1),
             endpointsEnabled = appConfig.endpointsEnabled(VERSION_1)
           )
@@ -59,10 +59,5 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         logger.error(s"[ApiDefinition][buildApiStatus] no API Status found in config.  Reverting to Alpha")
         APIStatus.ALPHA
       }
-  }
-
-  private[definition] def buildAllowListAccess(): Option[Access] = {
-    val featureSwitch = FeatureSwitch(appConfig.featureSwitch)
-    if (featureSwitch.isAllowListEnabled) Some(Access("PRIVATE", featureSwitch.allowListApplicationIds)) else None
   }
 }

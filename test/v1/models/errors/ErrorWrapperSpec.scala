@@ -20,7 +20,6 @@ import play.api.libs.json.Json
 import support.UnitSpec
 
 class ErrorWrapperSpec extends UnitSpec {
-
   val correlationId: String = "X-123"
 
   "Rendering a error response with one error" should {

@@ -22,23 +22,6 @@ case class FeatureSwitch(value: Option[Configuration]) {
 
   private val versionRegex = """(\d)\.\d""".r
 
-  def isAllowListEnabled: Boolean = {
-    value match {
-      case Some(config) => config.getOptional[Boolean]("allow-list.enabled").getOrElse(false)
-      case None         => false
-    }
-  }
-
-  def allowListApplicationIds: Seq[String] = {
-    value match {
-      case Some(config) =>
-        config
-          .getOptional[Seq[String]]("allow-list.applicationIds")
-          .getOrElse(throw new RuntimeException(s"feature-switch.allow-list.applicationIds is not configured"))
-      case None => Seq()
-    }
-  }
-
   def isVersionEnabled(version: String): Boolean = {
     val versionNoIfPresent: Option[String] =
       version match {

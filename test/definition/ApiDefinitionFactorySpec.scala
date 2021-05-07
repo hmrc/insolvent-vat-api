@@ -16,11 +16,9 @@
 
 package definition
 
-import com.typesafe.config.ConfigFactory
 import definition.APIStatus.{ALPHA, BETA}
 import definition.Versions.VERSION_1
 import mocks.MockAppConfig
-import play.api.Configuration
 import support.UnitSpec
 import v1.mocks.MockHttpClient
 
@@ -34,7 +32,6 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
-        MockedAppConfig.featureSwitch returns None
         MockedAppConfig.apiStatus returns "BETA"
         MockedAppConfig.endpointsEnabled returns true
 
@@ -45,8 +42,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
             scopes = Seq(
               Scope(
                 key = writeScope,
-                name = "Change your VAT information",
-                description = "Allow write access to VAT data"
+                name = "Change your Insolvent VAT information",
+                description = "Allow write access to Insolvent VAT data"
               )
             ),
             api = APIDefinition(
@@ -57,7 +54,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = VERSION_1,
-                  access = Some(Access("PRIVATE", allowListApplicationIds = Seq())),
+                  access = Some(Access("PRIVATE")),
                   status = BETA,
                   endpointsEnabled = true
                 )
@@ -84,37 +81,4 @@ class ApiDefinitionFactorySpec extends UnitSpec {
       }
     }
   }
-
-  "buildAllowListAccess" when {
-    "the 'featureSwitch' parameter is not present" should {
-      "return None" in new Test {
-        MockedAppConfig.featureSwitch returns None
-        apiDefinitionFactory.buildAllowListAccess() shouldBe None
-      }
-    }
-
-    "the 'featureSwitch' parameter is present and allow list is enabled" should {
-      "return the correct Access object" in new Test {
-
-        private val someString =
-          """
-            |{
-            |   allow-list.enabled = true
-            |   allow-list.applicationIds = ["anId"]
-            |}
-          """.stripMargin
-
-        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString(someString)))
-        apiDefinitionFactory.buildAllowListAccess() shouldBe Some(Access("PRIVATE", Seq("anId")))
-      }
-    }
-
-    "the 'featureSwitch' parameter is present and allow list is not enabled" should {
-      "return None" in new Test {
-        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString("""allow-list.enabled = false""")))
-        apiDefinitionFactory.buildAllowListAccess() shouldBe None
-      }
-    }
-  }
-
 }

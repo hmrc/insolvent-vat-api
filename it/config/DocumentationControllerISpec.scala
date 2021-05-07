@@ -44,9 +44,8 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     |		  	 "status": "BETA",
     |			   "endpointsEnabled": true,
     |        "access": {
-    |          "type": "PRIVATE",
-    |          "whitelistedApplicationIds": []
-    |          }
+    |          "type": "PRIVATE"
+    |        }
     |		   }
     |    ]
     |  }
