@@ -19,7 +19,7 @@ package definition
 import play.api.libs.json.{Format, Json, OFormat}
 import utils.enums.Enums
 
-case class Access(`type`: String, whitelistedApplicationIds: Seq[String])
+case class Access(`type`: String)
 
 object Access {
   implicit val formatAccess: OFormat[Access] = Json.format[Access]

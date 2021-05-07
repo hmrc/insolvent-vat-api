@@ -28,14 +28,9 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     |{
     |  "scopes": [
     |    {
-    |		   "key": "read:vat",
-    |		   "name": "View your VAT information",
-    |		   "description": "Allow read access to VAT data"
-    |	   },
-    |    {
-    |		   "key": "write:vat",
-    |		   "name": "Change your VAT information",
-    |		   "description": "Allow write access to VAT data"
+    |		   "key": "write:insolvent-vat",
+    |		   "name": "Change your Insolvent VAT information",
+    |		   "description": "Allow write access to Insolvent VAT data"
     |	   }
     |  ],
     |	 "api": {
@@ -47,7 +42,10 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     |      {
     |		  	 "version": "1.0",
     |		  	 "status": "BETA",
-    |			   "endpointsEnabled": true
+    |			   "endpointsEnabled": true,
+    |        "access": {
+    |          "type": "PRIVATE"
+    |        }
     |		   }
     |    ]
     |  }

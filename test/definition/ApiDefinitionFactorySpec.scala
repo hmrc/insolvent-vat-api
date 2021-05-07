@@ -16,11 +16,9 @@
 
 package definition
 
-import com.typesafe.config.ConfigFactory
 import definition.APIStatus.{ALPHA, BETA}
 import definition.Versions.VERSION_1
 import mocks.MockAppConfig
-import play.api.Configuration
 import support.UnitSpec
 import v1.mocks.MockHttpClient
 
@@ -34,25 +32,18 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
-        MockedAppConfig.featureSwitch returns None
         MockedAppConfig.apiStatus returns "BETA"
         MockedAppConfig.endpointsEnabled returns true
 
-        private val readScope = "read:vat"
-        private val writeScope = "write:vat"
+        private val writeScope = "write:insolvent-vat"
 
         apiDefinitionFactory.definition shouldBe
           Definition(
             scopes = Seq(
               Scope(
-                key = readScope,
-                name = "View your VAT information",
-                description = "Allow read access to VAT data"
-              ),
-              Scope(
                 key = writeScope,
-                name = "Change your VAT information",
-                description = "Allow write access to VAT data"
+                name = "Change your Insolvent VAT information",
+                description = "Allow write access to Insolvent VAT data"
               )
             ),
             api = APIDefinition(
@@ -63,7 +54,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = VERSION_1,
-                  access = None,
+                  access = Some(Access("PRIVATE")),
                   status = BETA,
                   endpointsEnabled = true
                 )
@@ -90,37 +81,4 @@ class ApiDefinitionFactorySpec extends UnitSpec {
       }
     }
   }
-
-  "buildWhiteListingAccess" when {
-    "the 'featureSwitch' parameter is not present" should {
-      "return None" in new Test {
-        MockedAppConfig.featureSwitch returns None
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe None
-      }
-    }
-
-    "the 'featureSwitch' parameter is present and white listing is enabled" should {
-      "return the correct Access object" in new Test {
-
-        private val someString =
-          """
-            |{
-            |   white-list.enabled = true
-            |   white-list.applicationIds = ["anId"]
-            |}
-          """.stripMargin
-
-        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString(someString)))
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe Some(Access("PRIVATE", Seq("anId")))
-      }
-    }
-
-    "the 'featureSwitch' parameter is present and white listing is not enabled" should {
-      "return None" in new Test {
-        MockedAppConfig.featureSwitch returns Some(Configuration(ConfigFactory.parseString("""white-list.enabled = false""")))
-        apiDefinitionFactory.buildWhiteListingAccess() shouldBe None
-      }
-    }
-  }
-
 }

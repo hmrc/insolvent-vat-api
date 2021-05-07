@@ -24,22 +24,16 @@ import play.api.Logger
 @Singleton
 class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
 
-  private val readScope = "read:vat"
-  private val writeScope = "write:vat"
+  private val writeScope = "write:insolvent-vat"
   private val logger: Logger = Logger(this.getClass)
 
   lazy val definition: Definition =
     Definition(
       scopes = Seq(
         Scope(
-          key = readScope,
-          name = "View your VAT information",
-          description = "Allow read access to VAT data"
-        ),
-        Scope(
           key = writeScope,
-          name = "Change your VAT information",
-          description = "Allow write access to VAT data"
+          name = "Change your Insolvent VAT information",
+          description = "Allow write access to Insolvent VAT data"
         )
       ),
       api = APIDefinition(
@@ -50,7 +44,7 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         versions = Seq(
           APIVersion(
             version = VERSION_1,
-            access = buildWhiteListingAccess(),
+            access = Some(Access("PRIVATE")),
             status = buildAPIStatus(VERSION_1),
             endpointsEnabled = appConfig.endpointsEnabled(VERSION_1)
           )
@@ -65,10 +59,5 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         logger.error(s"[ApiDefinition][buildApiStatus] no API Status found in config.  Reverting to Alpha")
         APIStatus.ALPHA
       }
-  }
-
-  private[definition] def buildWhiteListingAccess(): Option[Access] = {
-    val featureSwitch = FeatureSwitch(appConfig.featureSwitch)
-    if (featureSwitch.isWhiteListingEnabled) Some(Access("PRIVATE", featureSwitch.whiteListedApplicationIds)) else None
   }
 }
