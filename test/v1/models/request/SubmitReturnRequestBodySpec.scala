@@ -53,8 +53,8 @@ class SubmitReturnRequestBodySpec extends UnitSpec {
       |   "totalValuePurchasesExVAT": 999999999.00,
       |   "totalValueGoodsSuppliedExVAT": 999999999.00,
       |   "totalAllAcquisitionsExVAT": 999999999.00,
-      |   "uniqueID": "0123456789",
-      |   "receivedAt": "2020-05-05T12:01:00Z"
+      |   "receivedAt": "2020-05-05T12:01:00Z",
+      |   "uniqueID": "0123456789"
       |}
     """.stripMargin
   )
