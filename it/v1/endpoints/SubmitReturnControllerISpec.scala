@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub}
+import v1.stubs.DesStub
 
 class SubmitReturnControllerISpec extends IntegrationBaseSpec {
 
@@ -86,8 +86,6 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
       "a valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
           DesStub.onSuccess(DesStub.POST, desUrl, OK, desResponse)
         }
 
@@ -278,9 +276,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
           override val vrn: String = requestVrn
           override val requestJson: JsValue = requestBody
 
-          override def setupStubs(): StubMapping = {
-            AuditStub.audit()
-          }
+          override def setupStubs(): StubMapping = StubMapping.NOT_CONFIGURED
 
           val response: WSResponse = await(request().post(requestJson))
           response.status shouldBe expectedStatus
@@ -308,7 +304,6 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
         s"des returns an $desCode error and status $desStatus" in new Test {
 
           override def setupStubs(): StubMapping = {
-            AuditStub.audit()
             DesStub.onError(DesStub.POST, desUrl, desStatus, errorBody(desCode))
           }
 

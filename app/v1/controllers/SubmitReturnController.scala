@@ -17,10 +17,12 @@
 package v1.controllers
 
 import cats.data.EitherT
+
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import utils._
 import v1.controllers.requestParsers.SubmitReturnRequestParser
 import v1.models.errors._
@@ -30,13 +32,12 @@ import v1.services._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
-                                       requestParser: SubmitReturnRequestParser,
+class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestParser,
                                        service: SubmitReturnService,
                                        idGenerator: IdGenerator,
                                        cc: ControllerComponents)
                                       (implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+  extends BackendController(cc) with BaseController with Logging {
 
   implicit val endpointLogContext: EndpointLogContext = EndpointLogContext(
     controllerName = "SubmitReturnController",
@@ -44,7 +45,7 @@ class SubmitReturnController @Inject()(val authService: EnrolmentsAuthService,
   )
 
   def submitReturn(vrn: String): Action[JsValue] =
-    authorisedAction(vrn).async(parse.json) { implicit request =>
+    Action.async(parse.json) { implicit request =>
 
       implicit val correlationId: String = idGenerator.generateCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +

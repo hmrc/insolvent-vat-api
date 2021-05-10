@@ -32,7 +32,6 @@ import scala.concurrent.Future
 
 class SubmitReturnControllerSpec
   extends ControllerBaseSpec
-    with MockEnrolmentsAuthService
     with MockSubmitReturnRequestParser
     with MockSubmitReturnService
     with MockIdGenerator {
@@ -44,14 +43,12 @@ class SubmitReturnControllerSpec
     val hc: HeaderCarrier = HeaderCarrier()
 
     val controller: SubmitReturnController = new SubmitReturnController(
-      mockEnrolmentsAuthService,
       requestParser = mockSubmitReturnRequestParser,
       service = mockSubmitReturnService,
       cc = cc,
       idGenerator = mockIdGenerator
     )
 
-    MockEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.getUid.returns(correlationId).anyNumberOfTimes()
   }
 
