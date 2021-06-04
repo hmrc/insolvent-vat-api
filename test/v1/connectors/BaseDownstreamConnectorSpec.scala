@@ -55,6 +55,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer des-token",
       "User-Agent" -> "insolvent-vat-api",
       "CorrelationId" -> correlationId,
+      "OriginatorID" -> "SCAN",
       "Gov-Test-Scenario" -> "DEFAULT"
     )
 
@@ -70,6 +71,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           "Environment" -> "des-environment",
           "Authorization" -> s"Bearer des-token",
           "User-Agent" -> "insolvent-vat-api",
+          "OriginatorID" -> "SCAN",
           "CorrelationId" -> correlationId,
         )
 

@@ -36,6 +36,7 @@ trait BaseDownstreamConnector {
         Seq(
           "Authorization" -> s"Bearer ${appConfig.desToken}",
           "Environment" -> appConfig.desEnv,
+          "OriginatorID" -> "SCAN",
           "CorrelationId" -> correlationId
         ) ++
         // Other headers (i.e Gov-Test-Scenario, Content-Type)

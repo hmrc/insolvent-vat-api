@@ -55,11 +55,6 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
-    )
-
     MockAppConfig.desBaseUrl returns baseUrl
     MockAppConfig.desToken returns "des-token"
     MockAppConfig.desEnvironment returns "des-environment"
@@ -77,7 +72,7 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
             url = s"$baseUrl/enterprise/return/vat/$vrn",
             body = submitReturnRequest.body,
             config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = desRequestHeaders,
+            requiredHeaders = requiredDesHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 

@@ -24,8 +24,7 @@ object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.3.0",
     "org.typelevel" %% "cats-core"         % "2.6.1",
-    "com.chuusai"   %% "shapeless"         % "2.4.0-M1",
-    "com.typesafe.play" %% "play-json-joda"    % "2.7.3" // TODO: Please refactor utils.DateUtils to remove uses of JodaReads/Writes and remove this import.
+    "com.chuusai"   %% "shapeless"         % "2.4.0-M1"
   )
 
   def test(scope: String = "test, it"): Seq[sbt.ModuleID] = Seq(
