@@ -17,9 +17,9 @@
 package v1.controllers.requestParsers
 
 import support.UnitSpec
-import uk.gov.hmrc.domain.Vrn
 import v1.controllers.requestParsers.validators.Validator
-import v1.models.errors.{BadRequestError, ErrorWrapper, VrnFormatError, RuleIncorrectOrEmptyBodyError}
+import v1.models.domain.Vrn
+import v1.models.errors.{BadRequestError, ErrorWrapper, RuleIncorrectOrEmptyBodyError, VrnFormatError}
 import v1.models.request.RawData
 
 class RequestParserSpec extends UnitSpec {

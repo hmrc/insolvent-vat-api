@@ -17,8 +17,8 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Vrn
 import v1.mocks.MockHttpClient
+import v1.models.domain.Vrn
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRequest, SubmitReturnRequestBody}
 
@@ -55,10 +55,17 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockedAppConfig.desBaseUrl returns baseUrl
-    MockedAppConfig.desToken returns "des-token"
-    MockedAppConfig.desEnvironment returns "des-environment"
+    val desRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment" -> "des-environment",
+      "Authorization" -> s"Bearer des-token"
+    )
+
+    MockAppConfig.desBaseUrl returns baseUrl
+    MockAppConfig.desToken returns "des-token"
+    MockAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
   }
+
 
   "SubmitReturnConnector" when {
     "submitReturn" should {
@@ -68,8 +75,10 @@ class SubmitReturnConnectorSpec extends ConnectorSpec {
         MockedHttpClient
           .post(
             url = s"$baseUrl/enterprise/return/vat/$vrn",
-            body = submitReturnRequestBody,
-            requiredHeaders = requiredDesHeaders :_*
+            body = submitReturnRequest.body,
+            config = dummyDesHeaderCarrierConfig,
+            requiredHeaders = desRequestHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 
         await(connector.submitReturn(submitReturnRequest)) shouldBe outcome

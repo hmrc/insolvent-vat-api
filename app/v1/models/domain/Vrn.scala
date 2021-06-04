@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package v1.models.request
+package v1.models.domain
 
-import v1.models.domain.Vrn
-
-case class SubmitReturnRequest(vrn: Vrn, body: SubmitReturnRequestBody)
+case class Vrn(vrn: String) {
+  override def toString: String = vrn
+  val name = "vrn"
+  def value: String = vrn
+}
