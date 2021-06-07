@@ -19,8 +19,8 @@ package v1.controllers.requestParsers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import support.UnitSpec
-import uk.gov.hmrc.domain.Vrn
 import v1.mocks.validators.MockSubmitReturnValidator
+import v1.models.domain.Vrn
 import v1.models.errors._
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest, SubmitReturnRequestBody}
 

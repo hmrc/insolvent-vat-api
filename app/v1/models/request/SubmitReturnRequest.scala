@@ -16,6 +16,6 @@
 
 package v1.models.request
 
-import uk.gov.hmrc.domain.Vrn
+import v1.models.domain.Vrn
 
 case class SubmitReturnRequest(vrn: Vrn, body: SubmitReturnRequestBody)

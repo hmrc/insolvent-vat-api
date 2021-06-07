@@ -16,11 +16,10 @@
 
 package v1.controllers.requestParsers
 
-import uk.gov.hmrc.domain.Vrn
 import v1.controllers.requestParsers.validators.SubmitReturnValidator
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequest, SubmitReturnRequestBody}
-
 import javax.inject.Inject
+import v1.models.domain.Vrn
 
 class SubmitReturnRequestParser @Inject()(val validator: SubmitReturnValidator)
   extends RequestParser[SubmitReturnRawData, SubmitReturnRequest] {

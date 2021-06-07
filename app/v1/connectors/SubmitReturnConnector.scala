@@ -17,8 +17,8 @@
 package v1.connectors
 
 import config.AppConfig
-import controllers.Assets.OK
 import javax.inject.{Inject, Singleton}
+import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.models.request.SubmitReturnRequest
 
@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SubmitReturnConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDesConnector {
+                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def submitReturn(request: SubmitReturnRequest)(
     implicit hc: HeaderCarrier,

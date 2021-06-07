@@ -16,9 +16,10 @@
 
 package v1.services
 
-import uk.gov.hmrc.domain.Vrn
+
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockSubmitReturnConnector
+import v1.models.domain.Vrn
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.{SubmitReturnRequest, SubmitReturnRequestBody}
