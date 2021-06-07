@@ -43,10 +43,11 @@ trait ConnectorSpec extends UnitSpec
     )
 
   val requiredDesHeaders: Seq[(String, String)] = Seq(
-    "Authorization" -> s"Bearer des-token",
     "Environment" -> "des-environment",
+    "Authorization" -> s"Bearer des-token",
+    "User-Agent" -> "insolvent-vat-api",
     "OriginatorID" -> "SCAN",
-    "CorrelationId" -> s"$correlationId"
+    "CorrelationId" -> correlationId
   )
 
   val allowedDesHeaders: Seq[String] = Seq(
