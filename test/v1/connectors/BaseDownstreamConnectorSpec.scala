@@ -85,11 +85,13 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
                       excludedHeaders: Seq[(String, String)],
                       desEnvironmentHeaders: Option[Seq[String]]): Unit = {
 
+    val requiredHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
+
     "complete the request successfully with the required headers" when {
       "POST" in new Test(desEnvironmentHeaders) {
         implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         MockedHttpClient
-          .post(absoluteUrl, config, body, requiredHeaders, excludedHeaders)
+          .post(absoluteUrl, config, body, requiredHeadersPost, excludedHeaders)
           .returns(Future.successful(outcome))
 
         await(connector.post(body, DesUri[Result](url))) shouldBe outcome

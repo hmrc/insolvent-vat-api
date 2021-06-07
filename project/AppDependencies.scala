@@ -33,7 +33,7 @@ object AppDependencies {
     "org.scalacheck"         %% "scalacheck"         % "1.15.4"            % scope,
     "org.scalamock"          %% "scalamock"          % "5.1.0"             % scope,
     "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3"             % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"             % scope,
     "com.github.tomakehurst" % "wiremock-jre8"      % "2.27.2"            % scope
   )
 

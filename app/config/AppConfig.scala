@@ -28,6 +28,7 @@ trait AppConfig {
   def desToken: String
   def desEnvironmentHeaders: Option[Seq[String]]
 
+  // API Config
   def apiGatewayContext: String
   def apiStatus(version: String): String
   def featureSwitch: Option[Configuration]
@@ -36,6 +37,8 @@ trait AppConfig {
 
 @Singleton
 class AppConfigImpl @Inject()(config: ServicesConfig, configuration: Configuration) extends AppConfig {
+
+  // DES Config
   val desBaseUrl: String = config.baseUrl("des")
   val desEnv: String = config.getString("microservice.services.des.env")
   val desToken: String = config.getString("microservice.services.des.token")

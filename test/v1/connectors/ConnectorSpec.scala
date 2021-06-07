@@ -47,7 +47,8 @@ trait ConnectorSpec extends UnitSpec
     "Authorization" -> s"Bearer des-token",
     "User-Agent" -> "insolvent-vat-api",
     "OriginatorID" -> "SCAN",
-    "CorrelationId" -> correlationId
+    "CorrelationId" -> correlationId,
+    "Gov-Test-Scenario" -> "DEFAULT"
   )
 
   val allowedDesHeaders: Seq[String] = Seq(
@@ -59,6 +60,6 @@ trait ConnectorSpec extends UnitSpec
     "X-Session-Id"
   )
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 }
