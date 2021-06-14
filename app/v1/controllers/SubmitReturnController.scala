@@ -22,9 +22,12 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import utils._
 import v1.controllers.requestParsers.SubmitReturnRequestParser
+import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.errors._
 import v1.models.request.SubmitReturnRawData
 import v1.services._
@@ -34,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestParser,
                                        service: SubmitReturnService,
+                                       auditService: AuditService,
                                        idGenerator: IdGenerator,
                                        cc: ControllerComponents)
                                       (implicit ec: ExecutionContext)
@@ -66,6 +70,15 @@ class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestPar
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
+          auditSubmission(
+            GenericAuditDetail(
+              Map("vrn" -> vrn),
+              Some(request.body),
+              serviceResponse.correlationId,
+              AuditResponse(httpStatus = CREATED, response = Right(None))
+            )
+          )
+
           Created
             .withApiHeaders(serviceResponse.correlationId)
             .as(MimeTypes.JSON)
@@ -77,6 +90,15 @@ class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestPar
       logger.warn(
         s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
           s"Error response received with CorrelationId: $resCorrelationId")
+
+      auditSubmission(
+        GenericAuditDetail(
+          Map("vrn" -> vrn),
+          Some(request.body),
+          resCorrelationId,
+          AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
+        )
+      )
 
       result
     }.merge
@@ -90,5 +112,10 @@ class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestPar
            UniqueIDFormatError | ReceivedAtFormatError => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
+  }
+
+  private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+    val event = AuditEvent("createVATReturnForInsolventTrader", "CREATE-VAT-Return-For-Insolvent-Trader", details)
+    auditService.auditEvent(event)
   }
 }

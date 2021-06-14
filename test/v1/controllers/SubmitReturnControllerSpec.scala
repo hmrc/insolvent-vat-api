@@ -21,7 +21,8 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.requestParsers.MockSubmitReturnRequestParser
 import v1.mocks.MockIdGenerator
-import v1.mocks.services.MockSubmitReturnService
+import v1.mocks.services.{MockAuditService, MockSubmitReturnService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.domain.Vrn
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
@@ -34,6 +35,7 @@ class SubmitReturnControllerSpec
   extends ControllerBaseSpec
     with MockSubmitReturnRequestParser
     with MockSubmitReturnService
+    with MockAuditService
     with MockIdGenerator {
 
   val vrn: String = "123456789"
@@ -45,6 +47,7 @@ class SubmitReturnControllerSpec
     val controller: SubmitReturnController = new SubmitReturnController(
       requestParser = mockSubmitReturnRequestParser,
       service = mockSubmitReturnService,
+      auditService = mockAuditService,
       cc = cc,
       idGenerator = mockIdGenerator
     )
@@ -96,6 +99,18 @@ class SubmitReturnControllerSpec
     body = requestBody
   )
 
+  def event(auditResponse: AuditResponse): AuditEvent[GenericAuditDetail] =
+    AuditEvent(
+      auditType = "createVATReturnForInsolventTrader",
+      transactionName = "CREATE-VAT-Return-For-Insolvent-Trader",
+      detail = GenericAuditDetail(
+        params = Map("vrn" -> vrn),
+        detail = Some(submitRequestBodyJson),
+        `X-CorrelationId` = correlationId,
+        response = auditResponse
+      )
+    )
+
   "submitReturn" when {
     "return CREATED" should {
       "happy path" in new Test {
@@ -112,6 +127,9 @@ class SubmitReturnControllerSpec
 
         status(result) shouldBe CREATED
         header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+        val auditResponse: AuditResponse = AuditResponse(CREATED, None, None)
+        MockedAuditService.verifyAuditEvent(event(auditResponse)).once
       }
     }
 
@@ -129,6 +147,9 @@ class SubmitReturnControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(error.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
@@ -162,6 +183,9 @@ class SubmitReturnControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
