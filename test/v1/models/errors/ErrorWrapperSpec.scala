@@ -18,6 +18,7 @@ package v1.models.errors
 
 import play.api.libs.json.Json
 import support.UnitSpec
+import v1.models.audit.AuditError
 
 class ErrorWrapperSpec extends UnitSpec {
   val correlationId: String = "X-123"
@@ -87,6 +88,18 @@ class ErrorWrapperSpec extends UnitSpec {
 
     "generate the correct JSON" in {
       Json.toJson(error) shouldBe json
+    }
+  }
+
+  "auditErrors" should {
+    "map a single error to a single audit error" in {
+      val singleWrappedError = ErrorWrapper(correlationId, VrnFormatError, None)
+      singleWrappedError.auditErrors shouldBe Seq(AuditError(VrnFormatError.code))
+    }
+
+    "map multiple errors to a sequence of audit errors" in {
+      val singleWrappedError = ErrorWrapper(correlationId, BadRequestError, Some(Seq(VrnFormatError, PeriodKeyFormatError)))
+      singleWrappedError.auditErrors shouldBe Seq(AuditError(VrnFormatError.code), AuditError(PeriodKeyFormatError.code))
     }
   }
 
