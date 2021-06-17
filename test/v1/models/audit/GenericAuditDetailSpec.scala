@@ -30,7 +30,7 @@ class GenericAuditDetailSpec extends UnitSpec {
     s"""
       |{
       |    "vrn": "$vrn",
-      |    "detail": {
+      |    "request": {
       |      "periodKey": "18A1",
       |      "vatDueSales": 105.50,
       |      "vatDueAcquisitions": -100.45,
@@ -54,7 +54,7 @@ class GenericAuditDetailSpec extends UnitSpec {
 
   val auditDetailModelSuccess: GenericAuditDetail = GenericAuditDetail(
     params = Map("vrn" -> vrn),
-    detail = Some(Json.parse(
+    request = Some(Json.parse(
       """
         |{
         |  "periodKey": "18A1",
@@ -83,7 +83,7 @@ class GenericAuditDetailSpec extends UnitSpec {
     s"""
       |{
       |    "vrn": "$vrn",
-      |    "detail": {
+      |    "request": {
       |      "periodKey": "18A1",
       |      "vatDueSales": 105.50,
       |      "vatDueAcquisitions": -100.45,
@@ -112,7 +112,7 @@ class GenericAuditDetailSpec extends UnitSpec {
 
   val invalidTaxYearAuditDetailModel: GenericAuditDetail = GenericAuditDetail(
     params = Map("vrn" -> vrn),
-    detail = Some(Json.parse(
+    request = Some(Json.parse(
       """
         |{
         |  "periodKey": "18A1",

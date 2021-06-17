@@ -20,14 +20,14 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, JsValue, OWrites}
 
 case class GenericAuditDetail(params: Map[String, String],
-                              detail: Option[JsValue],
+                              request: Option[JsValue],
                               `X-CorrelationId`: String,
                               response: AuditResponse)
 
 object GenericAuditDetail {
   implicit val writes: OWrites[GenericAuditDetail] = (
       JsPath.write[Map[String, String]] and
-      (JsPath \ "detail").writeNullable[JsValue] and
+      (JsPath \ "request").writeNullable[JsValue] and
       (JsPath \ "X-CorrelationId").write[String] and
       (JsPath \ "response").write[AuditResponse]
     ) (unlift(GenericAuditDetail.unapply))

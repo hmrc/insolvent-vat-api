@@ -105,7 +105,7 @@ class SubmitReturnControllerSpec
       transactionName = "CREATE-VAT-Return-For-Insolvent-Trader",
       detail = GenericAuditDetail(
         params = Map("vrn" -> vrn),
-        detail = Some(submitRequestBodyJson),
+        request = Some(submitRequestBodyJson),
         `X-CorrelationId` = correlationId,
         response = auditResponse
       )
