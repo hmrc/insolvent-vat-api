@@ -16,7 +16,10 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations.{DateTimeFormatValidation, DecimalValueValidation, JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation}
+import v1.controllers.requestParsers.validators.validations.{
+  DateTimeFormatValidation, DecimalValueValidation,
+  JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation
+}
 import v1.models.errors.MtdError
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequestBody}
 
@@ -36,62 +39,55 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
     )
   }
 
-
-  //here
   private def bodyValueValidator: SubmitReturnRawData => List[List[MtdError]] = (data: SubmitReturnRawData) => {
     val requestBodyData = data.body.json.as[SubmitReturnRequestBody]
-
-    List(
-      Validator.flattenErrors(
-        List(
-          PeriodKeyValidation.validate(requestBodyData.periodKey),
-          DecimalValueValidation.validate(
-            amount = requestBodyData.vatDueSales,
-            path = "/vatDueSales",
-            minValue = -9999999999999.99
-          ),
-          DecimalValueValidation.validate(
-            amount = requestBodyData.vatDueAcquisitions,
-            path = "/vatDueAcquisitions",
-            minValue = -9999999999999.99
-          ),
-          DecimalValueValidation.validate(
-            amount = requestBodyData.totalVatDue,
-            path = "/totalVatDue",
-            minValue = -9999999999999.99
-          ),
-          DecimalValueValidation.validate(
-            amount = requestBodyData.vatReclaimedCurrPeriod,
-            path = "/vatReclaimedCurrPeriod",
-            minValue = -9999999999999.99
-          ),
-          DecimalValueValidation.validate(
-            amount = requestBodyData.netVatDue,
-            path = "/netVatDue",
-            maxValue = 99999999999.99,
-            message = ZERO_MINIMUM_INCLUSIVE
-          ),
-          NonDecimalValueValidation.validate(
-            amount = requestBodyData.totalValueSalesExVAT,
-            path = "/totalValueSalesExVAT"
-          ),
-          NonDecimalValueValidation.validate(
-            amount = requestBodyData.totalValuePurchasesExVAT,
-            path = "/totalValuePurchasesExVAT"
-          ),
-          NonDecimalValueValidation.validate(
-            amount = requestBodyData.totalValueGoodsSuppliedExVAT,
-            path = "/totalValueGoodsSuppliedExVAT"
-          ),
-          NonDecimalValueValidation.validate(
-            amount = requestBodyData.totalAcquisitionsExVAT,
-            path = "/totalAcquisitionsExVAT"
-          ),
-          DateTimeFormatValidation.validate(requestBodyData.receivedAt),
-          UniqueIDValidation.validate(requestBodyData.uniqueId)
-        )
-      )
-    )
+    List(Validator.flattenErrors(List(
+      PeriodKeyValidation.validate(requestBodyData.periodKey),
+      DecimalValueValidation.validate(
+        amount = requestBodyData.vatDueSales,
+        path = "/vatDueSales",
+        minValue = -9999999999999.99
+      ),
+      DecimalValueValidation.validate(
+        amount = requestBodyData.vatDueAcquisitions,
+        path = "/vatDueAcquisitions",
+        minValue = -9999999999999.99
+      ),
+      DecimalValueValidation.validate(
+        amount = requestBodyData.totalVatDue,
+        path = "/totalVatDue",
+        minValue = -9999999999999.99
+      ),
+      DecimalValueValidation.validate(
+        amount = requestBodyData.vatReclaimedCurrPeriod,
+        path = "/vatReclaimedCurrPeriod",
+        minValue = -9999999999999.99
+      ),
+      DecimalValueValidation.validate(
+        amount = requestBodyData.netVatDue,
+        path = "/netVatDue",
+        maxValue = 99999999999.99,
+        message = ZERO_MINIMUM_INCLUSIVE
+      ),
+      NonDecimalValueValidation.validate(
+        amount = requestBodyData.totalValueSalesExVAT,
+        path = "/totalValueSalesExVAT"
+      ),
+      NonDecimalValueValidation.validate(
+        amount = requestBodyData.totalValuePurchasesExVAT,
+        path = "/totalValuePurchasesExVAT"
+      ),
+      NonDecimalValueValidation.validate(
+        amount = requestBodyData.totalValueGoodsSuppliedExVAT,
+        path = "/totalValueGoodsSuppliedExVAT"
+      ),
+      NonDecimalValueValidation.validate(
+        amount = requestBodyData.totalAcquisitionsExVAT,
+        path = "/totalAcquisitionsExVAT"
+      ),
+      DateTimeFormatValidation.validate(requestBodyData.receivedAt),
+      UniqueIDValidation.validate(requestBodyData.uniqueId)
+    )))
   }
 
   override def validate(data: SubmitReturnRawData): List[MtdError] = {

@@ -38,9 +38,10 @@ object JsonFormatValidation {
       case (path: JsPath, _) => OtherFailure(path)
     }
 
+    val numberToDrop = 5
     val logString = failures.groupBy(_.getClass)
       .values.map(failure => s"${failure.head.failureReason}: " + s"${failure.map(_.fromJsPath)}")
-      .toString().dropRight(1).drop(5)
+      .toString().dropRight(1).drop(numberToDrop)
 
     val logger: Logger = Logger(this.getClass)
     logger.warn(s"[JsonFormatValidation][validate] - Request body failed validation with errors - $logString")

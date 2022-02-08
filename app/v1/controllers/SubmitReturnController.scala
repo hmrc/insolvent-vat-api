@@ -50,26 +50,21 @@ class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestPar
 
   def submitReturn(vrn: String): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
-
       implicit val correlationId: String = idGenerator.generateCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"Submitting Vat Return for VRN : $vrn with correlationId : $correlationId")
-
       val rawData: SubmitReturnRawData = SubmitReturnRawData(
         vrn,
         AnyContentAsJson(request.body)
       )
-
       val result =
         for {
           parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.submitReturn(parsedRequest))
         } yield {
-
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
-
           auditSubmission(
             GenericAuditDetail(
               Map("vrn" -> vrn),
@@ -78,37 +73,33 @@ class SubmitReturnController @Inject()(val requestParser: SubmitReturnRequestPar
               AuditResponse(httpStatus = CREATED, response = Right(None))
             )
           )
-
           Created
             .withApiHeaders(serviceResponse.correlationId)
             .as(MimeTypes.JSON)
         }
-
-    result.leftMap { errorWrapper =>
-      val resCorrelationId = errorWrapper.correlationId
-      val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
-      logger.warn(
-        s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-          s"Error response received with CorrelationId: $resCorrelationId")
-
-      auditSubmission(
-        GenericAuditDetail(
-          Map("vrn" -> vrn),
-          Some(request.body),
-          resCorrelationId,
-          AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
+      result.leftMap { errorWrapper =>
+        val resCorrelationId = errorWrapper.correlationId
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        logger.warn(
+          s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
+            s"Error response received with CorrelationId: $resCorrelationId")
+        auditSubmission(
+          GenericAuditDetail(
+            Map("vrn" -> vrn),
+            Some(request.body),
+            resCorrelationId,
+            AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
+          )
         )
-      )
-
-      result
-    }.merge
-  }
+        result
+      }.merge
+    }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case BadRequestError | VrnFormatError| PeriodKeyFormatError |
+      case BadRequestError | VrnFormatError | PeriodKeyFormatError |
            MtdErrorWithCustomMessage(RuleIncorrectOrEmptyBodyError.code) |
-           MtdErrorWithCustomMessage(ValueFormatError.code)|
+           MtdErrorWithCustomMessage(ValueFormatError.code) |
            UniqueIDFormatError | ReceivedAtFormatError => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
