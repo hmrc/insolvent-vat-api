@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
 
       "the submitted request body is not in the correct format and mandatory fields are missing" in {
         validator.validate(SubmitReturnRawData(validVrn, nonValidRawRequestBody)) shouldBe
-          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey"))))
+          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey").sorted)))
       }
     }
 
