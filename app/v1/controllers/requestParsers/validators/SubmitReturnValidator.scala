@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations.{DateTimeFormatValidation, DecimalValueValidation, JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation}
+import v1.controllers.requestParsers.validators.validations.{
+  DateTimeFormatValidation, DecimalValueValidation,
+  JsonFormatValidation, NonDecimalValueValidation, PeriodKeyValidation, UniqueIDValidation, ValueFormatErrorMessages, VrnValidation
+}
 import v1.models.errors.MtdError
 import v1.models.request.{SubmitReturnRawData, SubmitReturnRequestBody}
 
-class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFormatErrorMessages{
+class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFormatErrorMessages {
 
   private val validationSet = List(parameterFormatValidation, bodyFormatValidation, bodyValueValidator)
 
@@ -36,30 +39,29 @@ class SubmitReturnValidator extends Validator[SubmitReturnRawData] with ValueFor
     )
   }
 
-  private def bodyValueValidator: SubmitReturnRawData => List[List[MtdError]] = { data =>
+  private def bodyValueValidator: SubmitReturnRawData => List[List[MtdError]] = (data: SubmitReturnRawData) => {
     val requestBodyData = data.body.json.as[SubmitReturnRequestBody]
-
     List(Validator.flattenErrors(List(
       PeriodKeyValidation.validate(requestBodyData.periodKey),
       DecimalValueValidation.validate(
         amount = requestBodyData.vatDueSales,
         path = "/vatDueSales",
-        minValue = -9999999999999.99,
+        minValue = -9999999999999.99
       ),
       DecimalValueValidation.validate(
         amount = requestBodyData.vatDueAcquisitions,
         path = "/vatDueAcquisitions",
-        minValue = -9999999999999.99,
+        minValue = -9999999999999.99
       ),
       DecimalValueValidation.validate(
         amount = requestBodyData.totalVatDue,
         path = "/totalVatDue",
-        minValue = -9999999999999.99,
+        minValue = -9999999999999.99
       ),
       DecimalValueValidation.validate(
         amount = requestBodyData.vatReclaimedCurrPeriod,
         path = "/vatReclaimedCurrPeriod",
-        minValue = -9999999999999.99,
+        minValue = -9999999999999.99
       ),
       DecimalValueValidation.validate(
         amount = requestBodyData.netVatDue,

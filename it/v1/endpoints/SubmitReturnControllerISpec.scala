@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -267,7 +267,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
       )
 
       val nonValidRequestBodyErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
-        paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey"))
+        paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey").sorted)
       )
 
       def validationErrorTest(requestVrn: String, requestBody: JsValue, expectedStatus: Int,
