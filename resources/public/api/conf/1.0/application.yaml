@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  title: Insolvent VAT (MTD)
+  description: "When an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nYou can find the changelog in the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/wiki) GitHub wiki.\n* Raise non-technical or platform-related issues with the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).\n* Raise technical issues on the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/issues) GitHub page."
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://api.service.hmrc.gov.uk/
+  variables: {}
+paths:
+  /organisations/insolvent/vat/{vrn}/returns:
+    post:
+      tags:
+      - organisations
+      summary: Submit VAT Return for Insolvent Trader [test only]
+      description: This endpoint has been created specifically for submissions from an external scanning provider. This endpoint allows a developer to submit a VAT return for a period.  These submissions relate to VAT traders that are insolvent.
+      operationId: SubmitVATReturnforInsolventTrader[testonly]
+      parameters:
+      - name: vrn
+        in: path
+        description: VAT registration number. <br> A nine-digit number.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: '123456789'
+      - name: Gov-Test-Scenario
+        in: header
+        description: Only in sandbox environment. See Test Data table for all header values.
+        style: simple
+        schema:
+          type: string
+          example: '-'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/SubmitVATReturnforInsolventTraderRequest'
+              - example:
+                  periodKey: 18A1
+                  vatDueSales: 105.5
+                  vatDueAcquisitions: -100.45
+                  totalVatDue: 5.05
+                  vatReclaimedCurrPeriod: 105.15
+                  netVatDue: 100.1
+                  totalValueSalesExVAT: 300
+                  totalValuePurchasesExVAT: 300
+                  totalValueGoodsSuppliedExVAT: 3000
+                  totalAcquisitionsExVAT: 3000
+                  receivedAt: 2021-06-05T14:00:00Z
+                  uniqueId: '0123456789'
+            examples:
+              example-1:
+                description: VAT Return with decimals
+                value:
+                  periodKey: 18A1
+                  vatDueSales: 105.5
+                  vatDueAcquisitions: -100.45
+                  totalVatDue: 5.05
+                  vatReclaimedCurrPeriod: 105.15
+                  netVatDue: 100.1
+                  totalValueSalesExVAT: 300
+                  totalValuePurchasesExVAT: 300
+                  totalValueGoodsSuppliedExVAT: 3000
+                  totalAcquisitionsExVAT: 3000
+                  receivedAt: 2021-06-05T14:00:00Z
+                  uniqueId: '0123456789'
+              example-2:
+                description: VAT Return with a hash in the periodKey
+                value:
+                  periodKey: '#001'
+                  vatDueSales: 100
+                  vatDueAcquisitions: 100
+                  totalVatDue: 200
+                  vatReclaimedCurrPeriod: 100
+                  netVatDue: 100
+                  totalValueSalesExVAT: 500
+                  totalValuePurchasesExVAT: 500
+                  totalValueGoodsSuppliedExVAT: 500
+                  totalAcquisitionsExVAT: 500
+                  receivedAt: 2021-06-05T14:00:00Z
+                  uniqueId: '0112233445'
+        required: true
+      responses:
+        '201':
+          description: ''
+          headers:
+            X-CorrelationId:
+              description: Unique ID for operation tracking <br> String, 36 characters.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                    description: Unique ID for operation tracking <br> String, 36 characters.
+                    example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+                  example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+          content: {}
+        '400':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/errorResponse'
+                - example:
+                    code: FORMAT_VRN
+              examples:
+                formatVrn:
+                  description: The format of the supplied VRN field is not valid.
+                  value:
+                    code: FORMAT_VRN
+                formatPeriodKey:
+                  description: The format of the supplied period key is not valid. It must be a 4 character string.
+                  value:
+                    code: FORMAT_PERIOD_KEY
+                incorrectOrEmptyBody:
+                  description: An empty or non-matching body was submitted.
+                  value:
+                    code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
+                formatValue:
+                  description: One or more values have been added with the incorrect format.
+                  value:
+                    code: FORMAT_VALUE
+                formatUniqueId:
+                  description: The format of the Unique ID is invalid.
+                  value:
+                    code: FORMAT_UNIQUE_ID
+                formatReceivedAt:
+                  description: The format of Received At is invalid.
+                  value:
+                    code: FORMAT_RECEIVED_AT
+      deprecated: false
+components:
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+      - code
+      type: object
+      properties:
+        code:
+          type: string
+    SubmitVATReturnforInsolventTraderRequest:
+      title: SubmitVATReturnforInsolventTraderRequest
+      required:
+      - periodKey
+      - vatDueSales
+      - vatDueAcquisitions
+      - totalVatDue
+      - vatReclaimedCurrPeriod
+      - netVatDue
+      - totalValueSalesExVAT
+      - totalValuePurchasesExVAT
+      - totalValueGoodsSuppliedExVAT
+      - totalAcquisitionsExVAT
+      - receivedAt
+      - uniqueId
+      type: object
+      properties:
+        periodKey:
+          maxLength: 4
+          minLength: 4
+          pattern: (^[0-9]{2}[A-Z][A-Z0-9]$)|(^#[0-9]{3}$)|(^[0-9]{4}$)
+          type: string
+          description: 'The ID code for the period that this obligation belongs to. The format is a string of four alphanumeric characters. Occasionally the format includes the # symbol.'
+        vatDueSales:
+          multipleOf: 0.01
+          maximum: 9999999999999.99
+          minimum: -9999999999999.99
+          type: number
+          description: Defines a monetary value (to 2 decimal places), between -9,999,999,999,999.99 and 9,999,999,999,999.99
+          example: 1000.25
+        vatDueAcquisitions:
+          multipleOf: 0.01
+          maximum: 9999999999999.99
+          minimum: -9999999999999.99
+          type: number
+          description: Defines a monetary value (to 2 decimal places), between -9,999,999,999,999.99 and 9,999,999,999,999.99
+          example: 1000.25
+        totalVatDue:
+          multipleOf: 0.01
+          maximum: 9999999999999.99
+          minimum: -9999999999999.99
+          type: number
+          description: Defines a monetary value (to 2 decimal places), between -9,999,999,999,999.99 and 9,999,999,999,999.99
+          example: 1000.25
+        vatReclaimedCurrPeriod:
+          multipleOf: 0.01
+          maximum: 9999999999999.99
+          minimum: -9999999999999.99
+          type: number
+          description: Defines a monetary value (to 2 decimal places), between -9,999,999,999,999.99 and 9,999,999,999,999.99
+          example: 1000.25
+        netVatDue:
+          multipleOf: 0.01
+          maximum: 99999999999.99
+          minimum: 0
+          type: number
+          description: Defines a monetary value (to 2 decimal places), between 0 and 99,999,999,999.99
+          example: 1000.25
+        totalValueSalesExVAT:
+          multipleOf: 1
+          maximum: 9999999999999
+          minimum: -9999999999999
+          type: number
+          description: Defines a monetary value (to 2 zeroed decimal places), between -9,999,999,999,999.00 and 9,999,999,999,999.00
+          example: 1000
+        totalValuePurchasesExVAT:
+          multipleOf: 1
+          maximum: 9999999999999
+          minimum: -9999999999999
+          type: number
+          description: Defines a monetary value (to 2 zeroed decimal places), between -9,999,999,999,999.00 and 9,999,999,999,999.00
+          example: 1000
+        totalValueGoodsSuppliedExVAT:
+          multipleOf: 1
+          maximum: 9999999999999
+          minimum: -9999999999999
+          type: number
+          description: Defines a monetary value (to 2 zeroed decimal places), between -9,999,999,999,999.00 and 9,999,999,999,999.00
+          example: 1000
+        totalAcquisitionsExVAT:
+          multipleOf: 1
+          maximum: 9999999999999
+          minimum: -9999999999999
+          type: number
+          description: Defines a monetary value (to 2 zeroed decimal places), between -9,999,999,999,999.00 and 9,999,999,999,999.00
+          example: 1000
+        receivedAt:
+          type: string
+          description: The date & time the return was received. UTC timezone. It must be provided in the format YYYY-MM-DDThh:mm:ssZ
+          format: date-time
+          example: 2021-06-05T14:00:00Z
+        uniqueId:
+          pattern: ^[A-Za-z0-9\-,.&'\/()!]{1,10}$
+          type: string
+          description: A unique scan reference ID must be provided for an externally scanned submission.
+          example: '0123456789'
+      description: Submit VAT Return for Insolvent Trader Request
+tags:
+- name: organisations
+  description: ''
