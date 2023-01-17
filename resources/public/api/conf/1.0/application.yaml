@@ -52,8 +52,7 @@ paths:
                   receivedAt: 2021-06-05T14:00:00Z
                   uniqueId: '0123456789'
             examples:
-              example-1:
-                description: VAT Return with decimals
+              VAT Return with decimals:
                 value:
                   periodKey: 18A1
                   vatDueSales: 105.5
@@ -67,8 +66,7 @@ paths:
                   totalAcquisitionsExVAT: 3000
                   receivedAt: 2021-06-05T14:00:00Z
                   uniqueId: '0123456789'
-              example-2:
-                description: VAT Return with a hash in the periodKey
+              VAT Return with a hash in the periodKey:
                 value:
                   periodKey: '#001'
                   vatDueSales: 100
