@@ -1,2 +1,0 @@
-GET        /api/definition                                  config.DocumentationController.definition()
-GET        /api/conf/:version/*file                         config.DocumentationController.raml(version, file)
