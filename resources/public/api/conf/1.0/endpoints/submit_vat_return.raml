@@ -1,0 +1,31 @@
+is:
+  - headers.acceptJson
+  - headers.contentTypeJson
+  - headers.testScenarioHeader
+  - errors.formatVrn
+  - errors.formatPeriodKey
+  - errors.incorrectOrEmptyBody
+  - errors.formatValue
+  - errors.formatUniqueId
+  - errors.formatReceivedAt
+displayName: Submit VAT Return for Insolvent Trader [test only]
+description: This endpoint has been created specifically for submissions from an external scanning provider. This endpoint allows a developer to submit a VAT return for a period.  These submissions relate to VAT traders that are insolvent.
+(annotations.sandboxData): !include ../scenarios/common.md
+(annotations.scope): "write:insolvent-vat"
+securedBy: [ sec.oauth_2_0: { scopes: [ "write:insolvent-vat" ] } ]
+body:
+  application/json:
+    type: !include ../schemas/submit_vat_return_request.json
+    examples:
+      example-1:
+        description: VAT Return with decimals
+        value: !include ../examples/submit_vat_return_request.json
+      example-2:
+        description: VAT Return with a hash in the periodKey
+        value: !include ../examples/submit_vat_return_request_hash.json
+responses:
+  201:
+    headers:
+      X-CorrelationId:
+        example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+        description: Unique ID for operation tracking <br> String, 36 characters.

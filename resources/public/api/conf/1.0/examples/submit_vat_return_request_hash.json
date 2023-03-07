@@ -1,0 +1,14 @@
+{
+  "periodKey": "#001",
+  "vatDueSales": 100.00,
+  "vatDueAcquisitions": 100.00,
+  "totalVatDue": 200.00,
+  "vatReclaimedCurrPeriod": 100.00,
+  "netVatDue": 100.00,
+  "totalValueSalesExVAT": 500,
+  "totalValuePurchasesExVAT": 500,
+  "totalValueGoodsSuppliedExVAT": 500,
+  "totalAcquisitionsExVAT": 500,
+  "receivedAt": "2021-06-05T14:00:00Z",
+  "uniqueId": "0112233445"
+}
