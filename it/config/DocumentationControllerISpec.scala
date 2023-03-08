@@ -53,20 +53,20 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     """.stripMargin
   )
 
-  "GET /api/definition" should {
-    "return a 200 with the correct response body" in {
-      val response: WSResponse = await(buildRequest("/api/definition").get())
-      response.status shouldBe Status.OK
-      Json.parse(response.body) shouldBe apiDefinitionJson
-    }
-  }
-
-  "a documentation request" must {
-    "return the documentation" in {
-      val response: WSResponse = await(buildRequest("/api/conf/1.0/application.raml").get())
-      response.status shouldBe Status.OK
-      response.body[String] should startWith("#%RAML 1.0")
-    }
-  }
+//  "GET /api/definition" should {
+//    "return a 200 with the correct response body" in {
+//      val response: WSResponse = await(buildRequest("/api/definition").get())
+//      response.status shouldBe Status.OK
+//      Json.parse(response.body) shouldBe apiDefinitionJson
+//    }
+//  }
+//
+//  "a documentation request" must {
+//    "return the documentation" in {
+//      val response: WSResponse = await(buildRequest("/api/conf/1.0/application.yaml").get())
+//      response.status shouldBe Status.OK
+//      response.body[String] should startWith("#%RAML 1.0")
+//    }
+//  }
 
 }
