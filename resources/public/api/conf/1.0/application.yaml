@@ -5,8 +5,10 @@ info:
   contact: {}
   version: '1.0'
 servers:
-- url: https://api.service.hmrc.gov.uk/
-  variables: {}
+  - url: https://test-api.service.hmrc.gov.uk/organisations/insolvent/vat
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk/organisations/insolvent/vat
+    description: Production
 paths:
   /organisations/insolvent/vat/{vrn}/returns:
     post:
