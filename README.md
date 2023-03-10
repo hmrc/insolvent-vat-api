@@ -1,6 +1,6 @@
 insolvent-vat-api
 ========================
-The Insolvent VAT API enables Third Party suppliers to submit scanned copies of VAT Returns of insolvent companies.
+The Insolvent VAT API enables Third Party suppliers to submit scanned copies of VAT Returns of insolvent companies. 
 
 ## Requirements 
 - Scala 2.12.x
