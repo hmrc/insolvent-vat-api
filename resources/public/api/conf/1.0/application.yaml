@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Insolvent VAT (MTD)
-  description: "When an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nYou can find the changelog in the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/wiki) GitHub wiki.\n* Raise non-technical or platform-related issues with the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).\n* Raise technical issues on the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/issues) GitHub page."
+  description: ""
   contact: {}
   version: '1.0'
 servers:
