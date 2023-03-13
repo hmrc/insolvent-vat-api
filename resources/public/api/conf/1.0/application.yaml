@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Insolvent VAT (MTD)
-  description: ""
+  description: "When an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nYou can find the changelog in the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/wiki) GitHub wiki.\n* Raise non-technical or platform-related issues with the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).\n* Raise technical issues on the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/issues) GitHub page."
   contact: {}
   version: '1.0'
 servers:
@@ -54,7 +54,8 @@ paths:
                   receivedAt: 2021-06-05T14:00:00Z
                   uniqueId: '0123456789'
             examples:
-              VAT Return with decimals:
+              example-1:
+                description: VAT Return with decimals
                 value:
                   periodKey: 18A1
                   vatDueSales: 105.5
@@ -68,7 +69,8 @@ paths:
                   totalAcquisitionsExVAT: 3000
                   receivedAt: 2021-06-05T14:00:00Z
                   uniqueId: '0123456789'
-              VAT Return with a hash in the periodKey:
+              example-2:
+                description: VAT Return with a hash in the periodKey
                 value:
                   periodKey: '#001'
                   vatDueSales: 100
