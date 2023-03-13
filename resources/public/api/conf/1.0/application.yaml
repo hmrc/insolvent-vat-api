@@ -152,6 +152,8 @@ paths:
                   description: The format of Received At is invalid.
                   value:
                     code: FORMAT_RECEIVED_AT
+      security:
+        - applicationRestricted: []
       deprecated: false
 components:
   schemas:
@@ -260,6 +262,28 @@ components:
           description: A unique scan reference ID must be provided for an externally scanned submission.
           example: '0123456789'
       description: Submit VAT Return for Insolvent Trader Request
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            hello: access hello user
+    applicationRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating application restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints for details.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          scopes: { }
 tags:
 - name: organisations
   description: ''
