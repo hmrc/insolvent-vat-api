@@ -1,1 +1,0 @@
-You can find the changelog in the [insolvent-vat-api](https://github.com/hmrc/insolvent-vat-api/wiki) GitHub wiki.

@@ -1,1 +1,0 @@
-This API enables Third Party suppliers to submit scanned copies of VAT Returns of insolvent companies.
