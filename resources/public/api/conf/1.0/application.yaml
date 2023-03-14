@@ -153,8 +153,7 @@ paths:
                   value:
                     code: FORMAT_RECEIVED_AT
       security:
-        - userRestricted:
-            - write
+        - userRestricted: [ write:insolvent-vat ]
       deprecated: false
 components:
   schemas:
@@ -274,8 +273,7 @@ components:
           authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
           refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
-          scopes:
-            write: write:insolvent-vat
+          scopes: {write:insolvent-vat}
     applicationRestricted:
       type: oauth2
       description: |
