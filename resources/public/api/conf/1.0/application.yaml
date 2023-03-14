@@ -283,7 +283,7 @@ components:
       flows:
         clientCredentials:
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
-          scopes: { }
+          scopes: { "write:insolvent-vat" }
 tags:
 - name: organisations
   description: ''
