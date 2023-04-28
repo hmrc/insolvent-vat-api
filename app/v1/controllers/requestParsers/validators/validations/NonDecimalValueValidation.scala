@@ -30,7 +30,7 @@ object NonDecimalValueValidation extends ValueFormatErrorMessages {
     val amountScaleIsCorrect = amount.scale <= maxScale
     val amountIsInRange = amount >= minValue && amount <= maxValue
 
-    if (amountScaleIsCorrect && amountIsInRange && amount.isWhole()) NoValidationErrors else List(
+    if (amountScaleIsCorrect && amountIsInRange && amount.isWhole) NoValidationErrors else List(
       ValueFormatError.copy(
         message = message,
         paths = Some(Seq(path))

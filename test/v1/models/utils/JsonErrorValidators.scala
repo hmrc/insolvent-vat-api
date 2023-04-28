@@ -19,11 +19,10 @@ package v1.models.utils
 import play.api.libs.json._
 import support.UnitSpec
 
+import scala.collection.immutable
+
 trait JsonErrorValidators {
   _: UnitSpec =>
-
-  type JsError = (JsPath, Seq[JsonValidationError])
-  type JsErrors = Seq[JsError]
 
   object JsonError {
     val NUMBER_OR_STRING_FORMAT_EXCEPTION = "error.expected.jsnumberorjsstring"
@@ -35,7 +34,7 @@ trait JsonErrorValidators {
     val PATH_MISSING_EXCEPTION = "error.path.missing"
   }
 
-  implicit class JsErrorOps(err: JsError){
+  implicit class JsErrorOps(err: (JsPath, Seq[JsonValidationError])){
     def path: JsPath = err._1
   }
 
@@ -44,8 +43,16 @@ trait JsonErrorValidators {
   }
 
   implicit class JsResultOps[T](res: JsResult[T]) {
-    def errors: JsErrors = res match {
-      case JsError(jsErrors) => jsErrors
+    def errors: Seq[(JsPath, Seq[JsonValidationError])] = res match {
+      case JsError(jsErrors) =>
+
+        val immutableSeq: immutable.Seq[(JsPath, immutable.Seq[JsonValidationError])] =
+          jsErrors.map { case (jsPath, errors) =>
+            (jsPath, errors.to(immutable.Seq))
+          }.to(immutable.Seq)
+
+          immutableSeq
+
       case JsSuccess(_, _) => fail("A JSON error was expected")
     }
   }
@@ -72,7 +79,7 @@ trait JsonErrorValidators {
       lazy val jsError = jsResult.errors.head
 
       "throw the error against the correct property" in {
-        jsError.path shouldBe jsPath
+        jsError._1 shouldBe jsPath
       }
 
       "throw a missing path error" in {
@@ -117,7 +124,7 @@ trait JsonErrorValidators {
     json.as[JsObject](updateReads)
   }
 
-  private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
+  private def filterErrorByPath(jsPath: JsPath, jsError: (JsPath, Seq[JsonValidationError])): JsonValidationError = {
     jsError match {
       case (path, err :: Nil) if jsError.path == path => err
       case (path, _ :: Nil)=> fail(s"single error returned but path $path does not match $jsPath")
