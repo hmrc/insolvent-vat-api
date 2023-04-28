@@ -126,8 +126,8 @@ class ValidatorSpec extends UnitSpec with MockFactory {
       )
 
       val flatErrors: List[MtdError] = List(
-        NotFoundError,
-        VrnFormatError.copy(paths = Some(Seq("one", "two")))
+        VrnFormatError.copy(paths = Some(Seq("one", "two"))),
+        NotFoundError
       )
 
       Validator.flattenErrors(errors) shouldBe flatErrors
@@ -135,8 +135,8 @@ class ValidatorSpec extends UnitSpec with MockFactory {
 
     "return the input for a list of unique errors" in {
       val errors: List[List[MtdError]] = List(
-        List(NotFoundError),
-        List(VrnFormatError.copy(paths = Some(Seq("one"))))
+        List(VrnFormatError.copy(paths = Some(Seq("one")))),
+        List(NotFoundError)
       )
 
       Validator.flattenErrors(errors) shouldBe errors.flatten

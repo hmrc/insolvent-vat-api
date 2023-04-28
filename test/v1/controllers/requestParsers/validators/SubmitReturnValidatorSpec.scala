@@ -192,7 +192,7 @@ class SubmitReturnValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
 
       "the submitted request body is not in the correct format and mandatory fields are missing" in {
         validator.validate(SubmitReturnRawData(validVrn, nonValidRawRequestBody)) shouldBe
-          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey").sorted)))
+          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/receivedAt", "/periodKey", "/uniqueId"))))
       }
     }
 

@@ -267,7 +267,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
       )
 
       val nonValidRequestBodyErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
-        paths = Some(Seq("/receivedAt", "/uniqueId", "/periodKey").sorted)
+        paths = Some(Seq("/receivedAt", "/periodKey", "/uniqueId"))
       )
 
       def validationErrorTest(requestVrn: String, requestBody: JsValue, expectedStatus: Int,
