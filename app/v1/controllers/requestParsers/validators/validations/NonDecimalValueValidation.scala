@@ -33,7 +33,7 @@ object NonDecimalValueValidation extends ValueFormatErrorMessages {
     if (amountScaleIsCorrect && amountIsInRange && amount.isWhole) NoValidationErrors else List(
       ValueFormatError.copy(
         message = message,
-        paths = Some(Seq(path))
+        paths = Some(Seq(path).sorted)
       )
     )
   }
