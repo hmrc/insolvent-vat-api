@@ -33,7 +33,7 @@ object DecimalValueValidation extends ValueFormatErrorMessages {
     if (amountIsInRange && amountScaleIsCorrect) NoValidationErrors else List(
       ValueFormatError.copy(
         message = message,
-        paths = Some(Seq(path))
+        paths = Some(Seq(path).sorted)
       )
     )
   }
