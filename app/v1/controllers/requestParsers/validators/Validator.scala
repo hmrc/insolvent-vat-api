@@ -47,7 +47,9 @@ object Validator {
 
       errors.fold(baseError)(
         (error1: MtdError, error2: MtdError) => (error1, error2) match {
-          case (MtdError(_, _, Some(paths1)), MtdError(_, _, Some(paths2))) => error1.copy(paths = Some(paths1 ++ paths2))
+          case (MtdError(_, _, Some(paths1)), MtdError(_, _, Some(paths2))) =>
+            val paths = paths1 ++ paths2
+            error1.copy(paths = Some(paths.sorted))
           case (MtdError(_, _, Some(_)), MtdError(_, _, None)) => error1
           case (MtdError(_, _, None), MtdError(_, _, Some(_))) => error2
           case _ => error1

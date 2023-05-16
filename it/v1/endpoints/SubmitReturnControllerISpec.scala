@@ -244,7 +244,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
             "/vatDueAcquisitions",
             "/totalVatDue",
             "/vatReclaimedCurrPeriod"
-          )),
+          ).sorted),
           message = "The field should be between -9999999999999.99 and 9999999999999.99"
         ),
         UniqueIDFormatError,
@@ -254,7 +254,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
             "/totalValuePurchasesExVAT",
             "/totalValueGoodsSuppliedExVAT",
             "/totalAcquisitionsExVAT"
-          )),
+          ).sorted),
           message = "The field should be between -9999999999999 and 9999999999999"
         ),
         ValueFormatError.copy(
@@ -267,7 +267,7 @@ class SubmitReturnControllerISpec extends IntegrationBaseSpec {
       )
 
       val nonValidRequestBodyErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
-        paths = Some(Seq("/receivedAt", "/periodKey", "/uniqueId"))
+        paths = Some(Seq("/receivedAt", "/periodKey", "/uniqueId").sorted)
       )
 
       def validationErrorTest(requestVrn: String, requestBody: JsValue, expectedStatus: Int,
