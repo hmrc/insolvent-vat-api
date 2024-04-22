@@ -3,21 +3,21 @@ insolvent-vat-api
 The Insolvent VAT API enables Third Party suppliers to submit scanned copies of VAT Returns of insolvent companies. 
 
 ## Requirements 
-- Scala 2.12.x
-- Java 8
-- sbt 1.3.7
+- Scala 2.13.x
+- Java 21
+- sbt 1.9.7
 - [Service Manager](https://github.com/hmrc/service-manager)
  
 ## Development Setup
   
 Run from the console using: `sbt run` (starts on port 9676 by default)
   
-Start the service manager profile: `sm --start MTDFB_VAT`
+Start the service manager profile: `sm2 --start MTDFB_VAT`
 
 # Running tests
 ```
 sbt test
-sbt it:test
+sbt it/test
 ```
 
 ## Viewing RAML
