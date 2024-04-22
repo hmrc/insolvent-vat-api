@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-import play.core.PlayVersion
 import play.sbt.PlayImport._
 import sbt._
 
 object AppDependencies {
 
+  val bootstrapVersion = "8.5.0"
+
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "7.15.0",
-    "org.typelevel" %% "cats-core"         % "2.9.0",
+    "uk.gov.hmrc" %% "bootstrap-backend-play-30" % bootstrapVersion,
+    "org.typelevel" %% "cats-core"         % "2.10.0",
     "com.chuusai"   %% "shapeless"         % "2.4.0-M1",
-    "com.fasterxml.jackson.module"  %% "jackson-module-scala"               %  "2.15.0"
+    "com.fasterxml.jackson.module"  %% "jackson-module-scala"               %  "2.17.0"
 
   )
 
-  def test(scope: String = "test, it"): Seq[sbt.ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"          % "3.2.15"             % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"        % "0.64.0"           % scope,
-    "org.scalacheck"         %% "scalacheck"         % "1.17.0"            % scope,
-    "org.scalamock"          %% "scalamock"          % "5.2.0"             % scope,
-    "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"             % scope,
-    "com.github.tomakehurst" % "wiremock-jre8"      % "2.35.0"            % scope
-  )
+  def test: Seq[sbt.ModuleID] = Seq(
+    "org.scalatest"          %% "scalatest"          % "3.2.15",
+    "com.vladsch.flexmark"   % "flexmark-all"        % "0.64.8",
+    "org.scalacheck"         %% "scalacheck"         % "1.17.0",
+    "org.scalamock"          %% "scalamock"          % "5.2.0" ,
+    "org.playframework"      %% "play-test"          % "3.0.2" ,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1",
+    "com.github.tomakehurst" % "wiremock-jre8"      % "2.35.0"
+  ).map(_ % Test)
 
 }
