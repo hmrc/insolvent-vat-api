@@ -31,13 +31,13 @@ object AppDependencies {
   )
 
   def test: Seq[sbt.ModuleID] = Seq(
+    "uk.gov.hmrc"            %% "bootstrap-test-play-30" % bootstrapVersion,
     "org.scalatest"          %% "scalatest"          % "3.2.15",
     "com.vladsch.flexmark"   % "flexmark-all"        % "0.64.8",
     "org.scalacheck"         %% "scalacheck"         % "1.17.0",
     "org.scalamock"          %% "scalamock"          % "5.2.0" ,
     "org.playframework"      %% "play-test"          % "3.0.2" ,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1",
-    "com.github.tomakehurst" % "wiremock-jre8"      % "2.35.0"
+    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1"
   ).map(_ % Test)
 
 }
