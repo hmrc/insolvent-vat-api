@@ -18,12 +18,10 @@ resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases
 resolvers += "HMRC-open-artefacts-maven" at "https://open.artefacts.tax.service.gov.uk/maven2"
 resolvers += Resolver.url("HMRC-open-artefacts-ivy", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin(dependency = "uk.gov.hmrc" % "sbt-auto-build" % "3.9.0")
-addSbtPlugin(dependency = "uk.gov.hmrc" % "sbt-distributables" % "2.2.0")
-addSbtPlugin(dependency = "com.typesafe.play" % "sbt-plugin" % "2.8.16")
-addSbtPlugin(dependency = "org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
-addSbtPlugin(dependency = "org.scoverage" % "sbt-scoverage" % "2.0.7")
-addSbtPlugin(dependency = "com.timushev.sbt" % "sbt-updates" % "0.6.3")
-
-libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+addSbtPlugin(dependency = "uk.gov.hmrc" % "sbt-auto-build" % "3.21.0")
+addSbtPlugin(dependency = "uk.gov.hmrc" % "sbt-distributables" % "2.5.0")
+addSbtPlugin(dependency = "org.playframework" % "sbt-plugin" % "3.0.2")
+addSbtPlugin(dependency = "org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0" exclude("org.scala-lang.modules", "scala-xml_2.12"))
+addSbtPlugin(dependency = "org.scoverage" % "sbt-scoverage" % "2.0.11")
+addSbtPlugin(dependency = "com.timushev.sbt" % "sbt-updates" % "0.6.4")
 
