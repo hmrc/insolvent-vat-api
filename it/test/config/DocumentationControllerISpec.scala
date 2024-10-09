@@ -26,13 +26,6 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
   val apiDefinitionJson: JsValue = Json.parse(
     """
     |{
-    |  "scopes": [
-    |    {
-    |		   "key": "write:insolvent-vat",
-    |		   "name": "Change your Insolvent VAT information",
-    |		   "description": "Allow write access to Insolvent VAT data"
-    |	   }
-    |  ],
     |	 "api": {
     |		 "name": "Insolvent VAT (MTD)",
     |		 "description": "An API for providing VAT data for insolvent traders",

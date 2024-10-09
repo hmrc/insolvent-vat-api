@@ -30,13 +30,6 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
 
   lazy val definition: Definition =
     Definition(
-      scopes = Seq(
-        Scope(
-          key = writeScope,
-          name = "Change your Insolvent VAT information",
-          description = "Allow write access to Insolvent VAT data"
-        )
-      ),
       api = APIDefinition(
         name = "Insolvent VAT (MTD)",
         description = "An API for providing VAT data for insolvent traders",
